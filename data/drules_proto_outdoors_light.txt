@@ -26546,6 +26546,13 @@ cont {
   element {
     scale: 11
     lines {
+      width: 0.1
+      color: 4250095083
+      priority: 170
+      join: BEVELJOIN
+      cap: BUTTCAP
+    }
+    lines {
       width: 1.0
       color: 15921906
       dashdot {
@@ -26559,6 +26566,13 @@ cont {
   }
   element {
     scale: 12
+    lines {
+      width: 0.1
+      color: 4250095083
+      priority: 170
+      join: BEVELJOIN
+      cap: BUTTCAP
+    }
     lines {
       width: 1.1
       color: 1307767538
@@ -30474,6 +30488,13 @@ cont {
   name: "highway-path-bicycle"
   element {
     scale: 11
+    lines {
+      width: 0.1
+      color: 4250095083
+      priority: 170
+      join: BEVELJOIN
+      cap: BUTTCAP
+    }
     lines {
       width: 1.0
       color: 1721782290
@@ -48752,6 +48773,26 @@ cont {
 }
 cont {
   name: "hwtag-cycleway_track"
+  element {
+    scale: 11
+    lines {
+      width: 0.8
+      color: 5459435
+      priority: 330
+      join: BEVELJOIN
+      cap: BUTTCAP
+    }
+  }
+  element {
+    scale: 12
+    lines {
+      width: 0.9
+      color: 5459435
+      priority: 330
+      join: BEVELJOIN
+      cap: BUTTCAP
+    }
+  }
   element {
     scale: 13
     lines {
