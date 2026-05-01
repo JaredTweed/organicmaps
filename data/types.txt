@@ -1649,3 +1649,6 @@ amenity|recycling|container
 *waterway|access_point
 *natural|volcano|active
 *building|construction
+*hwtag|cycleway_track
+*hwtag|cycleway_lane
+*hwtag|cycleway_shared_lane
