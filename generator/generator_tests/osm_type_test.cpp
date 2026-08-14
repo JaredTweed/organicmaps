@@ -583,7 +583,8 @@ UNIT_CLASS_TEST(TestWithClassificator, OsmType_Hwtag)
     TEST(params.IsTypeExist(GetType({"hwtag", "oneway"})), ());
     TEST(params.IsTypeExist(GetType({"hwtag", "private"})), ());
     TEST(params.IsTypeExist(GetType({"hwtag", "nofoot"})), ());
-    TEST(params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(!params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(params.IsTypeExist(GetType({"hwtag", "bicycle_access"})), ());
     TEST(params.IsTypeExist(GetType({"hwtag", "bidir_bicycle"})), ());
     // We don't put yescar tag for features that already Yes by default.
     // TEST(params.IsTypeExist(GetType({"hwtag", "yescar"})), ());
@@ -598,10 +599,68 @@ UNIT_CLASS_TEST(TestWithClassificator, OsmType_Hwtag)
 
     auto const params = GetFeatureBuilderParams(tags);
 
-    TEST_EQUAL(params.m_types.size(), 3, (params));
+    TEST_EQUAL(params.m_types.size(), 4, (params));
     TEST(params.IsTypeExist(GetType({"highway", "primary"})), ());
     TEST(params.IsTypeExist(GetType({"hwtag", "yesfoot"})), ());
     TEST(params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(params.IsTypeExist(GetType({"cyclewaytag", "lane"})), ());
+  }
+
+  {
+    Tags const tags = {{"cycleway:right", "track"}, {"highway", "secondary"}};
+    auto const params = GetFeatureBuilderParams(tags);
+
+    TEST_EQUAL(params.m_types.size(), 3, (params));
+    TEST(params.IsTypeExist(GetType({"highway", "secondary"})), ());
+    TEST(params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(params.IsTypeExist(GetType({"cyclewaytag", "track"})), ());
+  }
+
+  {
+    Tags const tags = {{"cycleway:both", "shared_lane"}, {"highway", "primary"}};
+    auto const params = GetFeatureBuilderParams(tags);
+
+    TEST_EQUAL(params.m_types.size(), 3, (params));
+    TEST(params.IsTypeExist(GetType({"highway", "primary"})), ());
+    TEST(params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(params.IsTypeExist(GetType({"cyclewaytag", "shared_lane"})), ());
+  }
+
+  {
+    Tags const tags = {
+        {"cycleway:left", "lane"}, {"cycleway:left:separation", "kerb"}, {"highway", "secondary"}};
+    auto const params = GetFeatureBuilderParams(tags);
+
+    TEST_EQUAL(params.m_types.size(), 3, (params));
+    TEST(params.IsTypeExist(GetType({"cyclewaytag", "track"})), ());
+    TEST(!params.IsTypeExist(GetType({"cyclewaytag", "lane"})), ());
+  }
+
+  {
+    Tags const tags = {{"cycleway", "buffered_lane"}, {"highway", "secondary"}};
+    auto const params = GetFeatureBuilderParams(tags);
+
+    TEST_EQUAL(params.m_types.size(), 3, (params));
+    TEST(params.IsTypeExist(GetType({"cyclewaytag", "lane"})), ());
+  }
+
+  {
+    Tags const tags = {
+        {"cycleway:left", "shared_lane"}, {"cycleway:right", "track"}, {"highway", "secondary"}};
+    auto const params = GetFeatureBuilderParams(tags);
+
+    TEST_EQUAL(params.m_types.size(), 3, (params));
+    TEST(params.IsTypeExist(GetType({"cyclewaytag", "track"})), ());
+    TEST(!params.IsTypeExist(GetType({"cyclewaytag", "shared_lane"})), ());
+  }
+
+  {
+    Tags const tags = {{"highway", "steps"}, {"ramp:bicycle", "yes"}};
+    auto const params = GetFeatureBuilderParams(tags);
+
+    TEST_EQUAL(params.m_types.size(), 2, (params));
+    TEST(params.IsTypeExist(GetType({"highway", "steps"})), ());
+    TEST(params.IsTypeExist(GetType({"hwtag", "bicycle_ramp"})), ());
   }
 
   {
@@ -674,7 +733,8 @@ UNIT_CLASS_TEST(TestWithClassificator, OsmType_Hwtag)
     TEST_EQUAL(params.m_types.size(), 3, (params));
     TEST(params.IsTypeExist(GetType({"highway", "path"})), (params));
     TEST(params.IsTypeExist(GetType({"hwtag", "yesfoot"})), ());
-    TEST(params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(!params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(params.IsTypeExist(GetType({"hwtag", "bicycle_access"})), ());
   }
 
   {
@@ -714,7 +774,8 @@ UNIT_CLASS_TEST(TestWithClassificator, OsmType_Hwtag)
 
     TEST_EQUAL(params.m_types.size(), 8, (params));
     TEST(params.IsTypeExist(GetType({"highway", "footway"})), (params));
-    TEST(params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(!params.IsTypeExist(GetType({"hwtag", "yesbicycle"})), ());
+    TEST(params.IsTypeExist(GetType({"hwtag", "bicycle_access"})), ());
     TEST(!params.IsTypeExist(GetType({"hwtag", "yesfoot"})), ());
 
     /// @todo One platform is enough.
