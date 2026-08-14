@@ -1777,3 +1777,8 @@ leisure|bird_hide;1654;
 amenity|stage;1655;
 natural|hill;1656;
 natural|arch;1657;
+hwtag|bicycle_access;1658;
+cyclewaytag|track;1659;
+cyclewaytag|lane;1660;
+cyclewaytag|shared_lane;1661;
+hwtag|bicycle_ramp;1662;
