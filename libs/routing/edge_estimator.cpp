@@ -153,7 +153,11 @@ double GetBicycleClimbPenalty(EdgeEstimator::Purpose purpose, double tangent, ge
     factor = 1 + 2 * 0.7 / 13.0 * slope + 0.7 / 169 * slope * slope;
   }
   else if (slope <= 20)
-    factor = 1 + slope * slope / 49;
+  {
+    // Keep the measured ETA curve, but make route selection less eager to take long detours around moderate climbs.
+    double const gradeForDoublePenalty = purpose == EdgeEstimator::Purpose::Weight ? 9.0 : 7.0;
+    factor = 1 + slope * slope / (gradeForDoublePenalty * gradeForDoublePenalty);
+  }
   else
     factor = 10.0;
   return factor;

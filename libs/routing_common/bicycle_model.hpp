@@ -15,6 +15,7 @@ public:
 
   /// VehicleModelInterface overrides:
   SpeedKMpH GetSpeed(FeatureTypes const & types, SpeedParams const & speedParams) const override;
+  bool IsRoad(FeatureTypes const & types) const override;
   bool IsOneWay(FeatureTypes const & types) const override;
   SpeedKMpH const & GetOffroadSpeed() const override;
 
@@ -29,6 +30,14 @@ private:
 
   uint32_t m_bidirBicycleType = 0;
   uint32_t m_onedirBicycleType = 0;
+  uint32_t m_bicycleAccessType = 0;
+  uint32_t m_cyclewayTrackType = 0;
+  uint32_t m_cyclewayLaneType = 0;
+  uint32_t m_cyclewaySharedLaneType = 0;
+  uint32_t m_bicycleRampType = 0;
+  uint32_t m_pathType = 0;
+  uint32_t m_trackType = 0;
+  uint32_t m_surfaceType = 0;
 
   uint32_t m_livingStType = 0;
 };

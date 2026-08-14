@@ -311,10 +311,15 @@ UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_Smoke)
   h5.Add(secondary);
   h5.Add(c.GetTypeByPath({"hwtag", "nocycleway"}));
 
+  feature::TypesHolder h6;
+  h6.Add(secondary);
+  h6.Add(c.GetTypeByPath({"hwtag", "bicycle_access"}));
+
   TEST_EQUAL(model.GetSpeed(h1, p), model.GetSpeed(h2, p), ());
   TEST_LESS_SPEED(model.GetSpeed(h3, p), model.GetSpeed(h2, p));
   TEST_LESS_SPEED(model.GetSpeed(h4, p), model.GetSpeed(h3, p));
   TEST_LESS_SPEED(model.GetSpeed(h5, p), model.GetSpeed(h4, p));
+  TEST_EQUAL(model.GetSpeed(h6, p), model.GetSpeed(h4, p), ());
 }
 
 UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_Speeds)
@@ -328,14 +333,14 @@ UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_Speeds)
       {cycleway, unpavedGood},           // TODO: should be lower than previous, but is equal
       {footway, yesBicycle, pavedGood},  // TODO: should be higher than next, but is equal
       {footway, yesBicycle},
-      {path,
-       yesBicycle},  // TODO: unpaved by default, so should be lower than shared footways or cycleways, but is equal
       {cycleway, pavedBad},
       {footway, yesBicycle, pavedBad},
+      {path, yesBicycle},
       {footway},  // If allowed in the region.
       {cycleway, unpavedBad},
       {path, unpavedGood},  // Its controversial what is preferrable: a good path or a bad cycleway
       {path, yesBicycle, unpavedBad},
+      {path},
       /// @todo(pastk): "nobicycle" is ignored in speed calculation atm, the routing is just forbidden there.
       /// But "nobicycle" should result in a dismount speed instead, see
       /// https://github.com/organicmaps/organicmaps/issues/9784
@@ -356,6 +361,75 @@ UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_Speeds)
       TEST_LESS_OR_EQUAL_SPEED(model.GetSpeed(h, p), model.GetSpeed(hprev, p));
     hprev = h;
   }
+}
+
+UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_UnknownPathSurface)
+{
+  auto const & model = BicycleModel::AllLimitsInstance();
+  auto const p = DefaultParams();
+  auto const track = classif().GetTypeByPath({"highway", "track"});
+
+  feature::TypesHolder pathUnknown;
+  pathUnknown.Add(path);
+  feature::TypesHolder pathKnown;
+  pathKnown.Add(path);
+  pathKnown.Add(unpavedGood);
+
+  feature::TypesHolder trackUnknown;
+  trackUnknown.Add(track);
+  feature::TypesHolder trackKnown;
+  trackKnown.Add(track);
+  trackKnown.Add(unpavedGood);
+
+  TEST_LESS_SPEED(model.GetSpeed(pathUnknown, p), model.GetSpeed(pathKnown, p));
+  TEST_LESS_SPEED(model.GetSpeed(trackUnknown, p), model.GetSpeed(trackKnown, p));
+}
+
+UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_CyclewayInfrastructure)
+{
+  auto const & model = BicycleModel::AllLimitsInstance();
+  auto const & c = classif();
+  auto const p = DefaultParams();
+
+  auto MakeSecondary = [&](std::initializer_list<std::string> cyclewayType)
+  {
+    feature::TypesHolder types;
+    types.Add(secondary);
+    types.Add(yesBicycle);
+    types.Add(c.GetTypeByPath(cyclewayType));
+    return types;
+  };
+
+  auto const track = MakeSecondary({"cyclewaytag", "track"});
+  auto const lane = MakeSecondary({"cyclewaytag", "lane"});
+  auto const sharedLane = MakeSecondary({"cyclewaytag", "shared_lane"});
+
+  feature::TypesHolder dedicated;
+  dedicated.Add(cycleway);
+
+  TEST_LESS_SPEED(model.GetSpeed(track, p), model.GetSpeed(dedicated, p));
+  TEST_LESS_SPEED(model.GetSpeed(lane, p), model.GetSpeed(track, p));
+  TEST_LESS_SPEED(model.GetSpeed(sharedLane, p), model.GetSpeed(lane, p));
+}
+
+UNIT_CLASS_TEST(VehicleModelTest, BicycleModel_StepsRamp)
+{
+  auto const & model = BicycleModel::AllLimitsInstance();
+  auto const & c = classif();
+  auto const p = DefaultParams();
+
+  feature::TypesHolder steps;
+  steps.Add(c.GetTypeByPath({"highway", "steps"}));
+  feature::TypesHolder stepsWithRamp = steps;
+  stepsWithRamp.Add(c.GetTypeByPath({"hwtag", "bicycle_ramp"}));
+  feature::TypesHolder malformedStepsWithRamp = stepsWithRamp;
+  malformedStepsWithRamp.Add(c.GetTypeByPath({"cyclewaytag", "lane"}));
+  feature::TypesHolder dedicated;
+  dedicated.Add(cycleway);
+
+  TEST_LESS_SPEED(model.GetSpeed(steps, p), model.GetSpeed(stepsWithRamp, p));
+  TEST_EQUAL(model.GetSpeed(malformedStepsWithRamp, p), model.GetSpeed(stepsWithRamp, p), ());
+  TEST_LESS_SPEED(model.GetSpeed(stepsWithRamp, p), model.GetSpeed(dedicated, p));
 }
 
 UNIT_CLASS_TEST(VehicleModelTest, PedestrianModel_Smoke)

@@ -43,6 +43,16 @@ UNIT_TEST(ClimbPenalty_DescentLessThenAscent)
   }
 }
 
+UNIT_TEST(BicycleClimbPenalty_RoutingLessThanEtaUphill)
+{
+  for (double const tangent : {0.05, 0.1, 0.15, 0.2})
+  {
+    auto const weight = GetBicycleClimbPenalty(EdgeEstimator::Purpose::Weight, tangent, kAlt);
+    auto const eta = GetBicycleClimbPenalty(EdgeEstimator::Purpose::ETA, tangent, kAlt);
+    TEST_LESS(weight, eta, (tangent));
+  }
+}
+
 // Descent penalty for cars must be equal to the ascent penalty.
 UNIT_TEST(ClimbPenalty_DescentEqualsAscent)
 {

@@ -26,12 +26,19 @@ HighwayBasedFactors const kDefaultFactors = GetOneFactorsForBicycleAndPedestrian
 
 SpeedKMpH constexpr kSpeedOffroadKMpH = {1.5 /* weight */, 3.0 /* eta */};
 SpeedKMpH constexpr kSpeedDismountKMpH = {2.0 /* weight */, 4.0 /* eta */};
+// Access-only bicycle tags permit riding, but do not imply dedicated or preferred infrastructure.
+SpeedKMpH constexpr kSpeedBicycleAccessKMpH = {8.0 /* weight */, 10.0 /* eta */};
+SpeedKMpH constexpr kSpeedCyclewayTrackKMpH = {20.0 /* weight */, 18.0 /* eta */};
+SpeedKMpH constexpr kSpeedCyclewayLaneKMpH = {17.0 /* weight */, 17.0 /* eta */};
+SpeedKMpH constexpr kSpeedCyclewaySharedLaneKMpH = {14.0 /* weight */, 16.0 /* eta */};
+SpeedKMpH constexpr kSpeedBicycleRampKMpH = {10.0 /* weight */, 10.0 /* eta */};
+SpeedFactor constexpr kUnknownPathSurfaceFactor = {0.8 /* weight */, 0.8 /* eta */};
 // Applies only to countries where cycling is allowed on footways (by default the above dismount speed is used).
 SpeedKMpH constexpr kSpeedOnFootwayKMpH = {8.0 /* weight */, 10.0 /* eta */};
 
 HighwayBasedSpeeds const kDefaultSpeeds = {
     // {highway class : InOutCitySpeedKMpH(in city(weight, eta), out city(weight eta))}
-    // Note that roads with hwtag=yesbicycle get high speed of 0.9 * Cycleway.
+    // Note that designated roads with hwtag=yesbicycle get high speed of 0.9 * Cycleway.
     /// @see Russia_UseTrunk test for Trunk weights.
     {HighwayType::HighwayTrunk, InOutCitySpeedKMpH(SpeedKMpH(7.0, 17.0), SpeedKMpH(9.0, 19.0))},
     // Presence of link roads usually means that connected roads are high traffic.
@@ -199,16 +206,35 @@ BicycleModel::BicycleModel(VehicleModel::LimitsInitList const & limits, HighwayB
   ASSERT_EQUAL(kDefaultOptions.size(), kDefaultSpeeds.size() - 1, ());
 
   base::StringIL hwtagYesBicycle = {"hwtag", "yesbicycle"};
+  base::StringIL hwtagBicycleAccess = {"hwtag", "bicycle_access"};
+  base::StringIL cyclewayTrack = {"cyclewaytag", "track"};
+  base::StringIL cyclewayLane = {"cyclewaytag", "lane"};
+  base::StringIL cyclewaySharedLane = {"cyclewaytag", "shared_lane"};
+  base::StringIL bicycleRamp = {"hwtag", "bicycle_ramp"};
 
   auto const & cl = classif();
   m_noType = cl.GetTypeByPath({"hwtag", "nobicycle"});
   m_yesType = cl.GetTypeByPath(hwtagYesBicycle);
+  m_bicycleAccessType = cl.GetTypeByPath(hwtagBicycleAccess);
+  m_cyclewayTrackType = cl.GetTypeByPath(cyclewayTrack);
+  m_cyclewayLaneType = cl.GetTypeByPath(cyclewayLane);
+  m_cyclewaySharedLaneType = cl.GetTypeByPath(cyclewaySharedLane);
+  m_bicycleRampType = cl.GetTypeByPath(bicycleRamp);
   m_bidirBicycleType = cl.GetTypeByPath({"hwtag", "bidir_bicycle"});
   m_onedirBicycleType = cl.GetTypeByPath({"hwtag", "onedir_bicycle"});
+  m_pathType = cl.GetTypeByPath({"highway", "path"});
+  m_trackType = cl.GetTypeByPath({"highway", "track"});
+  m_surfaceType = cl.GetTypeByPath({"psurface"});
 
-  // Assign 90% of max cycleway speed for bicycle=yes to keep choosing most preferred cycleway.
+  // Keep designated bicycle ways strongly preferred. Access-only ways use their normal road speed, with a modest
+  // floor for ways such as footways where cycling is explicitly permitted.
   auto const yesSpeed = kDefaultSpeeds.Get(HighwayType::HighwayCycleway).m_inCity * 0.9;
-  AddAdditionalRoadTypes(cl, {{hwtagYesBicycle, InOutCitySpeedKMpH(yesSpeed)}});
+  AddAdditionalRoadTypes(cl, {{hwtagYesBicycle, InOutCitySpeedKMpH(yesSpeed)},
+                              {hwtagBicycleAccess, InOutCitySpeedKMpH(kSpeedBicycleAccessKMpH)},
+                              {cyclewayTrack, InOutCitySpeedKMpH(kSpeedCyclewayTrackKMpH)},
+                              {cyclewayLane, InOutCitySpeedKMpH(kSpeedCyclewayLaneKMpH)},
+                              {cyclewaySharedLane, InOutCitySpeedKMpH(kSpeedCyclewaySharedLaneKMpH)},
+                              {bicycleRamp, InOutCitySpeedKMpH(kSpeedBicycleRampKMpH)}});
 
   // Update max speed with possible ferry transfer and bicycle speed downhill.
   // See EdgeEstimator::CalcHeuristic, GetBicycleClimbPenalty.
@@ -232,7 +258,28 @@ bool BicycleModel::IsBicycleOnedir(feature::TypesHolder const & types) const
 
 SpeedKMpH BicycleModel::GetSpeed(FeatureTypes const & types, SpeedParams const & speedParams) const
 {
-  return GetTypeSpeedImpl(types, speedParams, false /* isCar */);
+  auto bicycleTypes = types;
+  if (types.Has(m_cyclewayTrackType) || types.Has(m_cyclewayLaneType) || types.Has(m_cyclewaySharedLaneType))
+    bicycleTypes.Remove(m_yesType);
+  if (types.Has(m_bicycleRampType))
+  {
+    bicycleTypes.Remove(m_yesType);
+    bicycleTypes.Remove(m_bicycleAccessType);
+    bicycleTypes.Remove(m_cyclewayTrackType);
+    bicycleTypes.Remove(m_cyclewayLaneType);
+    bicycleTypes.Remove(m_cyclewaySharedLaneType);
+  }
+
+  auto speed = GetTypeSpeedImpl(bicycleTypes, speedParams, false /* isCar */);
+  if ((types.Has(m_pathType) || types.Has(m_trackType)) && !types.HasWithSubclass(m_surfaceType))
+    speed = speed * bicycle_model::kUnknownPathSurfaceFactor;
+  return speed;
+}
+
+bool BicycleModel::IsRoad(FeatureTypes const & types) const
+{
+  return types.GetGeomType() == feature::GeomType::Line &&
+         (types.Has(m_bicycleAccessType) || IsRoadImpl(types));
 }
 
 bool BicycleModel::IsOneWay(FeatureTypes const & types) const
