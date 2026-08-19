@@ -4897,51 +4897,51 @@ type craft-winery
     caption primary[height=11 color=c066 dy=1 optional] priority=-7600
 type cyclewaytag-lane
   z14
-    line width=1.1 color=c129 join=round cap=butt dash=[6,4] priority=330
+    line width=1.1 color=c129 join=round cap=butt dash=[6,4] priority=340
   z15
-    line width=1.2 color=c129 join=round cap=butt dash=[6.5,4.5] priority=330
+    line width=1.2 color=c129 join=round cap=butt dash=[6.5,4.5] priority=340
   z16
-    line width=1.5 color=c129 join=round cap=round dash=[8,5] priority=330
+    line width=1.5 color=c129 join=round cap=round dash=[8,5] priority=340
   z17
-    line width=1.5 color=c129 join=round cap=round dash=[8,5] priority=330
+    line width=1.5 color=c129 join=round cap=round dash=[8,5] priority=340
   z18
-    line width=1.8 color=c129 join=round cap=round dash=[9,5.5] priority=330
+    line width=1.8 color=c129 join=round cap=round dash=[9,5.5] priority=340
   z19
-    line width=1.8 color=c129 join=round cap=round dash=[9,5.5] priority=330
+    line width=1.8 color=c129 join=round cap=round dash=[9,5.5] priority=340
   z20
-    line width=1.8 color=c129 join=round cap=round dash=[9,5.5] priority=330
+    line width=1.8 color=c129 join=round cap=round dash=[9,5.5] priority=340
 type cyclewaytag-shared_lane
   z14
-    line width=1 color=c129 join=round cap=butt dash=[1.4,4.2] priority=330
+    line width=1 color=c129 join=round cap=butt dash=[1.4,4.2] priority=340
   z15
-    line width=1.1 color=c129 join=round cap=butt dash=[1.4,4.4] priority=330
+    line width=1.1 color=c129 join=round cap=butt dash=[1.4,4.4] priority=340
   z16
-    line width=1.3 color=c129 join=round cap=round dash=[1.6,5] priority=330
+    line width=1.3 color=c129 join=round cap=round dash=[1.6,5] priority=340
   z17
-    line width=1.3 color=c129 join=round cap=round dash=[1.6,5] priority=330
+    line width=1.3 color=c129 join=round cap=round dash=[1.6,5] priority=340
   z18
-    line width=1.5 color=c129 join=round cap=round dash=[1.8,5.6] priority=330
+    line width=1.5 color=c129 join=round cap=round dash=[1.8,5.6] priority=340
   z19
-    line width=1.5 color=c129 join=round cap=round dash=[1.8,5.6] priority=330
+    line width=1.5 color=c129 join=round cap=round dash=[1.8,5.6] priority=340
   z20
-    line width=1.5 color=c129 join=round cap=round dash=[1.8,5.6] priority=330
+    line width=1.5 color=c129 join=round cap=round dash=[1.8,5.6] priority=340
 type cyclewaytag-track
   z13
-    line width=1.2 color=c129 join=round cap=butt priority=330
+    line width=1.2 color=c129 join=round cap=butt priority=340
   z14
-    line width=1.4 color=c129 join=round cap=butt priority=330
+    line width=1.4 color=c129 join=round cap=butt priority=340
   z15
-    line width=1.7 color=c129 join=round cap=butt priority=330
+    line width=1.7 color=c129 join=round cap=butt priority=340
   z16
-    line width=2 color=c129 join=round cap=round priority=330
+    line width=2 color=c129 join=round cap=round priority=340
   z17
-    line width=2 color=c129 join=round cap=round priority=330
+    line width=2 color=c129 join=round cap=round priority=340
   z18
-    line width=2.4 color=c129 join=round cap=round priority=330
+    line width=2.4 color=c129 join=round cap=round priority=340
   z19
-    line width=2.4 color=c129 join=round cap=round priority=330
+    line width=2.4 color=c129 join=round cap=round priority=340
   z20
-    line width=2.4 color=c129 join=round cap=round priority=330
+    line width=2.4 color=c129 join=round cap=round priority=340
 type emergency-assembly_point
   z18
     symbol name=assembly_point-m priority=-9980
