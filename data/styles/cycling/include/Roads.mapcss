@@ -54,6 +54,12 @@ line|z16-17[highway=cycleway],
 line|z18-[highway=cycleway],
 {width: 2.8;}
 
+/* The base path/footway line is already solid @cycleway, so the inherited
+   ::cycleline underline (a second, fainter blue line) is redundant. */
+line|z14-[highway=path][bicycle=designated]::cycleline,
+line|z15-[highway=footway][bicycle=designated]::cycleline,
+{width: 0;}
+
 /* Cycleway infrastructure attached to a road. The track category (protected:
    cycleway=track, protected lanes, separated lanes) renders solid; a painted
    lane renders dashed; a shared lane renders dotted. These cyclewaytag types
