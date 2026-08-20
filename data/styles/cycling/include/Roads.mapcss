@@ -37,26 +37,30 @@ line|z13-[highway=footway][bicycle=designated],
  casing-color: @cycleway_casing; casing-width: 1.5;}
 
 line|z11[highway=cycleway],
-{width: 3.6;}
+{width: 3.0;}
 line|z12[highway=cycleway],
-{width: 4.2;}
 line|z12[highway=path][bicycle=designated],
 {width: 3.6;}
 line|z13[highway=cycleway],
-{width: 4.8;}
 line|z13[highway=path][bicycle=designated],
 line|z13[highway=footway][bicycle=designated],
-{width: 3.9;}
-line|z14[highway=footway][bicycle=designated],
 {width: 4.2;}
 line|z14[highway=cycleway],
-{width: 5.4;}
+line|z14[highway=path][bicycle=designated],
+line|z14[highway=footway][bicycle=designated],
+{width: 4.8;}
 line|z15[highway=cycleway],
-{width: 6.3;}
+line|z15[highway=path][bicycle=designated],
+line|z15[highway=footway][bicycle=designated],
+{width: 5.7;}
 line|z16-17[highway=cycleway],
-{width: 7.8;}
+line|z16-17[highway=path][bicycle=designated],
+line|z16-17[highway=footway][bicycle=designated],
+{width: 6.9;}
 line|z18-[highway=cycleway],
-{width: 9.0;}
+line|z18-[highway=path][bicycle=designated],
+line|z18-[highway=footway][bicycle=designated],
+{width: 8.1;}
 
 /* The base path/footway line is already solid @cycleway, so the inherited
    ::cycleline underline (a second, fainter blue line) is redundant. */
@@ -85,18 +89,18 @@ line|z18-[cyclewaytag=track],
 {width: 8.1;}
 
 line|z14[cyclewaytag=lane],
-{width: 4.5; dashes: 18,4.8;}
+{width: 3.6; dashes: 18,4.8;}
 line|z15[cyclewaytag=lane],
-{width: 4.8; dashes: 19.5,4.8;}
+{width: 4.4; dashes: 19.5,4.8;}
 line|z16-17[cyclewaytag=lane],
 {width: 6.0; dashes: 24,5.4;}
 line|z18-[cyclewaytag=lane],
 {width: 6.9; dashes: 27,6.0;}
 
 line|z14[cyclewaytag=shared_lane],
-{width: 4.2; dashes: 4.8,4.8;}
+{width: 3.4; dashes: 4.8,4.8;}
 line|z15[cyclewaytag=shared_lane],
-{width: 4.5; dashes: 4.8,4.8;}
+{width: 4.1; dashes: 4.8,4.8;}
 line|z16-17[cyclewaytag=shared_lane],
 {width: 5.7; dashes: 5.4,5.4;}
 line|z18-[cyclewaytag=shared_lane],

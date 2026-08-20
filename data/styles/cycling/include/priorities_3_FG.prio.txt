@@ -44,20 +44,31 @@ historic-citywalls                                  # line z14- (also has pathte
 power-line                                          # line z18- (also has line::dash z18-)
 === 350
 
-cyclewaytag-lane                                    # line z14- (also has line(casing) z14-)
-cyclewaytag-shared_lane                             # line z14- (also has line(casing) z14-)
 cyclewaytag-track                                   # line z13- (also has line(casing) z13-)
-power-line::dash                                    # line::dash z18- (also has line z18-)
-=== 340
-
-# cyclewaytag-lane                                  # line(casing) z14- (also has line z14-)
-# cyclewaytag-shared_lane                           # line(casing) z14- (also has line z14-)
-# cyclewaytag-track                                 # line(casing) z13- (also has line z13-)
-# === 339
-
 highway-cycleway                                    # line z11- (also has line(casing) z11-, pathtext z15-)
 highway-cycleway-bridge                             # line z11- (also has line(casing) z11-, line::bridgeblack z17-, line::bridgewhite z15-, pathtext z15-)
 highway-cycleway-tunnel                             # line z11- (also has line(casing) z11-, line::tunnelBackground z17-, line::tunnelCasing z17-, pathtext z15-)
+highway-footway-bicycle                             # line z13- (also has line(casing) z13-, pathtext z15-)
+highway-path-bicycle                                # line z12- (also has line(casing) z12-, pathtext z15-)
+=== 342
+
+cyclewaytag-lane                                    # line z14- (also has line(casing) z14-)
+# cyclewaytag-track                                 # line(casing) z13- (also has line z13-)
+# highway-cycleway                                  # line(casing) z11- (also has line z11-, pathtext z15-)
+# highway-cycleway-bridge                           # line(casing) z11- (also has line z11-, line::bridgeblack z17-, line::bridgewhite z15-, pathtext z15-)
+# highway-cycleway-tunnel                           # line(casing) z11- (also has line z11-, line::tunnelBackground z17-, line::tunnelCasing z17-, pathtext z15-)
+# highway-footway-bicycle                           # line(casing) z13- (also has line z13-, pathtext z15-)
+# highway-path-bicycle                              # line(casing) z12- (also has line z12-, pathtext z15-)
+=== 341
+
+# cyclewaytag-lane                                  # line(casing) z14- (also has line z14-)
+cyclewaytag-shared_lane                             # line z14- (also has line(casing) z14-)
+power-line::dash                                    # line::dash z18- (also has line z18-)
+=== 340
+
+# cyclewaytag-shared_lane                           # line(casing) z14- (also has line z14-)
+# === 339
+
 highway-footway-crossing                            # line z16-
 highway-ladder                                      # line z15- (also has icon z17-)
 highway-steps                                       # line z15- (also has pathtext z16-)
@@ -66,11 +77,6 @@ highway-steps-tunnel                                # line z15- (also has line::
 hwtag-oneway::arrows                                # line::arrows z15-
 waterway-weir                                       # line z14- (also has pathtext z15-)
 === 330
-
-# highway-cycleway                                  # line(casing) z11- (also has line z11-, pathtext z15-)
-# highway-cycleway-bridge                           # line(casing) z11- (also has line z11-, line::bridgeblack z17-, line::bridgewhite z15-, pathtext z15-)
-# highway-cycleway-tunnel                           # line(casing) z11- (also has line z11-, line::tunnelBackground z17-, line::tunnelCasing z17-, pathtext z15-)
-# === 329
 
 barrier-city_wall                                   # line z14- (also has pathtext z16-)
 barrier-fence                                       # line z16-
@@ -293,9 +299,7 @@ highway-bridleway-bridge                            # line z14- (also has line::
 highway-bridleway-tunnel                            # line z14- (also has line::tunnelBackground z17-, line::tunnelCasing z17-, pathtext z15-)
 highway-footway                                     # line z15- (also has pathtext z15-)
 highway-footway-area                                # line z13 and area z14-
-highway-footway-bicycle                             # line z13- (also has line(casing) z13-, pathtext z15-)
 highway-path                                        # line z14- (also has pathtext z15-)
-highway-path-bicycle                                # line z12- (also has line(casing) z12-, pathtext z15-)
 highway-path-difficult                              # line z14- (also has pathtext z15-)
 highway-path-expert                                 # line z14- (also has pathtext z15-)
 highway-raceway                                     # line z14- (also has pathtext z16-)
@@ -305,10 +309,6 @@ highway-track-bridge                                # line z14- (also has line::
 highway-track-no-access                             # line z14- (also has pathtext z15-)
 highway-track-tunnel                                # line z14- (also has line::tunnelBackground z17-, line::tunnelCasing z17-, pathtext z15-)
 === 180
-
-# highway-footway-bicycle                           # line(casing) z13- (also has line z13-, pathtext z15-)
-# highway-path-bicycle                              # line(casing) z12- (also has line z12-, pathtext z15-)
-# === 179
 
 highway-footway-bicycle::cycleline                  # WARNING: no drule defined for the priority (also has line(casing) z13-, line z13-, pathtext z15-)
 highway-path-bicycle::cycleline                     # WARNING: no drule defined for the priority (also has line(casing) z12-, line z12-, pathtext z15-)
