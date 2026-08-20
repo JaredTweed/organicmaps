@@ -85,13 +85,13 @@ line|z18-[cyclewaytag=track],
 {width: 8.1;}
 
 line|z14[cyclewaytag=lane],
-{width: 4.5; dashes: 18,18;}
+{width: 4.5; dashes: 18,4.8;}
 line|z15[cyclewaytag=lane],
-{width: 4.8; dashes: 19.5,19.5;}
+{width: 4.8; dashes: 19.5,4.8;}
 line|z16-17[cyclewaytag=lane],
-{width: 6.0; dashes: 24,24;}
+{width: 6.0; dashes: 24,5.4;}
 line|z18-[cyclewaytag=lane],
-{width: 6.9; dashes: 27,27;}
+{width: 6.9; dashes: 27,6.0;}
 
 line|z14[cyclewaytag=shared_lane],
 {width: 4.2; dashes: 4.8,4.8;}
