@@ -2,10 +2,14 @@
 @import("../../default/include/Roads.mapcss");
 
 /* ~~~~ CYCLING STYLE — ROADS OVERRIDES ~~~~~
-   Design discipline: a single cycling accent color (@cycleway = cyan-blue)
-   marks every cycling-relevant line. Infrastructure type is encoded by
-   *line treatment* (solid / dashed / dotted) — not by color — so beginners
-   read "blue = cycling" instantly and the dash nuance earns meaning with use.
+   Google Maps-like cased lines: a continuous contrasting casing underneath,
+   with a colored blue stroke centered on top. The casing always stays
+   continuous; the stroke is solid / dashed / dotted to encode the
+   infrastructure type.
+
+   Two blue intensities share one hue: dedicated (off-road) cycling
+   infrastructure (@cycleway) is slightly stronger than road-attached
+   cyclewaytag track/lane/shared_lane (@cycleway_road).
 
    Motorways and trunks are de-emphasized: cyclists rarely use them, so they
    recede into the base. The cycling layer gets the visual room to breathe.
@@ -22,37 +26,37 @@ line|z10-[highway=trunk_link],
 
 /* Promote dedicated cycleways to z11+ (default starts at z13) and designated
    shared paths/footways to z12+/z13+, so the cycling network is visible at
-   city overview zoom — the most important read for a cyclist planning a trip.
-
-   Designated paths/footways render SOLID, like dedicated cycleways: they are
-   cycling infrastructure, and the solid/dashed/dotted distinction is reserved
-   for cycleway=track/lane/shared_lane attached to a road. */
+   city overview zoom. Designated paths/footways render solid, like dedicated
+   cycleways: they are cycling infrastructure, and the solid/dashed/dotted
+   distinction is reserved for cycleway=track/lane/shared_lane attached to a
+   road. The stronger @cycleway blue + casing makes them stand out. */
 line|z11-[highway=cycleway],
 line|z12-[highway=path][bicycle=designated],
 line|z13-[highway=footway][bicycle=designated],
-{color: @cycleway; opacity: 1; dashes: none;}
+{color: @cycleway; opacity: 1; dashes: none; linecap: round;
+ casing-color: @cycleway_casing; casing-width: 1.5;}
 
 line|z11[highway=cycleway],
-{width: 1.0;}
+{width: 3.6;}
 line|z12[highway=cycleway],
-{width: 1.2;}
+{width: 4.2;}
 line|z12[highway=path][bicycle=designated],
-{width: 1.0;}
+{width: 3.6;}
 line|z13[highway=cycleway],
-{width: 1.4;}
+{width: 4.8;}
 line|z13[highway=path][bicycle=designated],
 line|z13[highway=footway][bicycle=designated],
-{width: 1.1;}
+{width: 3.9;}
 line|z14[highway=footway][bicycle=designated],
-{width: 1.2;}
+{width: 4.2;}
 line|z14[highway=cycleway],
-{width: 1.6;}
+{width: 5.4;}
 line|z15[highway=cycleway],
-{width: 1.9;}
+{width: 6.3;}
 line|z16-17[highway=cycleway],
-{width: 2.3;}
+{width: 7.8;}
 line|z18-[highway=cycleway],
-{width: 2.8;}
+{width: 9.0;}
 
 /* The base path/footway line is already solid @cycleway, so the inherited
    ::cycleline underline (a second, fainter blue line) is redundant. */
@@ -60,41 +64,40 @@ line|z14-[highway=path][bicycle=designated]::cycleline,
 line|z15-[highway=footway][bicycle=designated]::cycleline,
 {width: 0;}
 
-/* Cycleway infrastructure attached to a road. The track category (protected:
-   cycleway=track, protected lanes, separated lanes) renders solid; a painted
-   lane renders dashed; a shared lane renders dotted. These cyclewaytag types
-   are carried alongside the road's own highway type, so they are drawn above
-   it and the dash pattern is what distinguishes the safety level. */
+/* Cycleway infrastructure attached to a road. Solid = track, dashed = lane,
+   dotted = shared_lane, all in the same @cycleway_road blue over a continuous
+   casing (the casing never inherits the stroke dashes). */
 line|z13-[cyclewaytag=track],
 line|z14-[cyclewaytag=lane],
 line|z14-[cyclewaytag=shared_lane],
-{color: @cycleway; opacity: 1;}
+{color: @cycleway_road; opacity: 1; linecap: round;
+ casing-color: @cycleway_casing; casing-width: 1.5; casing-dashes: none;}
 
 line|z13[cyclewaytag=track],
-{width: 1.2;}
+{width: 4.2;}
 line|z14[cyclewaytag=track],
-{width: 1.4;}
+{width: 4.8;}
 line|z15[cyclewaytag=track],
-{width: 1.7;}
+{width: 5.7;}
 line|z16-17[cyclewaytag=track],
-{width: 2.0;}
+{width: 6.9;}
 line|z18-[cyclewaytag=track],
-{width: 2.4;}
+{width: 8.1;}
 
 line|z14[cyclewaytag=lane],
-{width: 1.1; dashes: 6,4;}
+{width: 4.5; dashes: 18,18;}
 line|z15[cyclewaytag=lane],
-{width: 1.2; dashes: 6.5,4.5;}
+{width: 4.8; dashes: 19.5,19.5;}
 line|z16-17[cyclewaytag=lane],
-{width: 1.5; dashes: 8,5;}
+{width: 6.0; dashes: 24,24;}
 line|z18-[cyclewaytag=lane],
-{width: 1.8; dashes: 9,5.5;}
+{width: 6.9; dashes: 27,27;}
 
 line|z14[cyclewaytag=shared_lane],
-{width: 1.0; dashes: 1.4,4.2;}
+{width: 4.2; dashes: 4.8,4.8;}
 line|z15[cyclewaytag=shared_lane],
-{width: 1.1; dashes: 1.4,4.4;}
+{width: 4.5; dashes: 4.8,4.8;}
 line|z16-17[cyclewaytag=shared_lane],
-{width: 1.3; dashes: 1.6,5;}
+{width: 5.7; dashes: 5.4,5.4;}
 line|z18-[cyclewaytag=shared_lane],
-{width: 1.5; dashes: 1.8,5.6;}
+{width: 6.6; dashes: 6.0,6.0;}
