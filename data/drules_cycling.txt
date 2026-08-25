@@ -4852,10 +4852,10 @@ type cyclewaytag-lane
 type cyclewaytag-shared_lane
   z14
     line width=5.3 color=c024 join=round cap=butt priority=339
-    line width=2.3 color=c140 join=round cap=round dash=[4.8,4.8] priority=340
+    line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=340
   z15
     line width=6.7 color=c024 join=round cap=butt priority=339
-    line width=3.7 color=c140 join=round cap=round dash=[4.8,4.8] priority=340
+    line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=340
   z16
     line width=8.7 color=c024 join=round cap=butt priority=339
     line width=5.7 color=c140 join=round cap=round dash=[5.4,5.4] priority=340
@@ -4864,13 +4864,13 @@ type cyclewaytag-shared_lane
     line width=5.7 color=c140 join=round cap=round dash=[5.4,5.4] priority=340
   z18
     line width=9.6 color=c024 join=round cap=butt priority=339
-    line width=6.6 color=c140 join=round cap=round dash=[6,6] priority=340
+    line width=6.6 color=c140 join=round cap=round dash=[6.6,6.6] priority=340
   z19
     line width=9.6 color=c024 join=round cap=butt priority=339
-    line width=6.6 color=c140 join=round cap=round dash=[6,6] priority=340
+    line width=6.6 color=c140 join=round cap=round dash=[6.6,6.6] priority=340
   z20
     line width=9.6 color=c024 join=round cap=butt priority=339
-    line width=6.6 color=c140 join=round cap=round dash=[6,6] priority=340
+    line width=6.6 color=c140 join=round cap=round dash=[6.6,6.6] priority=340
 type cyclewaytag-track
   z13
     line width=7.2 color=c024 join=round cap=butt priority=341
