@@ -4830,7 +4830,7 @@ type craft-winery
 type cyclewaytag-lane
   z14
     line width=5.3 color=c024 join=round cap=butt priority=340
-    line width=2.3 color=c140 join=round cap=round dash=[18,4.8] priority=341
+    line width=2.3 color=c140 join=round cap=round dash=[12.12,2.98] priority=341
   z15
     line width=6.7 color=c024 join=round cap=butt priority=340
     line width=3.7 color=c140 join=round cap=round dash=[19.5,4.8] priority=341
