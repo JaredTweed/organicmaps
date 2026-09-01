@@ -5348,20 +5348,17 @@ type highway-cycleway
     line width=4.3 color=c024 join=round cap=butt priority=341
     line width=1.3 color=c141 join=bevel cap=round priority=342
   z11 if "extra_tag=hwtag=yescar"
-    line width=4.3 color=c024 join=round cap=round priority=341
     line width=1.3 color=c140 join=bevel cap=round dash=[1.3,2.7] priority=342
   z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
   z12 if "extra_tag=hwtag=yescar"
-    line width=4.5 color=c024 join=round cap=round priority=341
     line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
   z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
   z13 if "extra_tag=hwtag=yescar"
-    line width=5 color=c024 join=round cap=round priority=341
     line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
   z14 if "extra_tag!=hwtag=yescar"
@@ -5369,7 +5366,6 @@ type highway-cycleway
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z14 if "extra_tag=hwtag=yescar"
-    line width=5.3 color=c024 join=round cap=round priority=341
     line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z15 if "extra_tag!=hwtag=yescar"
@@ -5377,7 +5373,6 @@ type highway-cycleway
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z15 if "extra_tag=hwtag=yescar"
-    line width=6.7 color=c024 join=round cap=round priority=341
     line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z16 if "extra_tag!=hwtag=yescar"
@@ -5385,7 +5380,6 @@ type highway-cycleway
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z16 if "extra_tag=hwtag=yescar"
-    line width=7.9 color=c024 join=round cap=round priority=341
     line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z17 if "extra_tag!=hwtag=yescar"
@@ -5393,7 +5387,6 @@ type highway-cycleway
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z17 if "extra_tag=hwtag=yescar"
-    line width=9 color=c024 join=round cap=round priority=341
     line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z18 if "extra_tag!=hwtag=yescar"
@@ -5401,7 +5394,6 @@ type highway-cycleway
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z18 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z19 if "extra_tag!=hwtag=yescar"
@@ -5409,7 +5401,6 @@ type highway-cycleway
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z19 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z20 if "extra_tag!=hwtag=yescar"
@@ -5417,7 +5408,6 @@ type highway-cycleway
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z20 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
 type highway-cycleway-bridge
@@ -5425,20 +5415,17 @@ type highway-cycleway-bridge
     line width=4.3 color=c024 join=round cap=butt priority=341
     line width=1.3 color=c141 join=bevel cap=round priority=342
   z11 if "extra_tag=hwtag=yescar"
-    line width=4.3 color=c024 join=round cap=round priority=341
     line width=1.3 color=c140 join=bevel cap=round dash=[1.3,2.7] priority=342
   z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
   z12 if "extra_tag=hwtag=yescar"
-    line width=4.5 color=c024 join=round cap=round priority=341
     line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
   z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
   z13 if "extra_tag=hwtag=yescar"
-    line width=5 color=c024 join=round cap=round priority=341
     line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
   z14 if "extra_tag!=hwtag=yescar"
@@ -5446,7 +5433,6 @@ type highway-cycleway-bridge
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z14 if "extra_tag=hwtag=yescar"
-    line width=5.3 color=c024 join=round cap=round priority=341
     line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z15 if "extra_tag!=hwtag=yescar"
@@ -5456,7 +5442,6 @@ type highway-cycleway-bridge
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z15 if "extra_tag=hwtag=yescar"
     line width=8.4 color=c146 join=round cap=butt priority=150
-    line width=6.7 color=c024 join=round cap=round priority=341
     line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z16 if "extra_tag!=hwtag=yescar"
@@ -5466,7 +5451,6 @@ type highway-cycleway-bridge
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z16 if "extra_tag=hwtag=yescar"
     line width=10.8 color=c146 join=round cap=butt priority=150
-    line width=7.9 color=c024 join=round cap=round priority=341
     line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z17 if "extra_tag!=hwtag=yescar"
@@ -5478,7 +5462,6 @@ type highway-cycleway-bridge
   z17 if "extra_tag=hwtag=yescar"
     line width=15 color=c147 join=round cap=butt priority=140
     line width=14 color=c146 join=round cap=butt priority=150
-    line width=9 color=c024 join=round cap=round priority=341
     line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z18 if "extra_tag!=hwtag=yescar"
@@ -5490,7 +5473,6 @@ type highway-cycleway-bridge
   z18 if "extra_tag=hwtag=yescar"
     line width=18.8 color=c147 join=round cap=butt priority=140
     line width=17.8 color=c146 join=round cap=butt priority=150
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z19 if "extra_tag!=hwtag=yescar"
@@ -5502,7 +5484,6 @@ type highway-cycleway-bridge
   z19 if "extra_tag=hwtag=yescar"
     line width=19.8 color=c147 join=round cap=butt priority=140
     line width=18.8 color=c146 join=round cap=butt priority=150
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z20 if "extra_tag!=hwtag=yescar"
@@ -5514,7 +5495,6 @@ type highway-cycleway-bridge
   z20 if "extra_tag=hwtag=yescar"
     line width=19.8 color=c147 join=round cap=butt priority=140
     line width=18.8 color=c146 join=round cap=butt priority=150
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
 type highway-cycleway-tunnel
@@ -5522,20 +5502,17 @@ type highway-cycleway-tunnel
     line width=4.3 color=c024 join=round cap=butt priority=341
     line width=1.3 color=c141 join=bevel cap=round priority=342
   z11 if "extra_tag=hwtag=yescar"
-    line width=4.3 color=c024 join=round cap=round priority=341
     line width=1.3 color=c140 join=bevel cap=round dash=[1.3,2.7] priority=342
   z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
   z12 if "extra_tag=hwtag=yescar"
-    line width=4.5 color=c024 join=round cap=round priority=341
     line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
   z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
   z13 if "extra_tag=hwtag=yescar"
-    line width=5 color=c024 join=round cap=round priority=341
     line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
   z14 if "extra_tag!=hwtag=yescar"
@@ -5543,7 +5520,6 @@ type highway-cycleway-tunnel
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z14 if "extra_tag=hwtag=yescar"
-    line width=5.3 color=c024 join=round cap=round priority=341
     line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z15 if "extra_tag!=hwtag=yescar"
@@ -5551,7 +5527,6 @@ type highway-cycleway-tunnel
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z15 if "extra_tag=hwtag=yescar"
-    line width=6.7 color=c024 join=round cap=round priority=341
     line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
   z16 if "extra_tag!=hwtag=yescar"
@@ -5559,7 +5534,6 @@ type highway-cycleway-tunnel
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z16 if "extra_tag=hwtag=yescar"
-    line width=7.9 color=c024 join=round cap=round priority=341
     line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z17 if "extra_tag!=hwtag=yescar"
@@ -5569,7 +5543,6 @@ type highway-cycleway-tunnel
     line width=15 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z17 if "extra_tag=hwtag=yescar"
-    line width=9 color=c024 join=round cap=round priority=341
     line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
     line width=14 color=c148 join=round cap=butt priority=154
     line width=15 color=c147 join=round cap=butt dash=[2,2] priority=153
@@ -5581,7 +5554,6 @@ type highway-cycleway-tunnel
     line width=18.8 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z18 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     line width=17.8 color=c148 join=round cap=butt priority=154
     line width=18.8 color=c147 join=round cap=butt dash=[2,2] priority=153
@@ -5593,7 +5565,6 @@ type highway-cycleway-tunnel
     line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z19 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     line width=18.8 color=c148 join=round cap=butt priority=154
     line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
@@ -5605,7 +5576,6 @@ type highway-cycleway-tunnel
     line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
   z20 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     line width=18.8 color=c148 join=round cap=butt priority=154
     line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
@@ -5675,7 +5645,6 @@ type highway-footway-bicycle
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2950
   z13 if "extra_tag=hwtag=yescar"
-    line width=5 color=c024 join=round cap=round priority=341
     line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2950
   z14 if "extra_tag!=hwtag=yescar"
@@ -5683,7 +5652,6 @@ type highway-footway-bicycle
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2950
   z14 if "extra_tag=hwtag=yescar"
-    line width=5.3 color=c024 join=round cap=round priority=341
     line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2950
   z15 if "extra_tag!=hwtag=yescar"
@@ -5691,7 +5659,6 @@ type highway-footway-bicycle
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2950
   z15 if "extra_tag=hwtag=yescar"
-    line width=6.7 color=c024 join=round cap=round priority=341
     line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2950
   z16 if "extra_tag!=hwtag=yescar"
@@ -5699,7 +5666,6 @@ type highway-footway-bicycle
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z16 if "extra_tag=hwtag=yescar"
-    line width=7.9 color=c024 join=round cap=round priority=341
     line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z17 if "extra_tag!=hwtag=yescar"
@@ -5707,7 +5673,6 @@ type highway-footway-bicycle
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z17 if "extra_tag=hwtag=yescar"
-    line width=9 color=c024 join=round cap=round priority=341
     line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z18 if "extra_tag!=hwtag=yescar"
@@ -5715,7 +5680,6 @@ type highway-footway-bicycle
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z18 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z19 if "extra_tag!=hwtag=yescar"
@@ -5723,7 +5687,6 @@ type highway-footway-bicycle
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z19 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z20 if "extra_tag!=hwtag=yescar"
@@ -5731,7 +5694,6 @@ type highway-footway-bicycle
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
   z20 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
 type highway-footway-bridge
@@ -6334,14 +6296,12 @@ type highway-path-bicycle
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
   z12 if "extra_tag=hwtag=yescar"
-    line width=4.5 color=c024 join=round cap=round priority=341
     line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
   z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2820
   z13 if "extra_tag=hwtag=yescar"
-    line width=5 color=c024 join=round cap=round priority=341
     line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2820
   z14 if "extra_tag!=hwtag=yescar"
@@ -6349,7 +6309,6 @@ type highway-path-bicycle
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2820
   z14 if "extra_tag=hwtag=yescar"
-    line width=5.3 color=c024 join=round cap=round priority=341
     line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2820
   z15 if "extra_tag!=hwtag=yescar"
@@ -6357,7 +6316,6 @@ type highway-path-bicycle
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2820
   z15 if "extra_tag=hwtag=yescar"
-    line width=6.7 color=c024 join=round cap=round priority=341
     line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2820
   z16 if "extra_tag!=hwtag=yescar"
@@ -6365,7 +6323,6 @@ type highway-path-bicycle
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z16 if "extra_tag=hwtag=yescar"
-    line width=7.9 color=c024 join=round cap=round priority=341
     line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z17 if "extra_tag!=hwtag=yescar"
@@ -6373,7 +6330,6 @@ type highway-path-bicycle
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z17 if "extra_tag=hwtag=yescar"
-    line width=9 color=c024 join=round cap=round priority=341
     line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z18 if "extra_tag!=hwtag=yescar"
@@ -6381,7 +6337,6 @@ type highway-path-bicycle
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z18 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z19 if "extra_tag!=hwtag=yescar"
@@ -6389,7 +6344,6 @@ type highway-path-bicycle
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z19 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z20 if "extra_tag!=hwtag=yescar"
@@ -6397,7 +6351,6 @@ type highway-path-bicycle
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
   z20 if "extra_tag=hwtag=yescar"
-    line width=9.9 color=c024 join=round cap=round priority=341
     line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
 type highway-path-bridge
@@ -9487,19 +9440,188 @@ type historic-wreck
   z20
     symbol name=wreck-m priority=3050
     caption primary[height=10 color=c083 dy=1 optional] priority=-6950
+type hwtag-onedir_bicycle
+  z15 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-xs step=44 offset=30 priority=343
+  z16 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=54 offset=50 priority=343
+  z16 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=54 offset=50 priority=343
+  z17 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=64 offset=70 priority=343
+  z17 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=64 offset=70 priority=343
+  z18 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z18 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z19 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z19 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z20 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z20 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
 type hwtag-oneway
-  z15
+  z15 if "extra_tag=cyclewaytag=track"
     line width=0 color=c022 join=round cap=round pathsym=arrow-xs step=44 offset=30 priority=330
-  z16
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-xs step=44 offset=30 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-xs step=44 offset=30 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-xs step=44 offset=30 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-xs step=44 offset=30 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-xs step=44 offset=30 priority=343
+  z15 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-xs step=44 offset=30 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-xs step=44 offset=30 priority=343
+  z16 if "extra_tag=cyclewaytag=track"
     line width=0 color=c022 join=round cap=round pathsym=arrow-s step=54 offset=50 priority=330
-  z17
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=54 offset=50 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=54 offset=50 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=54 offset=50 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=54 offset=50 priority=343
+  z16 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=54 offset=50 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=54 offset=50 priority=343
+  z16 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=54 offset=50 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=54 offset=50 priority=343
+  z17 if "extra_tag=cyclewaytag=track"
     line width=0 color=c022 join=round cap=round pathsym=arrow-s step=64 offset=70 priority=330
-  z18
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=64 offset=70 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=64 offset=70 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=64 offset=70 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-s step=64 offset=70 priority=343
+  z17 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=64 offset=70 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=64 offset=70 priority=343
+  z17 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-s step=64 offset=70 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-s step=64 offset=70 priority=343
+  z18 if "extra_tag=cyclewaytag=track"
     line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
-  z19
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=highway=cycleway"
     line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
-  z20
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=highway=path=bicycle"
     line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z18 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z18 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z19 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z19 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z19 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z20 if "extra_tag=cyclewaytag=track"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=highway=cycleway"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=highway=path=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=highway=footway=bicycle"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-solid-m step=74 offset=90 priority=343
+  z20 if "extra_tag=cyclewaytag=lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
+  z20 if "extra_tag=cyclewaytag=shared_lane"
+    line width=0 color=c022 join=round cap=round pathsym=arrow-m step=74 offset=90 priority=330
+    line width=0 color=c022 join=round cap=round pathsym=cycling-arrow-patterned-m step=74 offset=90 priority=343
 type isoline-step_10
   z15
     line width=0.8 color=c185 join=round cap=butt priority=60
