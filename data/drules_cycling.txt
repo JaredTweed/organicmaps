@@ -5344,137 +5344,269 @@ type highway-construction
     line width=6 color=c151 join=round cap=round dash=[18,6.2] priority=160
     path_text primary[height=10 color=c145 stroke=c088] priority=2450
 type highway-cycleway
-  z11
+  z11 if "extra_tag!=hwtag=yescar"
     line width=4.3 color=c024 join=round cap=butt priority=341
     line width=1.3 color=c141 join=bevel cap=round priority=342
-  z12
+  z11 if "extra_tag=hwtag=yescar"
+    line width=4.3 color=c024 join=round cap=round priority=341
+    line width=1.3 color=c140 join=bevel cap=round dash=[1.3,2.7] priority=342
+  z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
-  z13
+  z12 if "extra_tag=hwtag=yescar"
+    line width=4.5 color=c024 join=round cap=round priority=341
+    line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
+  z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
-  z14
+  z13 if "extra_tag=hwtag=yescar"
+    line width=5 color=c024 join=round cap=round priority=341
+    line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
+    path_text primary[height=10 color=c108 stroke=c109] priority=2953
+  z14 if "extra_tag!=hwtag=yescar"
     line width=5.3 color=c024 join=round cap=butt priority=341
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
-  z15
+  z14 if "extra_tag=hwtag=yescar"
+    line width=5.3 color=c024 join=round cap=round priority=341
+    line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2953
+  z15 if "extra_tag!=hwtag=yescar"
     line width=6.7 color=c024 join=round cap=butt priority=341
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
-  z16
+  z15 if "extra_tag=hwtag=yescar"
+    line width=6.7 color=c024 join=round cap=round priority=341
+    line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2953
+  z16 if "extra_tag!=hwtag=yescar"
     line width=7.9 color=c024 join=round cap=butt priority=341
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z17
+  z16 if "extra_tag=hwtag=yescar"
+    line width=7.9 color=c024 join=round cap=round priority=341
+    line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z17 if "extra_tag!=hwtag=yescar"
     line width=9 color=c024 join=round cap=butt priority=341
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z18
+  z17 if "extra_tag=hwtag=yescar"
+    line width=9 color=c024 join=round cap=round priority=341
+    line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z18 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z19
+  z18 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z19 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z20
+  z19 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z20 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z20 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
 type highway-cycleway-bridge
-  z11
+  z11 if "extra_tag!=hwtag=yescar"
     line width=4.3 color=c024 join=round cap=butt priority=341
     line width=1.3 color=c141 join=bevel cap=round priority=342
-  z12
+  z11 if "extra_tag=hwtag=yescar"
+    line width=4.3 color=c024 join=round cap=round priority=341
+    line width=1.3 color=c140 join=bevel cap=round dash=[1.3,2.7] priority=342
+  z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
-  z13
+  z12 if "extra_tag=hwtag=yescar"
+    line width=4.5 color=c024 join=round cap=round priority=341
+    line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
+  z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
-  z14
+  z13 if "extra_tag=hwtag=yescar"
+    line width=5 color=c024 join=round cap=round priority=341
+    line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
+    path_text primary[height=10 color=c108 stroke=c109] priority=2953
+  z14 if "extra_tag!=hwtag=yescar"
     line width=5.3 color=c024 join=round cap=butt priority=341
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
-  z15
+  z14 if "extra_tag=hwtag=yescar"
+    line width=5.3 color=c024 join=round cap=round priority=341
+    line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2953
+  z15 if "extra_tag!=hwtag=yescar"
     line width=8.4 color=c146 join=round cap=butt priority=150
     line width=6.7 color=c024 join=round cap=butt priority=341
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
-  z16
+  z15 if "extra_tag=hwtag=yescar"
+    line width=8.4 color=c146 join=round cap=butt priority=150
+    line width=6.7 color=c024 join=round cap=round priority=341
+    line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2953
+  z16 if "extra_tag!=hwtag=yescar"
     line width=10.8 color=c146 join=round cap=butt priority=150
     line width=7.9 color=c024 join=round cap=butt priority=341
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z17
+  z16 if "extra_tag=hwtag=yescar"
+    line width=10.8 color=c146 join=round cap=butt priority=150
+    line width=7.9 color=c024 join=round cap=round priority=341
+    line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z17 if "extra_tag!=hwtag=yescar"
     line width=15 color=c147 join=round cap=butt priority=140
     line width=14 color=c146 join=round cap=butt priority=150
     line width=9 color=c024 join=round cap=butt priority=341
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z18
+  z17 if "extra_tag=hwtag=yescar"
+    line width=15 color=c147 join=round cap=butt priority=140
+    line width=14 color=c146 join=round cap=butt priority=150
+    line width=9 color=c024 join=round cap=round priority=341
+    line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z18 if "extra_tag!=hwtag=yescar"
     line width=18.8 color=c147 join=round cap=butt priority=140
     line width=17.8 color=c146 join=round cap=butt priority=150
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z19
+  z18 if "extra_tag=hwtag=yescar"
+    line width=18.8 color=c147 join=round cap=butt priority=140
+    line width=17.8 color=c146 join=round cap=butt priority=150
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z19 if "extra_tag!=hwtag=yescar"
     line width=19.8 color=c147 join=round cap=butt priority=140
     line width=18.8 color=c146 join=round cap=butt priority=150
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z20
+  z19 if "extra_tag=hwtag=yescar"
+    line width=19.8 color=c147 join=round cap=butt priority=140
+    line width=18.8 color=c146 join=round cap=butt priority=150
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z20 if "extra_tag!=hwtag=yescar"
     line width=19.8 color=c147 join=round cap=butt priority=140
     line width=18.8 color=c146 join=round cap=butt priority=150
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z20 if "extra_tag=hwtag=yescar"
+    line width=19.8 color=c147 join=round cap=butt priority=140
+    line width=18.8 color=c146 join=round cap=butt priority=150
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
 type highway-cycleway-tunnel
-  z11
+  z11 if "extra_tag!=hwtag=yescar"
     line width=4.3 color=c024 join=round cap=butt priority=341
     line width=1.3 color=c141 join=bevel cap=round priority=342
-  z12
+  z11 if "extra_tag=hwtag=yescar"
+    line width=4.3 color=c024 join=round cap=round priority=341
+    line width=1.3 color=c140 join=bevel cap=round dash=[1.3,2.7] priority=342
+  z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
-  z13
+  z12 if "extra_tag=hwtag=yescar"
+    line width=4.5 color=c024 join=round cap=round priority=341
+    line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
+  z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2953
-  z14
+  z13 if "extra_tag=hwtag=yescar"
+    line width=5 color=c024 join=round cap=round priority=341
+    line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
+    path_text primary[height=10 color=c108 stroke=c109] priority=2953
+  z14 if "extra_tag!=hwtag=yescar"
     line width=5.3 color=c024 join=round cap=butt priority=341
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
-  z15
+  z14 if "extra_tag=hwtag=yescar"
+    line width=5.3 color=c024 join=round cap=round priority=341
+    line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2953
+  z15 if "extra_tag!=hwtag=yescar"
     line width=6.7 color=c024 join=round cap=butt priority=341
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2953
-  z16
+  z15 if "extra_tag=hwtag=yescar"
+    line width=6.7 color=c024 join=round cap=round priority=341
+    line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2953
+  z16 if "extra_tag!=hwtag=yescar"
     line width=7.9 color=c024 join=round cap=butt priority=341
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z17
+  z16 if "extra_tag=hwtag=yescar"
+    line width=7.9 color=c024 join=round cap=round priority=341
+    line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z17 if "extra_tag!=hwtag=yescar"
     line width=9 color=c024 join=round cap=butt priority=341
     line width=6 color=c141 join=round cap=round priority=342
     line width=14 color=c148 join=round cap=butt priority=154
     line width=15 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z18
+  z17 if "extra_tag=hwtag=yescar"
+    line width=9 color=c024 join=round cap=round priority=341
+    line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
+    line width=14 color=c148 join=round cap=butt priority=154
+    line width=15 color=c147 join=round cap=butt dash=[2,2] priority=153
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z18 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     line width=17.8 color=c148 join=round cap=butt priority=154
     line width=18.8 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z19
+  z18 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    line width=17.8 color=c148 join=round cap=butt priority=154
+    line width=18.8 color=c147 join=round cap=butt dash=[2,2] priority=153
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z19 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     line width=18.8 color=c148 join=round cap=butt priority=154
     line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
-  z20
+  z19 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    line width=18.8 color=c148 join=round cap=butt priority=154
+    line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z20 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
+    line width=18.8 color=c148 join=round cap=butt priority=154
+    line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
+    path_text primary[height=12 color=c145 stroke=c088] priority=2953
+  z20 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     line width=18.8 color=c148 join=round cap=butt priority=154
     line width=19.8 color=c147 join=round cap=butt dash=[2,2] priority=153
     path_text primary[height=12 color=c145 stroke=c088] priority=2953
@@ -5538,37 +5670,69 @@ type highway-footway-bicycle
     line width=1 color=c149 join=bevel cap=butt dash=[3.5,2] priority=342
   z12
     line width=1.1 color=c086 join=bevel cap=butt dash=[3.5,2.5] priority=342
-  z13
+  z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2950
-  z14
+  z13 if "extra_tag=hwtag=yescar"
+    line width=5 color=c024 join=round cap=round priority=341
+    line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
+    path_text primary[height=10 color=c108 stroke=c109] priority=2950
+  z14 if "extra_tag!=hwtag=yescar"
     line width=5.3 color=c024 join=round cap=butt priority=341
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2950
-  z15
+  z14 if "extra_tag=hwtag=yescar"
+    line width=5.3 color=c024 join=round cap=round priority=341
+    line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2950
+  z15 if "extra_tag!=hwtag=yescar"
     line width=6.7 color=c024 join=round cap=butt priority=341
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2950
-  z16
+  z15 if "extra_tag=hwtag=yescar"
+    line width=6.7 color=c024 join=round cap=round priority=341
+    line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2950
+  z16 if "extra_tag!=hwtag=yescar"
     line width=7.9 color=c024 join=round cap=butt priority=341
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
-  z17
+  z16 if "extra_tag=hwtag=yescar"
+    line width=7.9 color=c024 join=round cap=round priority=341
+    line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2950
+  z17 if "extra_tag!=hwtag=yescar"
     line width=9 color=c024 join=round cap=butt priority=341
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
-  z18
+  z17 if "extra_tag=hwtag=yescar"
+    line width=9 color=c024 join=round cap=round priority=341
+    line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2950
+  z18 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
-  z19
+  z18 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2950
+  z19 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
-  z20
+  z19 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2950
+  z20 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2950
+  z20 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2950
 type highway-footway-bridge
   z11
@@ -6166,40 +6330,75 @@ type highway-path
 type highway-path-bicycle
   z11
     line width=1 color=c142 join=bevel cap=butt dash=[3.5,2] priority=342
-  z12
+  z12 if "extra_tag!=hwtag=yescar"
     line width=4.5 color=c024 join=round cap=butt priority=341
     line width=1.5 color=c141 join=bevel cap=round priority=342
-  z13
+  z12 if "extra_tag=hwtag=yescar"
+    line width=4.5 color=c024 join=round cap=round priority=341
+    line width=1.5 color=c140 join=bevel cap=round dash=[1.5,3.1] priority=342
+  z13 if "extra_tag!=hwtag=yescar"
     line width=5 color=c024 join=round cap=butt priority=341
     line width=2 color=c141 join=round cap=round priority=342
     path_text primary[height=10 color=c108 stroke=c109] priority=2820
-  z14
+  z13 if "extra_tag=hwtag=yescar"
+    line width=5 color=c024 join=round cap=round priority=341
+    line width=2 color=c140 join=round cap=round dash=[2,4.2] priority=342
+    path_text primary[height=10 color=c108 stroke=c109] priority=2820
+  z14 if "extra_tag!=hwtag=yescar"
     line width=5.3 color=c024 join=round cap=butt priority=341
     line width=2.3 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2820
-  z15
+  z14 if "extra_tag=hwtag=yescar"
+    line width=5.3 color=c024 join=round cap=round priority=341
+    line width=2.3 color=c140 join=round cap=round dash=[2.4,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2820
+  z15 if "extra_tag!=hwtag=yescar"
     line width=6.7 color=c024 join=round cap=butt priority=341
     line width=3.7 color=c141 join=round cap=round priority=342
     path_text primary[height=11 color=c108 stroke=c109] priority=2820
-  z16
+  z15 if "extra_tag=hwtag=yescar"
+    line width=6.7 color=c024 join=round cap=round priority=341
+    line width=3.7 color=c140 join=round cap=round dash=[3.6,4.8] priority=342
+    path_text primary[height=11 color=c108 stroke=c109] priority=2820
+  z16 if "extra_tag!=hwtag=yescar"
     line width=7.9 color=c024 join=round cap=butt priority=341
     line width=4.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
-  z17
+  z16 if "extra_tag=hwtag=yescar"
+    line width=7.9 color=c024 join=round cap=round priority=341
+    line width=4.9 color=c140 join=round cap=round dash=[4.5,5.1] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2820
+  z17 if "extra_tag!=hwtag=yescar"
     line width=9 color=c024 join=round cap=butt priority=341
     line width=6 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
-  z18
+  z17 if "extra_tag=hwtag=yescar"
+    line width=9 color=c024 join=round cap=round priority=341
+    line width=6 color=c140 join=round cap=round dash=[5.4,5.4] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2820
+  z18 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
-  z19
+  z18 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2820
+  z19 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
-  z20
+  z19 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2820
+  z20 if "extra_tag!=hwtag=yescar"
     line width=9.9 color=c024 join=round cap=butt priority=341
     line width=6.9 color=c141 join=round cap=round priority=342
+    path_text primary[height=12 color=c145 stroke=c088] priority=2820
+  z20 if "extra_tag=hwtag=yescar"
+    line width=9.9 color=c024 join=round cap=round priority=341
+    line width=6.9 color=c140 join=round cap=round dash=[6.6,6.6] priority=342
     path_text primary[height=12 color=c145 stroke=c088] priority=2820
 type highway-path-bridge
   z11
