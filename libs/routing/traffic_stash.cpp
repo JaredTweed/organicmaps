@@ -100,18 +100,18 @@ std::optional<double> TrafficStash::GetHistoricalSpeed(Segment const & segment, 
   auto [it, inserted] = m_historical.try_emplace(id);
   if (inserted)
   {
-    auto const & handle = dataSource.GetHandle(id);
-    if (handle.IsAlive())
+    try
     {
-      auto const & value = *handle.GetValue();
-      auto const path = value.m_file.GetPath(MapFileType::Map);
-      uint64_t mapSize = 0;
-      uint64_t packageSize = 0;
-      if (Platform::GetFileSizeByFullPath(path, mapSize) &&
-          Platform::GetFileSizeByFullPath(path + ".traffic", packageSize) &&
-          packageSize <= traffic::HistoricalTraffic::kMaxPackageSize)
+      auto const & handle = dataSource.GetHandle(id);
+      if (handle.IsAlive())
       {
-        try
+        auto const & value = *handle.GetValue();
+        auto const path = value.m_file.GetPath(MapFileType::Map);
+        uint64_t mapSize = 0;
+        uint64_t packageSize = 0;
+        if (Platform::GetFileSizeByFullPath(path, mapSize) &&
+            Platform::GetFileSizeByFullPath(path + ".traffic", packageSize) &&
+            packageSize <= traffic::HistoricalTraffic::kMaxPackageSize)
         {
           FileReader reader(path + ".traffic");
           std::vector<uint8_t> bytes(packageSize);
@@ -120,11 +120,11 @@ std::optional<double> TrafficStash::GetHistoricalSpeed(Segment const & segment, 
               std::move(bytes), value.GetCountryFileName(), value.GetMwmVersion().GetSecondsSinceEpoch(), mapSize,
               GetMapHash(path, mapSize, value.m_file.GetCountryFile()));
         }
-        catch (std::exception const &)
-        {
-          LOG(LWARNING, ("Ignoring invalid historical traffic package for", value.GetCountryFileName()));
-        }
       }
+    }
+    catch (std::exception const &)
+    {
+      LOG(LWARNING, ("Ignoring invalid historical traffic package for", m_numMwmIds->GetFile(id).GetName()));
     }
   }
   if (!it->second)
