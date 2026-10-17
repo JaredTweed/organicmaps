@@ -1,0 +1,43 @@
+{
+  "region": "Synthetic",
+  "map_build": 1767225600,
+  "map_size": 12345,
+  "valid_from": "2026-01-01T00:00:00Z",
+  "valid_until": "2027-01-01T00:00:00Z",
+  "source": {
+    "name": "Synthetic test fixture, not measured traffic",
+    "license": "CC0-1.0",
+    "synthetic": true,
+    "tzdb": "system IANA; record installed tzdata version for production"
+  },
+  "minimum_samples": 5,
+  "segments": [
+    {
+      "id": "east",
+      "feature_id": 7,
+      "segment_idx": 0,
+      "forward": true,
+      "timezone": "America/Chicago"
+    },
+    {
+      "id": "west",
+      "feature_id": 7,
+      "segment_idx": 0,
+      "forward": false,
+      "timezone": "America/Chicago"
+    },
+    {
+      "id": "utc",
+      "feature_id": 8,
+      "segment_idx": 1,
+      "forward": true,
+      "timezone": "Etc/UTC"
+    }
+  ],
+  "date_adjustments": {
+    "America/Chicago": {
+      "2026-07-01": 0.75
+    }
+  },
+  "map_hash": "AAAAAAAAAAAA"
+}
