@@ -163,6 +163,7 @@ DEFINE_string(unpack_borders, "", "Convert packed_polygons to a directory of pol
 DEFINE_bool(unpack_mwm, false, "Unpack each section of mwm into a separate file with name filePath.sectionName.");
 DEFINE_bool(check_mwm, false, "Check map file to be correct.");
 DEFINE_string(delete_section, "", "Delete specified section (defines.hpp) from container.");
+DEFINE_string(export_historical_traffic_segments, "", "Export directed segment CSV for offline traffic map matching.");
 DEFINE_bool(generate_traffic_keys, false, "Generate keys for the traffic map (road segment -> speed group).");
 
 DEFINE_bool(dump_mwm_tmp, false, "Prints feature builder objects from .mwm.tmp");
@@ -524,6 +525,12 @@ MAIN_WITH_ERROR_HANDLING([](int argc, char ** argv)
   }
 
   string const dataFile = base::JoinPath(path, FLAGS_output + DATA_FILE_EXTENSION);
+
+  if (!FLAGS_export_historical_traffic_segments.empty())
+  {
+    if (!traffic::ExportHistoricalTrafficSegments(dataFile, FLAGS_export_historical_traffic_segments))
+      return EXIT_FAILURE;
+  }
 
   if (FLAGS_stats_general || FLAGS_stats_geometry || FLAGS_stats_types)
   {
