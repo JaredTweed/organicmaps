@@ -10,7 +10,9 @@
 #include "geometry/point_with_altitude.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <memory>
+#include <optional>
 
 class DataSource;
 
@@ -48,6 +50,15 @@ public:
   EdgeEstimator(double maxWeightSpeedKMpH, double distanceBiasCapSpeedKMpH, SpeedKMpH const & offroadSpeedKMpH,
                 DataSource * dataSourcePtr = nullptr, std::shared_ptr<NumMwmIds> numMwmIds = nullptr);
   virtual ~EdgeEstimator() = default;
+
+  using HistoricalSpeedGetter = std::function<std::optional<double>(Segment const &, int64_t)>;
+  // Only used while reconstructing the ETA of a fixed route. Never changes A* weights.
+  void SetHistoricalTraffic(HistoricalSpeedGetter getter) { m_historicalSpeedGetter = std::move(getter); }
+  void SetHistoricalTrafficTime(int64_t utc) { m_historicalUtc = utc; }
+  std::optional<double> GetHistoricalSpeed(Segment const & segment) const
+  {
+    return m_historicalSpeedGetter ? m_historicalSpeedGetter(segment, m_historicalUtc) : std::nullopt;
+  }
 
   /// |tightHeuristicAllowed| == false keeps CalcHeuristic() on the loose max-speed bound even under
   /// DistanceBiased. Needed when guides are attached: guides edges are priced at max speed
@@ -116,6 +127,8 @@ protected:
   }
 
 private:
+  HistoricalSpeedGetter m_historicalSpeedGetter;
+  int64_t m_historicalUtc = 0;
   double const m_maxWeightSpeedMpS;
   double const m_distanceBiasSecPerM;
   SpeedKMpH const m_offroadSpeedKMpH;

@@ -1868,12 +1868,26 @@ RouterResultCode IndexRouter::RedressRoute(std::vector<Segment> const & segments
   std::vector<double> times;
   times.reserve(segments.size());
 
+  // Keep absolute UTC separate from graph weights (which are elapsed seconds).
+  // A single departure instant also prevents time drifting between segments during reconstruction.
+  bool historicalEnabled = false;
+  (void)settings::Get(kOfflineHistoricalTrafficEnabled, historicalEnabled);
+  int64_t const departure = m_currentTimeGetter ? m_currentTimeGetter() : std::time(nullptr);
+  if (m_vehicleType == VehicleType::Car && historicalEnabled && m_trafficStash)
+  {
+    m_estimator->SetHistoricalTraffic([this](Segment const & segment, int64_t utc)
+    { return m_trafficStash->GetHistoricalSpeed(segment, utc, m_dataSource); });
+  }
+  SCOPE_GUARD(clearHistoricalTraffic, [this] { m_estimator->SetHistoricalTraffic({}); });
+  m_estimator->SetHistoricalTrafficTime(departure);
+
   // Time at first route point - weight of first segment.
   double time = starter.CalculateETAWithoutPenalty(segments.front());
   times.emplace_back(time);
 
   for (size_t i = 1; i < segments.size(); ++i)
   {
+    m_estimator->SetHistoricalTrafficTime(departure + static_cast<int64_t>(time));
     time += starter.CalculateETA(segments[i - 1], segments[i], static_cast<time_t>(time));
     times.emplace_back(time);
   }

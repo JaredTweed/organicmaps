@@ -442,11 +442,19 @@ double CarEstimator::CalcSegmentWeight(Segment const & segment, RoadGeometry con
 #endif
 
   double const distanceM = road.GetDistance(segment.GetSegmentIdx());
+  auto const speedGroup = m_trafficStash ? m_trafficStash->GetSpeedGroup(segment) : SpeedGroup::Unknown;
+  // Preserve available live traffic (including closures). Historical observations describe
+  // running speeds, excluding turn/junction penalties, and must not multiply live congestion.
+  if (purpose == Purpose::ETA && speedGroup == SpeedGroup::Unknown && !IsTransit(road.GetHighwayType()))
+  {
+    if (auto const historical = GetHistoricalSpeed(segment); historical && *historical >= 1.0 && *historical <= 200.0)
+      return distanceM / KmphToMps(*historical);
+  }
+
   double result = distanceM / speed;
 
   if (m_trafficStash)
   {
-    SpeedGroup const speedGroup = m_trafficStash->GetSpeedGroup(segment);
     ASSERT_LESS(speedGroup, SpeedGroup::Count, ());
     double const trafficFactor = CalcTrafficFactor(speedGroup);
     result *= trafficFactor;

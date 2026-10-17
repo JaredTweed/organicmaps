@@ -2,6 +2,7 @@
 
 #include "routing/segment.hpp"
 
+#include "traffic/historical_traffic.hpp"
 #include "traffic/traffic_cache.hpp"
 #include "traffic/traffic_info.hpp"
 
@@ -12,11 +13,14 @@
 #include "base/assert.hpp"
 
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
 namespace routing
 {
+class MwmDataSource;
+inline constexpr std::string_view kOfflineHistoricalTrafficEnabled = "OfflineHistoricalTrafficEnabled";
 class TrafficStash final
 {
 public:
@@ -44,12 +48,19 @@ public:
   traffic::SpeedGroup GetSpeedGroup(Segment const & segment) const;
   void SetColoring(NumMwmId numMwmId, std::shared_ptr<traffic::TrafficInfo::Coloring const> coloring);
   bool Has(NumMwmId numMwmId) const;
+  std::optional<double> GetHistoricalSpeed(Segment const & segment, int64_t utc, MwmDataSource & dataSource);
 
 private:
   void CopyTraffic();
 
-  void Clear() { m_mwmToTraffic.clear(); }
+  void Clear()
+  {
+    m_mwmToTraffic.clear();
+    m_historical.clear();
+  }
 
+  // Also caches absent/invalid packages for the duration of one route calculation.
+  std::unordered_map<NumMwmId, std::optional<traffic::HistoricalTraffic>> m_historical;
   traffic::TrafficCache const & m_source;
   std::shared_ptr<NumMwmIds> m_numMwmIds;
   std::unordered_map<NumMwmId, std::shared_ptr<traffic::TrafficInfo::Coloring const>> m_mwmToTraffic;

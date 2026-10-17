@@ -18,6 +18,7 @@ set(SRC
   fake_graph_test.cpp
   followed_polyline_test.cpp
   guides_tests.cpp
+  historical_traffic_test.cpp
   index_graph_test.cpp
   index_graph_tools.cpp
   index_graph_tools.hpp
@@ -57,3 +58,7 @@ target_link_libraries(${PROJECT_NAME}
     routing
     storage
 )
+
+# Focused driving ETA benchmark; no map generation or route-search workload.
+omim_add_executable(historical_traffic_eta_benchmark ../../../tools/traffic/eta_benchmark.cpp)
+target_link_libraries(historical_traffic_eta_benchmark PRIVATE routing)
