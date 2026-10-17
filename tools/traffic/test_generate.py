@@ -12,7 +12,7 @@ import tempfile
 import unittest
 import zlib
 
-from generate import encode, segment_key, transitions, timestamp
+from generate import cluster_profile, encode, segment_key, transitions, timestamp
 
 ROOT = Path(__file__).resolve().parents[2]
 SAMPLE = Path(__file__).resolve().parent / 'sample'
@@ -74,6 +74,32 @@ class GeneratorTest(unittest.TestCase):
         self.assertNotEqual(segment_key(7, 0, True), segment_key(7, 0, False))
         with self.assertRaises(ValueError):
             segment_key(0, 2**31, True)
+
+    def test_profile_clustering_tolerance(self):
+        manifest = copy.deepcopy(self.manifest)
+        manifest['cluster_tolerance_kmh'] = 2
+        for row in self.rows:
+            if row['id'] == 'east':
+                row['speed_kmh'] = '30'
+            elif row['id'] == 'west':
+                row['speed_kmh'] = '31'
+        _, stats = encode(manifest, self.rows)
+        self.assertEqual(stats['profiles_before_clustering'], 3)
+        self.assertEqual(stats['profiles'], 2)
+        self.assertEqual(stats['cluster_tolerance_kmh'], 2)
+        manifest['cluster_tolerance_kmh'] = 0
+        _, stats = encode(manifest, self.rows)
+        self.assertEqual(stats['profiles'], 3)
+        for speed in range(1, 201):
+            representative = cluster_profile(bytes([speed]), 2)[0]
+            self.assertLessEqual(abs(representative - speed), 2)
+
+    def test_cluster_tolerance_validation(self):
+        for value in (-1, 26, 1.5, '2', True):
+            manifest = copy.deepcopy(self.manifest)
+            manifest['cluster_tolerance_kmh'] = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                encode(manifest, self.rows)
 
     def test_dst_calendar(self):
         changes = transitions('America/Chicago', timestamp(self.manifest['valid_from']),

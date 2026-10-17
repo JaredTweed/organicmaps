@@ -83,6 +83,19 @@ def factor(value):
     return int(value * 128 + 0.5)
 
 
+def cluster_profile(profile, tolerance):
+    """Quantize a weekly profile with a deterministic maximum absolute error.
+
+    All speeds assigned to the same representative differ from the prepared
+    aggregate by at most |tolerance| km/h. Missing buckets stay missing.
+    """
+    if tolerance == 0:
+        return profile
+    step = 2 * tolerance
+    return bytes(0 if speed == 0 else max(1, min(200, ((speed + step // 2) // step) * step))
+                 for speed in profile)
+
+
 def encode(manifest, observations):
     start, end = timestamp(manifest["valid_from"]), timestamp(manifest["valid_until"])
     require(946684800 <= start < end <= 4102444800, "validity must be within 2000-2099")
@@ -115,7 +128,10 @@ def encode(manifest, observations):
         buckets[k] = (n + count, seconds + count / speed)
     zones = sorted({s[1] for s in matches.values()})
     require(len(zones) <= 256, "too many timezones")
-    profiles, profile_ids, records = [], {}, []
+    requested_tolerance = manifest.get("cluster_tolerance_kmh", 1)
+    require(type(requested_tolerance) is int and 0 <= requested_tolerance <= 25,
+            "cluster_tolerance_kmh must be an integer in [0, 25]")
+    raw_profile_ids, raw_profiles, records = {}, [], []
     for identifier, (key, zone, scale) in sorted(matches.items(), key=lambda item: item[1][0]):
         profile = bytearray(168)
         for hour in range(168):
@@ -126,12 +142,32 @@ def encode(manifest, observations):
         if not any(profile):
             continue
         profile = bytes(profile)
-        if profile not in profile_ids:
-            require(len(profiles) < 65535, "too many unique profiles; partition region or cluster offline")
-            profile_ids[profile] = len(profiles)
-            profiles.append(profile)
-        records.append((key, profile_ids[profile], zones.index(zone), scale))
+        if profile not in raw_profile_ids:
+            raw_profile_ids[profile] = len(raw_profiles)
+            raw_profiles.append(profile)
+        records.append((key, raw_profile_ids[profile], zones.index(zone), scale))
     require(records, "no observations meet minimum sample count")
+    profiles_before_clustering = len(raw_profiles)
+    tolerance = requested_tolerance
+    while True:
+        profiles, cluster_ids = [], {}
+        for profile in raw_profiles:
+            representative = cluster_profile(profile, tolerance)
+            if representative not in cluster_ids:
+                cluster_ids[representative] = len(profiles)
+                profiles.append(representative)
+        if len(profiles) <= 65535 or tolerance >= 25:
+            break
+        tolerance = min(max(1, 2 * tolerance), 25)
+    require(len(profiles) <= 65535,
+            "more than 65535 profile clusters; raise cluster_tolerance_kmh or partition the region")
+    representative_ids = {raw_profile_ids[profile]: cluster_ids[cluster_profile(profile, tolerance)]
+                          for profile in raw_profiles}
+    records = [(key, representative_ids[profile_id], zone, scale)
+               for key, profile_id, zone, scale in records]
+    source = dict(source)
+    source["profile_cluster_tolerance_kmh"] = tolerance
+    source["profiles_before_clustering"] = profiles_before_clustering
     out = bytearray(struct.pack("<4sHHQQqq", b"OMHT", 1, 0, manifest["map_build"], manifest["map_size"], start, end))
     require(len(manifest["map_hash"]) == 12, "map_hash must be the exported 12-character BLAKE3 digest")
     out += string(manifest["region"]) + string(manifest["map_hash"])
@@ -157,7 +193,9 @@ def encode(manifest, observations):
         previous = key
     out += struct.pack("<I", zlib.crc32(out))
     require(len(out) <= 128 * 1024 * 1024, "package too large")
-    return bytes(out), {"segments": len(records), "profiles": len(profiles), "bytes": len(out),
+    return bytes(out), {"segments": len(records), "profiles": len(profiles),
+                        "profiles_before_clustering": profiles_before_clustering,
+                        "cluster_tolerance_kmh": tolerance, "bytes": len(out),
                         "gzip_bytes": len(gzip.compress(out, mtime=0))}
 
 
