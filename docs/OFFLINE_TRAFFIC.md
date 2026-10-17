@@ -6,6 +6,14 @@ user activity, and requires no service account. It is disabled by default.
 Only synthetic test/benchmark data is included. There is no claim of real-world
 ETA accuracy until a licensed dataset has been independently evaluated.
 
+**Production data blocker.** A complete merge still needs a dataset whose license
+explicitly permits offline redistribution of derived speed profiles. Availability
+of a provider API, an evaluation account or a downloaded batch is not a
+redistribution right. This branch deliberately does not scrape, guess or relabel
+inferred speeds as measurements. The package generator, matching manifest and
+validation harness are ready for such a dataset; the country/coverage rollout and
+held-out accuracy evaluation remain separate work.
+
 ## Repository research and implementation scope
 
 Inspected `CONTRIBUTING.md`, `INSTALL.md`, `PR_GUIDE.md`, `CODE_STYLE_GUIDE.md`,
@@ -110,12 +118,20 @@ The manifest is JSON; see the complete sample for required fields:
 * `source`: name, license identifier/rights reference, explicit `synthetic`
   boolean and pinned `tzdb` release. Additional provenance/observation dates,
   quality, provider and license-attribution fields are preserved as JSON.
+  The generator adds the effective `profile_cluster_tolerance_kmh` and
+  `profiles_before_clustering` to this metadata.
 * `segments`: unique `id` per matched directed OM segment, `feature_id`,
   `segment_idx`, `forward` (boolean), `timezone` (IANA name), optional `factor`.
   A matching adapter may use any provider identifiers for these IDs; they are
   not included in the runtime package. Split at timezone boundaries during map
   generation where possible; otherwise assign a documented representative zone.
 * `minimum_samples`: positive sample threshold (default 5).
+* Optional `cluster_tolerance_kmh`: integer 0–25 (default 1). The generator
+  quantizes each hourly speed to a grid of width `2 * tolerance`, so every
+  retained representative is within `tolerance` km/h of the prepared aggregate.
+  If more than 65,535 clusters remain, it doubles the effective tolerance up to
+  25 and records the actual value in `source` metadata. Use 0 only for exact
+  deduplication. Missing buckets are never clustered into observed ones.
 * Optional `date_adjustments`: IANA zone -> local ISO date -> multiplicative
   speed factor. Include only supported adjustments from adequately sampled
   holiday/seasonal data. Named holiday inference is not performed. Factor range
@@ -133,7 +149,8 @@ samples or a harmonic mean of such samples, with a positive sample count.
 Adapters must normalize units and statistics before producing CSV. Inputs may
 come from multiple providers after deduplication and quality normalization.
 Generation combines rows by sample-weighted harmonic mean, rounds to 1 km/h,
-and deduplicates identical 168-hour profiles. It rejects invalid/unmatched
+and deterministically clusters similar 168-hour profiles within the configured
+speed tolerance. It rejects invalid/unmatched
 observations and duplicate matches. Input order is canonicalized. Speeds must
 be finite and in [1,200] km/h. Missing/low-confidence buckets are encoded as 0;
 segments with no supported buckets are omitted entirely. It does not invent
@@ -184,10 +201,12 @@ hash table or decompressed segment array is constructed.
 Raw bytes remain compressed by dictionary reuse and key deltas in memory.
 Profiles are copied into a compact dictionary for fast access (the original
 bytes also retain the serialized dictionary). Maximum speed quantization error
-before factors is 0.5 km/h; relative error at very low speeds can be significant.
-There is no lossy dictionary clustering in v1. More than 65,535 distinct profiles
-requires offline clustering with an error budget or partitioning/versioning.
-Gzip/xz can reduce transport size but are **not** accepted as sidecars: downloads
+before factors is 0.5 km/h plus at most `cluster_tolerance_kmh` from preparation;
+relative error at very low speeds can be significant. The v1 dictionary stores
+the already-clustered representatives, so the runtime needs no lossy clustering.
+If even the maximum clustering tolerance exceeds 65,535 representatives, the
+generator asks for partitioning or a reviewed format extension. Gzip/xz can
+reduce transport size but are **not** accepted as sidecars: downloads
 must decompress to the validated raw package before atomic installation.
 
 Lookup converts UTC using the segment zone, computes local weekday/hour, then
@@ -201,8 +220,12 @@ calendar validity window the caller falls back normally.
 
 `IndexRouter::RedressRoute` installs an ETA-only speed callback for driving,
 freezes one departure UTC instant, and advances it using accumulated segment
-travel time and existing penalties. The context also covers real edges behind
-partial/fake endpoint segments, without changing their geometry handling.
+travel time and existing penalties. The car router now creates the existing
+`TrafficStash` at the call site where it had been disabled; with an empty live
+`TrafficCache` all speed groups stay unknown, so maps without traffic data behave
+as before. If live traffic is populated, it takes precedence over historical data.
+The context also covers real edges behind partial/fake endpoint segments, without
+changing their geometry handling.
 `CarEstimator` uses historical distance/speed when live traffic is unknown.
 Available legacy live traffic, including temporary closures, takes precedence;
 congestion factors are never multiplied together. Turn/u-turn/ferry/border penalties remain owned by the graph;
@@ -234,12 +257,12 @@ Map updates with another path have no sidecar until explicitly installed; a
 sidecar at the old path or with an incompatible identity cannot affect the new
 map. Old sidecars are not automatically garbage-collected in this MVP.
 
-Cold package loading validates all records and hashes the full map once per
-region per route calculation, using the existing streaming BLAKE3 helper.
-This can dominate lookup costs on large maps/slow storage. Production integration
-should reuse Storage's verified map digest, with invalidation on replacement,
-instead of repeatedly hashing. There is no claim that the microbenchmark below
-includes disk/map hashing, graph reconstruction or whole-route search.
+Cold package loading validates all records and compares the package identity
+with the map. Downloaded maps already carry Storage's verified truncated BLAKE3
+digest, so no file hashing is needed. For bundled/test maps without that digest,
+the streaming BLAKE3 result is cached by path, size and modification time, so
+normal route calculations do not re-read large maps. The microbenchmark below
+still excludes cold disk I/O, graph reconstruction and whole-route search.
 
 The existing downloader handles `MapFileType::Map` and `Diff`, download queues,
 country manifests, integrity checking and atomic installation. Adding a traffic
@@ -295,8 +318,11 @@ canonical serialization, gzip round-trip and invalid/missing input. The routing
 test checks car ETA change, disabled/missing/invalid fallback, unchanged selection
 weights/turn penalty, live traffic/closure precedence, and pedestrian/bicycle/transit isolation.
 A generated-map test covers lazy loading, negative caching, active snapshots,
-removal between calculations, incompatible map hashes and read-only direction export. The simple native
-benchmark verifies a million known random-access lookups across block boundaries.
+removal between calculations, incompatible map hashes and read-only direction export.
+A full generated-OSM route calculation checks that an installed sidecar changes
+the driving ETA and a missing/disabled sidecar restores the baseline ETA without
+changing the selected route. The simple native benchmark verifies a million
+known random-access lookups across block boundaries.
 
 Initial optimized measurements on this laptop (single runs, synthetic):
 
