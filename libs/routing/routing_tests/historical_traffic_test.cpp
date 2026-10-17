@@ -1,12 +1,18 @@
 #include "testing/testing.hpp"
 
 #include "generator/generator_tests_support/test_feature.hpp"
+#include "generator/generator_tests_support/test_generator.hpp"
 #include "generator/generator_tests_support/test_mwm_builder.hpp"
 #include "generator/traffic_generator.hpp"
 
+#include "routing/checkpoints.hpp"
 #include "routing/data_source.hpp"
 #include "routing/edge_estimator.hpp"
 #include "routing/geometry.hpp"
+#include "routing/index_router.hpp"
+#include "routing/route.hpp"
+#include "routing/router_delegate.hpp"
+#include "routing/routing_callbacks.hpp"
 #include "routing/traffic_stash.hpp"
 
 #include "routing_common/maxspeed_conversion.hpp"
@@ -17,6 +23,10 @@
 
 #include "platform/measurement_utils.hpp"
 #include "platform/platform_tests_support/scoped_dir.hpp"
+#include "platform/settings.hpp"
+
+#include "geometry/mercator.hpp"
+#include "geometry/tree4d.hpp"
 
 #include "coding/blake3.hpp"
 #include "coding/file_reader.hpp"
@@ -27,6 +37,9 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <set>
+#include <string>
+#include <vector>
 
 using namespace routing;
 
@@ -177,4 +190,156 @@ UNIT_TEST(HistoricalTraffic_ManualPackageLifecycleAndSegmentExport)
   FileWriter::DeleteFileX(path + ".traffic");
   FileWriter::DeleteFileX(path);
 }
+
+void PutLE(std::vector<uint8_t> & bytes, uint64_t value, size_t n)
+{
+  for (size_t i = 0; i < n; ++i)
+    bytes.push_back(static_cast<uint8_t>(value >> (8 * i)));
+}
+
+void PutVarUint(std::vector<uint8_t> & bytes, uint64_t value)
+{
+  while (value >= 128)
+  {
+    bytes.push_back(static_cast<uint8_t>((value & 127) | 128));
+    value >>= 7;
+  }
+  bytes.push_back(static_cast<uint8_t>(value));
+}
+
+void PutString(std::vector<uint8_t> & bytes, std::string const & value)
+{
+  PutLE(bytes, value.size(), 2);
+  bytes.insert(bytes.end(), value.begin(), value.end());
+}
+
+std::vector<uint8_t> MakeTrafficPackage(std::string const & region, uint64_t mapBuild, uint64_t mapSize,
+                                        std::string const & mapHash, std::set<uint64_t> const & keys, uint8_t speedKMpH)
+{
+  constexpr int64_t kValidFrom = 1767225600;   // 2026-01-01
+  constexpr int64_t kValidUntil = 1798761600;  // 2027-01-01
+  std::vector<uint8_t> bytes{'O', 'M', 'H', 'T'};
+  PutLE(bytes, 1, 2);  // Version.
+  PutLE(bytes, 0, 2);  // Flags.
+  PutLE(bytes, mapBuild, 8);
+  PutLE(bytes, mapSize, 8);
+  PutLE(bytes, kValidFrom, 8);
+  PutLE(bytes, kValidUntil, 8);
+  PutString(bytes, region);
+  PutString(bytes, mapHash);
+  PutString(bytes, "{\"name\":\"end-to-end synthetic test\",\"license\":\"CC0-1.0\",\"synthetic\":true}");
+  PutLE(bytes, 1, 2);  // Profiles.
+  PutLE(bytes, 1, 2);  // Timezones.
+  PutLE(bytes, keys.size(), 4);
+  bytes.insert(bytes.end(), 168, speedKMpH);
+  PutLE(bytes, 1, 2);  // Transitions.
+  PutLE(bytes, 0, 2);  // Date adjustments.
+  PutLE(bytes, kValidFrom, 8);
+  PutLE(bytes, 0, 4);  // UTC.
+  uint64_t previous = 0;
+  size_t i = 0;
+  for (uint64_t key : keys)
+  {
+    PutVarUint(bytes, i % 64 == 0 ? key : key - previous);
+    PutLE(bytes, 0, 2);    // Profile.
+    PutLE(bytes, 0, 1);    // Timezone.
+    PutLE(bytes, 128, 1);  // Factor = 1.
+    previous = key;
+    ++i;
+  }
+  PutLE(bytes, crc32(0, bytes.data(), bytes.size()), 4);
+  return bytes;
+}
+
+void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon const & startLatLon,
+                             ms::LatLon const & finishLatLon)
+{
+  settings::Set(kOfflineHistoricalTrafficEnabled, false);
+  auto const path = file.GetPath(MapFileType::Map);
+  auto const region = file.GetCountryName();
+  FrozenDataSource dataSource;
+  auto const map = dataSource.RegisterMap(file);
+  TEST_EQUAL(map.second, MwmSet::RegResult::Success, ());
+  auto const ids = std::make_shared<NumMwmIds>();
+  ids->RegisterFile(platform::CountryFile(region));
+  auto const tree = std::make_shared<m4::Tree<NumMwmId>>();
+  m2::RectD const rect(-2.0, -2.0, 2.0, 2.0);
+  tree->Add(0, rect);
+  auto const parent = [](std::string const &) { return std::string(); };
+  auto const countryFile = [region](m2::PointD const &) { return region; };
+  auto const countryRect = [rect](std::string const &) { return rect; };
+  traffic::TrafficCache cache;
+  IndexRouter router(VehicleType::Car, false, parent, countryFile, countryRect, ids, tree, cache, dataSource);
+  int64_t const departure = 1767618000;
+  router.SetCurrentTimeGetter([&] { return departure; });
+
+  auto const start = mercator::FromLatLon(startLatLon);
+  auto const finish = mercator::FromLatLon(finishLatLon);
+  struct Snapshot
+  {
+    double m_time;
+    size_t m_segments;
+    std::set<uint64_t> m_keys;
+  };
+  auto const calculate = [&]
+  {
+    RouterDelegate delegate;
+    RoutesResult result("historical-test", 0);
+    auto const code = router.CalculateRoute(Checkpoints(start, finish), {0.0, 0.0}, false /* adjust */,
+                                            false /* needAlternatives */, delegate, result);
+    TEST_EQUAL(code, RouterResultCode::NoError, ());
+    TEST(result.IsValid(), ());
+    auto const & active = result.GetActive();
+    std::set<uint64_t> keys;
+    for (auto const & routeSegment : active.GetRouteSegments())
+    {
+      auto const & segment = routeSegment.GetSegment();
+      if (segment.IsRealSegment())
+        keys.insert(traffic::HistoricalTraffic::SegmentKey(segment.GetFeatureId(), segment.GetSegmentIdx(),
+                                                           segment.IsForward()));
+    }
+    return Snapshot{active.GetTotalTimeSec(), active.GetRouteSegments().size(), std::move(keys)};
+  };
+
+  auto const baseline = calculate();
+  TEST(!baseline.m_keys.empty(), ());
+  auto const handle = dataSource.GetMwmHandleById(map.first);
+  TEST(handle.IsAlive(), ());
+  auto const & value = *handle.GetValue();
+  auto const package =
+      MakeTrafficPackage(value.GetCountryFileName(), value.GetMwmVersion().GetSecondsSinceEpoch(),
+                         FileReader(path).Size(), coding::Blake3::CalculateMwmBase64(path), baseline.m_keys, 1);
+  {
+    FileWriter writer(path + ".traffic");
+    writer.Write(package.data(), package.size());
+  }
+
+  settings::Set(kOfflineHistoricalTrafficEnabled, true);
+  auto const congested = calculate();
+  TEST_EQUAL(congested.m_keys, baseline.m_keys, ("Traffic must not change the selected route"));
+  TEST_EQUAL(congested.m_segments, baseline.m_segments, ());
+  TEST_GREATER(congested.m_time, baseline.m_time * 2.0, ());
+
+  settings::Set(kOfflineHistoricalTrafficEnabled, false);
+  auto const disabled = calculate();
+  TEST_ALMOST_EQUAL_ABS(disabled.m_time, baseline.m_time, 1e-3, ());
+
+  settings::Set(kOfflineHistoricalTrafficEnabled, true);
+  FileWriter::DeleteFileX(path + ".traffic");
+  auto const missing = calculate();
+  TEST_ALMOST_EQUAL_ABS(missing.m_time, baseline.m_time, 1e-3, ());
+  settings::Set(kOfflineHistoricalTrafficEnabled, false);
+}
+
+UNIT_TEST(HistoricalTraffic_EndToEndGeneratedMapRouteEta)
+{
+  generator::tests_support::TestRawGenerator generator;
+  generator.BuildFB("./data/test_data/osm/nsk_magadanskaya.osm", "Synthetic");
+  generator.BuildFeatures("Synthetic");
+  generator.BuildRouting("Synthetic", "Synthetic");
+  generator.BuildCrossMwm("Synthetic", "Synthetic");
+  CheckHistoricalRouteEta(platform::LocalCountryFile::MakeTemporary(generator.GetMwmPath("Synthetic")),
+                          {55.074347, 82.939134}, {55.076779, 82.935965});
+}
+
 }  // namespace
