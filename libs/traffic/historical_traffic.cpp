@@ -1,6 +1,7 @@
 #include "traffic/historical_traffic.hpp"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <stdexcept>
 #include <utility>
@@ -105,13 +106,9 @@ HistoricalTraffic HistoricalTraffic::Deserialize(std::vector<uint8_t> bytes, std
   auto const zones = r.Read(2);
   result.m_segments = static_cast<uint32_t>(r.Read(4));
   Require(profiles > 0 && zones > 0 && zones <= 256 && result.m_segments <= bytes.size() / 5);
-  result.m_profiles.resize(profiles);
-  for (auto & profile : result.m_profiles)
-    for (auto & speed : profile)
-    {
-      speed = static_cast<uint8_t>(r.Read(1));
-      Require(speed <= 200);
-    }
+  result.m_profilesOffset = r.Pos();
+  for (size_t i = 0; i < profiles * 168; ++i)
+    Require(r.Read(1) <= 200);
   result.m_zones.resize(zones);
   for (auto & zone : result.m_zones)
   {
@@ -185,8 +182,8 @@ std::optional<double> HistoricalTraffic::GetSpeedKMpH(uint64_t key, int64_t utc)
     auto const day = static_cast<int32_t>(local / 86400);
     auto const second = local % 86400;
     auto const hour = ((day + 3) % 7) * 24 + second / 3600;  // Monday = 0; epoch was Thursday.
-    auto const a = m_profiles[profile][hour];
-    auto const b = m_profiles[profile][(hour + 1) % 168];
+    auto const a = m_bytes[m_profilesOffset + profile * 168 + hour];
+    auto const b = m_bytes[m_profilesOffset + profile * 168 + (hour + 1) % 168];
     if (a == 0 || b == 0)
       return {};
     double speed = (a + (b - double(a)) * (second % 3600) / 3600.0) * factor / 128.0;
@@ -202,7 +199,7 @@ std::optional<double> HistoricalTraffic::GetSpeedKMpH(uint64_t key, int64_t utc)
 size_t HistoricalTraffic::GetMemorySize() const
 {
   size_t size = sizeof(*this) + m_bytes.capacity() + m_blocks.capacity() * sizeof(Block) +
-                m_profiles.capacity() * sizeof(m_profiles[0]) + m_zones.capacity() * sizeof(Zone) + m_source.capacity();
+                m_zones.capacity() * sizeof(Zone) + m_source.capacity();
   for (auto const & z : m_zones)
     size += z.m_transitions.capacity() * sizeof(Transition) + z.m_adjustments.capacity() * sizeof(Adjustment);
   return size;

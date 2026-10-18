@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -53,7 +52,7 @@ private:
   std::vector<uint8_t> m_bytes;
   std::vector<Block> m_blocks;
   std::vector<Zone> m_zones;
-  std::vector<std::array<uint8_t, 168>> m_profiles;
+  size_t m_profilesOffset = 0;
   std::string m_source;
   int64_t m_validFrom = 0;
   int64_t m_validUntil = 0;

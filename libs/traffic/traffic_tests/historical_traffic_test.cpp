@@ -1,12 +1,13 @@
-#include "traffic/historical_traffic.hpp"
-#include "historical_traffic_fixture.hpp"
 #include "testing/testing.hpp"
+
+#include "traffic/historical_traffic.hpp"
+#include "traffic/traffic_tests/historical_traffic_fixture.hpp"
 
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
 
-namespace
+namespace traffic_historical_traffic_test
 {
 using traffic::HistoricalTraffic;
 std::vector<uint8_t> Fixture()
@@ -157,4 +158,4 @@ UNIT_TEST(HistoricalTraffic_RejectMalformedAndIncompatible)
     TEST(Reject(std::move(bytes)), (n));
   }
 }
-}  // namespace
+}  // namespace traffic_historical_traffic_test
