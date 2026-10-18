@@ -47,10 +47,9 @@
 #include <string>
 #include <vector>
 
-using namespace routing;
-
-namespace
+namespace routing_historical_traffic_test
 {
+using namespace routing;
 UNIT_TEST(HistoricalTraffic_DrivingEtaOnlyAndFallback)
 {
   RoadGeometry const road(false, Maxspeed(measurement_utils::Units::Metric, 60, 60),
@@ -118,9 +117,9 @@ UNIT_TEST(HistoricalTraffic_PreservesLiveTrafficAndClosures)
     TEST_EQUAL(estimator->CalcSegmentWeight(segment, road, EdgeEstimator::Purpose::ETA), live, ());
   }
 }
-}  // namespace
+}  // namespace routing_historical_traffic_test
 
-namespace
+namespace routing_historical_traffic_test
 {
 UNIT_TEST(HistoricalTraffic_ManualPackageLifecycleAndSegmentExport)
 {
@@ -184,6 +183,8 @@ UNIT_TEST(HistoricalTraffic_ManualPackageLifecycleAndSegmentExport)
       TrafficStash::Guard guard(stash);
       TEST(!stash->GetHistoricalSpeed(segment, 1767618000, source), ("Wrong map hash must fall back"));
     }
+    TEST(!traffic::ExportHistoricalTrafficSegments(path, path), ());
+    TEST_EQUAL(coding::Blake3::CalculateMwmBase64(path), hash, ("Reject overwriting the input map"));
     TEST(traffic::ExportHistoricalTrafficSegments(path, csv), ());
     std::ifstream stream(csv);
     std::string const exported{std::istreambuf_iterator<char>(stream), {}};
@@ -291,9 +292,7 @@ UNIT_TEST(HistoricalTraffic_MapIdentityFollowsRegistration)
       TEST_NOT_EQUAL(hash, previousHash, ());
       TEST_EQUAL(size, previousSize, ("Replacement deliberately has identical size and mtime"));
     }
-    // Catalog metadata is not proof that these are the corresponding local bytes.
-    platform::LocalCountryFile registered(dir.GetFullPath(), platform::CountryFile("Synthetic", size, "AAAAAAAAAAAA"),
-                                          0);
+    platform::LocalCountryFile registered(dir.GetFullPath(), platform::CountryFile("Synthetic"), 0);
     registered.SyncWithDisk();
     FrozenDataSource dataSource;
     TEST_EQUAL(dataSource.RegisterMap(registered).second, MwmSet::RegResult::Success, ());
@@ -349,7 +348,12 @@ void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon
   auto const path = file.GetPath(MapFileType::Map);
   auto const region = file.GetCountryName();
   FrozenDataSource dataSource;
-  auto const map = dataSource.RegisterMap(file);
+  platform::LocalCountryFile downloaded(
+      file.GetDirectory(),
+      platform::CountryFile(region, FileReader(path).Size(), coding::Blake3::CalculateMwmBase64(path)),
+      file.GetVersion());
+  downloaded.SyncWithDisk();
+  auto const map = dataSource.RegisterMap(downloaded);
   TEST_EQUAL(map.second, MwmSet::RegResult::Success, ());
   auto const ids = std::make_shared<NumMwmIds>();
   ids->RegisterFile(platform::CountryFile(region));
@@ -461,4 +465,4 @@ UNIT_TEST(HistoricalTraffic_EndToEndGeneratedMapRouteEta)
                           {55.074347, 82.939134}, {55.076779, 82.935965});
 }
 
-}  // namespace
+}  // namespace routing_historical_traffic_test

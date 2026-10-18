@@ -9,8 +9,8 @@
 
 #include "base/checked_cast.hpp"
 
-#include <exception>
 #include <limits>
+#include <stdexcept>
 #include <string>
 
 namespace routing
@@ -26,7 +26,7 @@ TrafficStash::TrafficStash(traffic::TrafficCache const & source, std::shared_ptr
 
 traffic::SpeedGroup TrafficStash::GetSpeedGroup(Segment const & segment) const
 {
-  if (segment.GetSegmentIdx() > std::numeric_limits<uint16_t>::max())
+  if (!m_useLiveTraffic || segment.GetSegmentIdx() > std::numeric_limits<uint16_t>::max())
     return traffic::SpeedGroup::Unknown;
   auto itMwm = m_mwmToTraffic.find(segment.GetMwmId());
   if (itMwm == m_mwmToTraffic.cend())
@@ -78,23 +78,33 @@ std::optional<double> TrafficStash::GetHistoricalSpeed(Segment const & segment, 
           FileReader reader(path + ".traffic");
           std::vector<uint8_t> bytes(packageSize);
           reader.Read(0, bytes.data(), bytes.size());
-          auto identity = m_mapIdentities.find(id);
-          if (identity == m_mapIdentities.end() || identity->second.m_info.lock() != handle.GetInfo())
+          // Storage verifies downloaded maps; reuse that identity just as other map readers do.
+          auto hash = value.m_file.GetCountryFile().GetHash();
+          if (hash.empty())
           {
-            auto hash = coding::Blake3::CalculateMwmBase64(path);
-            if (m_mapIdentities.size() >= 64)
-              m_mapIdentities.clear();
-            identity = m_mapIdentities.insert_or_assign(id, MapIdentity{handle.GetInfo(), std::move(hash)}).first;
+            auto identity = m_mapIdentities.find(id);
+            if (identity == m_mapIdentities.end() || identity->second.m_info.lock() != handle.GetInfo())
+            {
+              auto digest = coding::Blake3::CalculateMwmBase64(path);
+              if (m_mapIdentities.size() >= 64)
+                m_mapIdentities.clear();
+              identity = m_mapIdentities.insert_or_assign(id, MapIdentity{handle.GetInfo(), std::move(digest)}).first;
+            }
+            hash = identity->second.m_hash;
           }
-          it->second = traffic::HistoricalTraffic::Deserialize(std::move(bytes), value.GetCountryFileName(),
-                                                               value.GetMwmVersion().GetSecondsSinceEpoch(), mapSize,
-                                                               identity->second.m_hash);
+          it->second =
+              traffic::HistoricalTraffic::Deserialize(std::move(bytes), value.GetCountryFileName(),
+                                                      value.GetMwmVersion().GetSecondsSinceEpoch(), mapSize, hash);
         }
       }
     }
-    catch (std::exception const &)
+    catch (Reader::Exception const & e)
     {
-      LOG(LWARNING, ("Ignoring invalid historical traffic package for", m_numMwmIds->GetFile(id).GetName()));
+      LOG(LWARNING, ("Cannot read historical traffic package:", e.what()));
+    }
+    catch (std::runtime_error const & e)
+    {
+      LOG(LWARNING, ("Ignoring invalid historical traffic package for", m_numMwmIds->GetFile(id).GetName(), e.what()));
     }
   }
   if (!it->second)

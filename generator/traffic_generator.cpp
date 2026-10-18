@@ -20,6 +20,7 @@
 #include "coding/file_writer.hpp"
 #include "coding/files_container.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <locale>
@@ -31,6 +32,12 @@ bool ExportHistoricalTrafficSegments(std::string const & mwmPath, std::string co
 {
   try
   {
+    std::error_code error;
+    if (std::filesystem::equivalent(mwmPath, output, error))
+    {
+      LOG(LWARNING, ("The segment export must not overwrite its input map:", output));
+      return false;
+    }
     FilesContainerR container(mwmPath);
     auto const build = version::MwmVersion::Read(container).GetSecondsSinceEpoch();
     auto const size = FileReader(mwmPath).Size();
