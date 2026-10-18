@@ -96,6 +96,19 @@ def cluster_profile(profile, tolerance):
                  for speed in profile)
 
 
+def cluster_profiles(raw_profiles, tolerance, limit=65535):
+    profiles, ids = [], {}
+    for profile in raw_profiles:
+        representative = cluster_profile(profile, tolerance)
+        if representative not in ids:
+            require(len(profiles) < limit,
+                    "too many profile clusters at the requested tolerance; partition the region "
+                    "or explicitly choose a larger cluster_tolerance_kmh")
+            ids[representative] = len(profiles)
+            profiles.append(representative)
+    return profiles, ids
+
+
 def encode(manifest, observations):
     start, end = timestamp(manifest["valid_from"]), timestamp(manifest["valid_until"])
     require(946684800 <= start < end <= 4102444800, "validity must be within 2000-2099")
@@ -149,18 +162,7 @@ def encode(manifest, observations):
     require(records, "no observations meet minimum sample count")
     profiles_before_clustering = len(raw_profiles)
     tolerance = requested_tolerance
-    while True:
-        profiles, cluster_ids = [], {}
-        for profile in raw_profiles:
-            representative = cluster_profile(profile, tolerance)
-            if representative not in cluster_ids:
-                cluster_ids[representative] = len(profiles)
-                profiles.append(representative)
-        if len(profiles) <= 65535 or tolerance >= 25:
-            break
-        tolerance = min(max(1, 2 * tolerance), 25)
-    require(len(profiles) <= 65535,
-            "more than 65535 profile clusters; raise cluster_tolerance_kmh or partition the region")
+    profiles, cluster_ids = cluster_profiles(raw_profiles, tolerance)
     representative_ids = {raw_profile_ids[profile]: cluster_ids[cluster_profile(profile, tolerance)]
                           for profile in raw_profiles}
     records = [(key, representative_ids[profile_id], zone, scale)

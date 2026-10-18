@@ -12,7 +12,7 @@ import tempfile
 import unittest
 import zlib
 
-from generate import cluster_profile, encode, segment_key, transitions, timestamp
+from generate import cluster_profile, cluster_profiles, encode, segment_key, transitions, timestamp
 
 ROOT = Path(__file__).resolve().parents[2]
 SAMPLE = Path(__file__).resolve().parent / 'sample'
@@ -93,6 +93,19 @@ class GeneratorTest(unittest.TestCase):
         for speed in range(1, 201):
             representative = cluster_profile(bytes([speed]), 2)[0]
             self.assertLessEqual(abs(representative - speed), 2)
+
+    def test_cluster_limit_preserves_accuracy_budget(self):
+        profiles = [bytes([30]), bytes([31])]
+        for tolerance in (0, 1):
+            with self.subTest(tolerance=tolerance), self.assertRaisesRegex(ValueError, "requested tolerance"):
+                cluster_profiles(profiles, tolerance, limit=1)
+        representatives, _ = cluster_profiles(profiles, 2, limit=1)
+        self.assertEqual(representatives, [bytes([32])])
+        for tolerance in range(26):
+            original = bytes(range(201))
+            clustered = cluster_profile(original, tolerance)
+            self.assertEqual(clustered[0], 0)
+            self.assertTrue(all(abs(a - b) <= tolerance for a, b in zip(original, clustered)))
 
     def test_cluster_tolerance_validation(self):
         for value in (-1, 26, 1.5, '2', True):
