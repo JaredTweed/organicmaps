@@ -59,6 +59,16 @@ illustrate scrutiny of defaults and failure paths. This is evidence for keeping
 the first UI-free core small, not a guarantee of maintainer acceptance. This work
 was developed with Codex assistance and needs human review before submission.
 
+Additional review evidence: [#12063](https://github.com/organicmaps/organicmaps/pull/12063)
+requires arrival-time evaluation and keeping road-speed data with its owning
+geometry; [#13432](https://github.com/organicmaps/organicmaps/pull/13432) reviews
+hot-path duplication, measured latency and unchanged search guarantees;
+[#12412](https://github.com/organicmaps/organicmaps/pull/12412) requires unique test
+namespaces for unity builds. [#13421](https://github.com/organicmaps/organicmaps/pull/13421)
+separately discusses online TomTom traffic. This branch supplies offline ETA only,
+with no live provider or traffic-based route selection. Automated review comments
+are distinguished from handwritten feedback; none establishes upstream approval.
+
 ## Try the reproducible sample
 
 Python 3.9+ with an installed IANA tzdata database is sufficient. No pip packages,
@@ -201,8 +211,8 @@ Binary search selects a block, then at most 64 deltas are decoded. No per-edge
 hash table or decompressed segment array is constructed.
 
 Raw bytes remain compressed by dictionary reuse and key deltas in memory.
-Profiles are copied into a compact dictionary for fast access (the original
-bytes also retain the serialized dictionary). Maximum speed quantization error
+Profiles are accessed directly in the validated package bytes; the dictionary
+is not copied or decompressed. Maximum speed quantization error
 before factors is 0.5 km/h plus at most `cluster_tolerance_kmh` from preparation;
 relative error at very low speeds can be significant. The v1 dictionary stores
 the already-clustered representatives, so the runtime needs no lossy clustering.
@@ -259,13 +269,14 @@ sidecar at the old path or with an incompatible identity cannot affect the new
 map. Old sidecars are not automatically garbage-collected in this MVP.
 
 Cold package loading validates all records and compares the package identity
-with the actual map content. Its streaming BLAKE3 digest is cached for the lifetime
-of the registered map, using a weak reference to its `MwmInfo`. A replacement or
-re-registration creates a new identity and is hashed again, even if its path,
-size and modification time match. Catalog hashes alone are not treated as proof
-of the local bytes. As with routing itself, registered map files must remain
-immutable until deregistration. The cache retains at most 64 digests and never
-pins map handles. The microbenchmark below excludes cold disk I/O, graph
+with the registered map. Downloaded maps reuse `CountryFile`'s digest, following
+the repository contract that Storage verifies downloads and readers then trust
+them. No map read or new integrity policy is added to that path. For maps without
+a catalog digest, a streaming BLAKE3 digest is cached by a weak reference to the
+registered `MwmInfo`. Re-registration hashes that map again, even at the same
+path, size and timestamp. Registered map files remain immutable, as routing
+already requires. The fallback cache retains at most 64 digests and never pins
+map handles. The microbenchmark below excludes cold disk I/O, graph
 reconstruction and whole-route search.
 
 The existing downloader handles `MapFileType::Map` and `Diff`, download queues,
@@ -327,8 +338,9 @@ A full generated-OSM route calculation checks that an installed sidecar changes
 the driving ETA and a missing/disabled sidecar restores the baseline ETA without
 changing the ordered route. A changing hourly profile also checks that later
 segments use the accumulated arrival time. Registration tests replace a map with
-different bytes at the same size and timestamp, rejecting stale packages and
-unverified catalog hashes. The simple native benchmark verifies a million
+different bytes at the same size and timestamp, rejecting stale packages when
+no catalog identity is available. The route test also exercises the normal
+catalog-digest path. The simple native benchmark verifies a million
 known random-access lookups across block boundaries.
 
 Initial optimized measurements on this laptop (single runs, synthetic):
@@ -339,10 +351,15 @@ Initial optimized measurements on this laptop (single runs, synthetic):
 | Raw blocked-delta sidecar | 7.04 MB | 7.73 MB |
 | Gzip transport | 0.060 MB | 3.08 MB |
 | Xz transport | 0.011 MB | 2.33 MB |
-| Accounted package memory | 8.65 MB | 9.34 MB |
+| Accounted package memory | 8.65 MB | 8.65 MB |
 | Validate and build checkpoints | 31.7 ms | 39.5 ms |
 | Baseline million divisions | 1.53 ms | 1.91 ms |
 | Million random lookups + divisions | 419 ms | 455 ms |
+
+The memory row was refreshed after removing the duplicate profile dictionary:
+both cases now account for 8,650,994 bytes, saving 688,144 bytes in the mixed case.
+Latency rows are the original baseline measurements before that simplification;
+no latency improvement is claimed from runs made during concurrent builds.
 
 MB means 1,000,000 bytes. Memory is owned container capacity accounting, not
 process RSS; it excludes allocator overhead and map/graph caches. The simple
