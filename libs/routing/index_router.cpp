@@ -159,9 +159,11 @@ std::unique_ptr<DirectionsEngine> CreateDirectionsEngine(VehicleType vehicleType
 std::shared_ptr<TrafficStash> CreateTrafficStash(VehicleType vehicleType, std::shared_ptr<NumMwmIds> numMwmIds,
                                                  traffic::TrafficCache const & trafficCache)
 {
-  // Historical sidecars are loaded through the existing traffic stash. With an empty live
-  // TrafficCache its speed groups remain unknown, so maps without traffic data are unaffected.
-  return vehicleType == VehicleType::Car ? std::make_shared<TrafficStash>(trafficCache, std::move(numMwmIds)) : nullptr;
+  // Reuse the stash for historical sidecars without re-enabling upstream's disabled
+  // legacy live traffic costs in route search or ETA reconstruction.
+  return vehicleType == VehicleType::Car
+           ? std::make_shared<TrafficStash>(trafficCache, std::move(numMwmIds), false /* useLiveTraffic */)
+           : nullptr;
 }
 
 void PushPassedSubroutes(Checkpoints const & checkpoints, std::vector<Route::SubrouteAttrs> & subroutes)

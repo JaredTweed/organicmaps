@@ -13,6 +13,7 @@
 #include "base/assert.hpp"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <unordered_map>
 #include <utility>
@@ -43,7 +44,7 @@ public:
     std::shared_ptr<TrafficStash> m_stash;
   };
 
-  TrafficStash(traffic::TrafficCache const & source, std::shared_ptr<NumMwmIds> numMwmIds);
+  TrafficStash(traffic::TrafficCache const & source, std::shared_ptr<NumMwmIds> numMwmIds, bool useLiveTraffic = true);
 
   traffic::SpeedGroup GetSpeedGroup(Segment const & segment) const;
   void SetColoring(NumMwmId numMwmId, std::shared_ptr<traffic::TrafficInfo::Coloring const> coloring);
@@ -61,6 +62,14 @@ private:
 
   // Also caches absent/invalid packages for the duration of one route calculation.
   std::unordered_map<NumMwmId, std::optional<traffic::HistoricalTraffic>> m_historical;
+  struct MapIdentity
+  {
+    std::weak_ptr<MwmInfo> m_info;
+    std::string m_hash;
+  };
+  // Registered maps are immutable. Re-registration supplies a new MwmInfo, even at the same path.
+  std::unordered_map<NumMwmId, MapIdentity> m_mapIdentities;
+  bool const m_useLiveTraffic;
   traffic::TrafficCache const & m_source;
   std::shared_ptr<NumMwmIds> m_numMwmIds;
   std::unordered_map<NumMwmId, std::shared_ptr<traffic::TrafficInfo::Coloring const>> m_mwmToTraffic;

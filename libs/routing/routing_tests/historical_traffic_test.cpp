@@ -28,9 +28,15 @@
 #include "geometry/mercator.hpp"
 #include "geometry/tree4d.hpp"
 
+#include "base/file_name_utils.hpp"
+#include "base/scope_guard.hpp"
+
 #include "coding/blake3.hpp"
 #include "coding/file_reader.hpp"
 #include "coding/file_writer.hpp"
+#include "coding/files_container.hpp"
+
+#include "platform/platform.hpp"
 
 #include <zlib.h>
 
@@ -214,7 +220,8 @@ void PutString(std::vector<uint8_t> & bytes, std::string const & value)
 }
 
 std::vector<uint8_t> MakeTrafficPackage(std::string const & region, uint64_t mapBuild, uint64_t mapSize,
-                                        std::string const & mapHash, std::set<uint64_t> const & keys, uint8_t speedKMpH)
+                                        std::string const & mapHash, std::set<uint64_t> const & keys, uint8_t speedKMpH,
+                                        bool increasingMondaySpeed = false)
 {
   constexpr int64_t kValidFrom = 1767225600;   // 2026-01-01
   constexpr int64_t kValidUntil = 1798761600;  // 2027-01-01
@@ -232,6 +239,9 @@ std::vector<uint8_t> MakeTrafficPackage(std::string const & region, uint64_t map
   PutLE(bytes, 1, 2);  // Timezones.
   PutLE(bytes, keys.size(), 4);
   bytes.insert(bytes.end(), 168, speedKMpH);
+  if (increasingMondaySpeed)
+    bytes[bytes.size() - 168 + 14] = 2;  // Monday 14:00, one hour after departure.
+
   PutLE(bytes, 1, 2);  // Transitions.
   PutLE(bytes, 0, 2);  // Date adjustments.
   PutLE(bytes, kValidFrom, 8);
@@ -251,9 +261,90 @@ std::vector<uint8_t> MakeTrafficPackage(std::string const & region, uint64_t map
   return bytes;
 }
 
+UNIT_TEST(HistoricalTraffic_MapIdentityFollowsRegistration)
+{
+  classificator::Load();
+  platform::tests_support::ScopedDir dir("historical_traffic_identity");
+  platform::LocalCountryFile file(dir.GetFullPath(), platform::CountryFile("Synthetic"), 0);
+  {
+    generator::tests_support::TestMwmBuilder builder(file, feature::DataHeader::MapType::Country);
+    builder.Add(generator::tests_support::TestRoad({{0.0, 0.0}, {0.01, 0.01}}, "Road", "en"));
+  }
+  auto const path = file.GetPath(MapFileType::Map);
+  auto const ids = std::make_shared<NumMwmIds>();
+  ids->RegisterFile(file.GetCountryFile());
+  traffic::TrafficCache cache;
+  auto const stash = std::make_shared<TrafficStash>(cache, ids);
+  std::string previousHash;
+  uint64_t previousSize = 0;
+  for (char value : {'a', 'b'})
+  {
+    {
+      FilesContainerW writer(path, FileWriter::OP_WRITE_EXISTING);
+      writer.Write(&value, 1, "historical_identity_test");
+    }
+    TEST(Platform::SetFileModificationTime(path, 1700000000), ());
+    auto const hash = coding::Blake3::CalculateMwmBase64(path);
+    auto const size = FileReader(path).Size();
+    if (!previousHash.empty())
+    {
+      TEST_NOT_EQUAL(hash, previousHash, ());
+      TEST_EQUAL(size, previousSize, ("Replacement deliberately has identical size and mtime"));
+    }
+    // Catalog metadata is not proof that these are the corresponding local bytes.
+    platform::LocalCountryFile registered(dir.GetFullPath(), platform::CountryFile("Synthetic", size, "AAAAAAAAAAAA"),
+                                          0);
+    registered.SyncWithDisk();
+    FrozenDataSource dataSource;
+    TEST_EQUAL(dataSource.RegisterMap(registered).second, MwmSet::RegResult::Success, ());
+    MwmDataSource source(dataSource, ids);
+    auto const build = source.GetMwmValue(0).GetMwmVersion().GetSecondsSinceEpoch();
+    auto install = [&](std::string const & expectedHash)
+    {
+      auto const bytes = MakeTrafficPackage("Synthetic", build, size, expectedHash, {0}, 20);
+      FileWriter writer(path + ".traffic");
+      writer.Write(bytes.data(), bytes.size());
+    };
+    Segment const segment(0, 0, 0, true);
+    if (!previousHash.empty())
+    {
+      install(previousHash);
+      TrafficStash::Guard guard(stash);
+      TEST(!stash->GetHistoricalSpeed(segment, 1767618000, source),
+           ("A new registration must not reuse the previous map digest"));
+    }
+    install(hash);
+    {
+      TrafficStash::Guard guard(stash);
+      auto const speed = stash->GetHistoricalSpeed(segment, 1767618000, source);
+      TEST(speed.has_value(), ());
+      TEST_EQUAL(*speed, 20.0, ());
+    }
+    previousHash = hash;
+    previousSize = size;
+  }
+  FileWriter::DeleteFileX(path + ".traffic");
+  FileWriter::DeleteFileX(path);
+}
+
+class TestTrafficCache : public traffic::TrafficCache
+{
+public:
+  using traffic::TrafficCache::Set;
+};
+
 void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon const & startLatLon,
                              ms::LatLon const & finishLatLon)
 {
+  bool previousEnabled = false;
+  bool const hadSetting = settings::Get(kOfflineHistoricalTrafficEnabled, previousEnabled);
+  SCOPE_GUARD(restoreSetting, [&]
+  {
+    if (hadSetting)
+      settings::Set(kOfflineHistoricalTrafficEnabled, previousEnabled);
+    else
+      settings::Delete(kOfflineHistoricalTrafficEnabled);
+  });
   settings::Set(kOfflineHistoricalTrafficEnabled, false);
   auto const path = file.GetPath(MapFileType::Map);
   auto const region = file.GetCountryName();
@@ -263,12 +354,12 @@ void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon
   auto const ids = std::make_shared<NumMwmIds>();
   ids->RegisterFile(platform::CountryFile(region));
   auto const tree = std::make_shared<m4::Tree<NumMwmId>>();
-  m2::RectD const rect(-2.0, -2.0, 2.0, 2.0);
+  auto const rect = map.first.GetInfo()->m_bordersRect;
   tree->Add(0, rect);
   auto const parent = [](std::string const &) { return std::string(); };
   auto const countryFile = [region](m2::PointD const &) { return region; };
   auto const countryRect = [rect](std::string const &) { return rect; };
-  traffic::TrafficCache cache;
+  TestTrafficCache cache;
   IndexRouter router(VehicleType::Car, false, parent, countryFile, countryRect, ids, tree, cache, dataSource);
   int64_t const departure = 1767618000;
   router.SetCurrentTimeGetter([&] { return departure; });
@@ -280,6 +371,7 @@ void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon
     double m_time;
     size_t m_segments;
     std::set<uint64_t> m_keys;
+    std::vector<Segment> m_path;
   };
   auto const calculate = [&]
   {
@@ -291,18 +383,31 @@ void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon
     TEST(result.IsValid(), ());
     auto const & active = result.GetActive();
     std::set<uint64_t> keys;
+    std::vector<Segment> orderedPath;
     for (auto const & routeSegment : active.GetRouteSegments())
     {
       auto const & segment = routeSegment.GetSegment();
+      orderedPath.push_back(segment);
       if (segment.IsRealSegment())
         keys.insert(traffic::HistoricalTraffic::SegmentKey(segment.GetFeatureId(), segment.GetSegmentIdx(),
                                                            segment.IsForward()));
     }
-    return Snapshot{active.GetTotalTimeSec(), active.GetRouteSegments().size(), std::move(keys)};
+    return Snapshot{active.GetTotalTimeSec(), active.GetRouteSegments().size(), std::move(keys),
+                    std::move(orderedPath)};
   };
 
   auto const baseline = calculate();
   TEST(!baseline.m_keys.empty(), ());
+  auto coloring = std::make_shared<traffic::TrafficInfo::Coloring>();
+  for (auto const & segment : baseline.m_path)
+    if (segment.IsRealSegment() && segment.GetSegmentIdx() <= 65535)
+      (*coloring)[traffic::TrafficInfo::RoadSegmentId(segment.GetFeatureId(), segment.GetSegmentIdx(),
+                                                      segment.IsForward() ? 0 : 1)] = traffic::SpeedGroup::TempBlock;
+  cache.Set(map.first, coloring);
+  auto const withLegacyCache = calculate();
+  TEST_ALMOST_EQUAL_ABS(withLegacyCache.m_time, baseline.m_time, 1e-3,
+                        ("Historical traffic must not re-enable legacy live routing costs"));
+  TEST(withLegacyCache.m_path == baseline.m_path, ());
   auto const handle = dataSource.GetMwmHandleById(map.first);
   TEST(handle.IsAlive(), ());
   auto const & value = *handle.GetValue();
@@ -318,7 +423,20 @@ void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon
   auto const congested = calculate();
   TEST_EQUAL(congested.m_keys, baseline.m_keys, ("Traffic must not change the selected route"));
   TEST_EQUAL(congested.m_segments, baseline.m_segments, ());
+  TEST(congested.m_path == baseline.m_path, ());
   TEST_GREATER(congested.m_time, baseline.m_time * 2.0, ());
+
+  auto const varyingPackage =
+      MakeTrafficPackage(value.GetCountryFileName(), value.GetMwmVersion().GetSecondsSinceEpoch(),
+                         FileReader(path).Size(), coding::Blake3::CalculateMwmBase64(path), baseline.m_keys, 1, true);
+  {
+    FileWriter writer(path + ".traffic");
+    writer.Write(varyingPackage.data(), varyingPackage.size());
+  }
+  auto const varying = calculate();
+  TEST(varying.m_path == baseline.m_path, ());
+  TEST_LESS(varying.m_time, congested.m_time * 0.99, ("Later segments must sample the advancing arrival clock"));
+  TEST_GREATER(varying.m_time, congested.m_time * 0.5, ());
 
   settings::Set(kOfflineHistoricalTrafficEnabled, false);
   auto const disabled = calculate();
@@ -334,7 +452,8 @@ void CheckHistoricalRouteEta(platform::LocalCountryFile const & file, ms::LatLon
 UNIT_TEST(HistoricalTraffic_EndToEndGeneratedMapRouteEta)
 {
   generator::tests_support::TestRawGenerator generator;
-  generator.BuildFB("./data/test_data/osm/nsk_magadanskaya.osm", "Synthetic");
+  generator.BuildFB(base::JoinPath(GetPlatform().ResourcesDir(), "test_data", "osm", "nsk_magadanskaya.osm"),
+                    "Synthetic");
   generator.BuildFeatures("Synthetic");
   generator.BuildRouting("Synthetic", "Synthetic");
   generator.BuildCrossMwm("Synthetic", "Synthetic");

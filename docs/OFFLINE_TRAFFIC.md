@@ -129,9 +129,11 @@ The manifest is JSON; see the complete sample for required fields:
 * Optional `cluster_tolerance_kmh`: integer 0–25 (default 1). The generator
   quantizes each hourly speed to a grid of width `2 * tolerance`, so every
   retained representative is within `tolerance` km/h of the prepared aggregate.
-  If more than 65,535 clusters remain, it doubles the effective tolerance up to
-  25 and records the actual value in `source` metadata. Use 0 only for exact
-  deduplication. Missing buckets are never clustered into observed ones.
+  More than 65,535 clusters is an error: partition the region or explicitly
+  choose another tolerance. The generator never silently increases this accuracy
+  budget. Use 0 for exact deduplication. Missing buckets remain missing.
+  This grid clustering is deterministic and linear in the number of hourly
+  values; nearby profiles across grid boundaries can remain separate.
 * Optional `date_adjustments`: IANA zone -> local ISO date -> multiplicative
   speed factor. Include only supported adjustments from adequately sampled
   holiday/seasonal data. Named holiday inference is not performed. Factor range
@@ -204,7 +206,7 @@ bytes also retain the serialized dictionary). Maximum speed quantization error
 before factors is 0.5 km/h plus at most `cluster_tolerance_kmh` from preparation;
 relative error at very low speeds can be significant. The v1 dictionary stores
 the already-clustered representatives, so the runtime needs no lossy clustering.
-If even the maximum clustering tolerance exceeds 65,535 representatives, the
+If the chosen clustering tolerance leaves more than 65,535 representatives, the
 generator asks for partitioning or a reviewed format extension. Gzip/xz can
 reduce transport size but are **not** accepted as sidecars: downloads
 must decompress to the validated raw package before atomic installation.
@@ -220,14 +222,13 @@ calendar validity window the caller falls back normally.
 
 `IndexRouter::RedressRoute` installs an ETA-only speed callback for driving,
 freezes one departure UTC instant, and advances it using accumulated segment
-travel time and existing penalties. The car router now creates the existing
-`TrafficStash` at the call site where it had been disabled; with an empty live
-`TrafficCache` all speed groups stay unknown, so maps without traffic data behave
-as before. If live traffic is populated, it takes precedence over historical data.
+travel time and existing penalties. The car router creates a historical-only
+`TrafficStash`. It does not copy the legacy live cache, preserving upstream's
+existing decision to disable live traffic costs during route search.
 The context also covers real edges behind partial/fake endpoint segments, without
 changing their geometry handling.
 `CarEstimator` uses historical distance/speed when live traffic is unknown.
-Available legacy live traffic, including temporary closures, takes precedence;
+When used independently with a live-enabled stash, legacy live traffic, including temporary closures, takes precedence;
 congestion factors are never multiplied together. Turn/u-turn/ferry/border penalties remain owned by the graph;
 observations must exclude those delays to avoid counting them twice. The speed
 sample is taken at the segment entrance before the graph adds that junction's
@@ -258,11 +259,14 @@ sidecar at the old path or with an incompatible identity cannot affect the new
 map. Old sidecars are not automatically garbage-collected in this MVP.
 
 Cold package loading validates all records and compares the package identity
-with the map. Downloaded maps already carry Storage's verified truncated BLAKE3
-digest, so no file hashing is needed. For bundled/test maps without that digest,
-the streaming BLAKE3 result is cached by path, size and modification time, so
-normal route calculations do not re-read large maps. The microbenchmark below
-still excludes cold disk I/O, graph reconstruction and whole-route search.
+with the actual map content. Its streaming BLAKE3 digest is cached for the lifetime
+of the registered map, using a weak reference to its `MwmInfo`. A replacement or
+re-registration creates a new identity and is hashed again, even if its path,
+size and modification time match. Catalog hashes alone are not treated as proof
+of the local bytes. As with routing itself, registered map files must remain
+immutable until deregistration. The cache retains at most 64 digests and never
+pins map handles. The microbenchmark below excludes cold disk I/O, graph
+reconstruction and whole-route search.
 
 The existing downloader handles `MapFileType::Map` and `Diff`, download queues,
 country manifests, integrity checking and atomic installation. Adding a traffic
@@ -321,7 +325,10 @@ A generated-map test covers lazy loading, negative caching, active snapshots,
 removal between calculations, incompatible map hashes and read-only direction export.
 A full generated-OSM route calculation checks that an installed sidecar changes
 the driving ETA and a missing/disabled sidecar restores the baseline ETA without
-changing the selected route. The simple native benchmark verifies a million
+changing the ordered route. A changing hourly profile also checks that later
+segments use the accumulated arrival time. Registration tests replace a map with
+different bytes at the same size and timestamp, rejecting stale packages and
+unverified catalog hashes. The simple native benchmark verifies a million
 known random-access lookups across block boundaries.
 
 Initial optimized measurements on this laptop (single runs, synthetic):
@@ -382,7 +389,7 @@ validation remain prerequisites; this document makes no legal-rights assertion.
    validation datasets, country eligibility and map-matching quality reports.
 2. Review the car ETA hook and add full route reconstruction/rerouting fixtures,
    live-traffic precedence cases, partial endpoints and penalties across regions.
-3. Reuse verified map digest/caching, bound multi-region resident memory and
+3. Bound multi-region package memory and
    measure cold I/O, real routes, ARM hardware and long-edge speed integration.
 4. Add manifest/downloader support and package lifecycle tests, then independent
    Android/iOS opt-in, sizes, dates, updates/removal and attribution.

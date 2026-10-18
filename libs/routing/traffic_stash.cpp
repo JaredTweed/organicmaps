@@ -9,54 +9,16 @@
 
 #include "base/checked_cast.hpp"
 
-#include <ctime>
+#include <exception>
 #include <limits>
-#include <map>
-#include <mutex>
 #include <string>
-#include <unordered_map>
 
 namespace routing
 {
-namespace
-{
-struct MapHashCacheEntry
-{
-  uint64_t m_size;
-  time_t m_mtime;
-  std::string m_hash;
-};
-
-std::mutex g_mapHashCacheMutex;
-std::unordered_map<std::string, MapHashCacheEntry> g_mapHashCache;
-
-std::string GetMapHash(std::string const & path, uint64_t size, platform::CountryFile const & countryFile)
-{
-  // Storage has already verified downloaded maps and keeps the truncated BLAKE3 digest here.
-  if (!countryFile.GetHash().empty())
-    return countryFile.GetHash();
-
-  // Bundled or test maps may have no CountryFile hash. Avoid re-reading a large map on every
-  // route calculation; the identity is keyed by size and modification time.
-  time_t const mtime = Platform::GetFileModificationTime(path);
-  {
-    std::lock_guard lock(g_mapHashCacheMutex);
-    auto const it = g_mapHashCache.find(path);
-    if (it != g_mapHashCache.end() && it->second.m_size == size && it->second.m_mtime == mtime)
-      return it->second.m_hash;
-  }
-  auto const hash = coding::Blake3::CalculateMwmBase64(path);
-  {
-    std::lock_guard lock(g_mapHashCacheMutex);
-    if (g_mapHashCache.size() >= 64)
-      g_mapHashCache.clear();
-    g_mapHashCache[path] = {size, mtime, hash};
-  }
-  return hash;
-}
-}  // namespace
-TrafficStash::TrafficStash(traffic::TrafficCache const & source, std::shared_ptr<NumMwmIds> numMwmIds)
-  : m_source(source)
+TrafficStash::TrafficStash(traffic::TrafficCache const & source, std::shared_ptr<NumMwmIds> numMwmIds,
+                           bool useLiveTraffic)
+  : m_useLiveTraffic(useLiveTraffic)
+  , m_source(source)
   , m_numMwmIds(std::move(numMwmIds))
 {
   CHECK(m_numMwmIds, ());
@@ -116,9 +78,17 @@ std::optional<double> TrafficStash::GetHistoricalSpeed(Segment const & segment, 
           FileReader reader(path + ".traffic");
           std::vector<uint8_t> bytes(packageSize);
           reader.Read(0, bytes.data(), bytes.size());
-          it->second = traffic::HistoricalTraffic::Deserialize(
-              std::move(bytes), value.GetCountryFileName(), value.GetMwmVersion().GetSecondsSinceEpoch(), mapSize,
-              GetMapHash(path, mapSize, value.m_file.GetCountryFile()));
+          auto identity = m_mapIdentities.find(id);
+          if (identity == m_mapIdentities.end() || identity->second.m_info.lock() != handle.GetInfo())
+          {
+            auto hash = coding::Blake3::CalculateMwmBase64(path);
+            if (m_mapIdentities.size() >= 64)
+              m_mapIdentities.clear();
+            identity = m_mapIdentities.insert_or_assign(id, MapIdentity{handle.GetInfo(), std::move(hash)}).first;
+          }
+          it->second = traffic::HistoricalTraffic::Deserialize(std::move(bytes), value.GetCountryFileName(),
+                                                               value.GetMwmVersion().GetSecondsSinceEpoch(), mapSize,
+                                                               identity->second.m_hash);
         }
       }
     }
@@ -136,6 +106,8 @@ std::optional<double> TrafficStash::GetHistoricalSpeed(Segment const & segment, 
 
 void TrafficStash::CopyTraffic()
 {
+  if (!m_useLiveTraffic)
+    return;
   traffic::AllMwmTrafficInfo copy;
   m_source.CopyTraffic(copy);
   for (auto const & kv : copy)
