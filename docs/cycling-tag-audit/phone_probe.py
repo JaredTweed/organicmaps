@@ -207,7 +207,15 @@ def capture(bundle, output, adb, serial, timeout, style="baseline", theme="light
                            (output / "OrganicMapsPrefs.xml", "shared_prefs/OrganicMapsPrefs.xml")):
         transfer(source, target)
     adb_text("shell", "am", "start", "-W", "-n", PACKAGE + "/" + manifest["activity"])
-    pid = adb_text("shell", "pidof", PACKAGE)
+    pid = ""
+    for _ in range(20):
+        try:
+            pid = adb_text("shell", "pidof", PACKAGE)
+        except subprocess.CalledProcessError:
+            pass
+        if pid.isdecimal():
+            break
+        time.sleep(0.5)
     if not pid.isdecimal():
         raise RuntimeError("Research app did not start; unlock phone and inspect startup dialogs")
     deadline = time.monotonic() + timeout

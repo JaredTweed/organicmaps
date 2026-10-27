@@ -1,0 +1,79 @@
+{
+  "scenario_finished": true,
+  "style": "baseline",
+  "theme": "light",
+  "requested_backend": "OpenGLES3",
+  "actual_backend_requires_log_review": true,
+  "outdoors_layer_requested": true,
+  "viewport_records": [
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 0,
+      "elapsed_ms": 2427.534303,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 1,
+      "elapsed_ms": 446.772176,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 2,
+      "elapsed_ms": 112.075766,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 3,
+      "elapsed_ms": 1079.757813,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 4,
+      "elapsed_ms": 317.26709,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 5,
+      "elapsed_ms": 124.88260899999999,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 6,
+      "elapsed_ms": 1331.899618,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 7,
+      "elapsed_ms": 373.97583099999997,
+      "ready": true
+    },
+    {
+      "scenario": "cycling-research-vancouver",
+      "index": 8,
+      "elapsed_ms": 149.78479,
+      "ready": true
+    }
+  ],
+  "all_viewports_ready": true,
+  "screenshots_captured": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "scope": "baseline functional capture, not candidate A/B or release performance",
+  "pixel_review_required": true,
+  "release_performance_validated": false
+}

@@ -2,13 +2,20 @@
 
 ## Conclusion
 
-The separate-type candidate is the better of the **two prototypes tested** if
-older type mappings must still recognize the road. It retains the existing road
-type, whereas the naive combined-type prototype replaces it with an unknown
-type. This is not yet a universal winner: dual-writing or gating combined types,
-other representations, full routing, different regions and release rendering
-performance were not tested. It also does not establish visual equivalence to
-PR #12692 or require any change to that PR's appearance.
+**Best overall recommendation for the current centerline cycling style: keep
+the road's existing primary type and use one separate, normalized cycling
+attribute type.** This is an informed engineering judgment, not a proven
+universal winner. It gives the clearest compatibility advantage in the tested
+comparison, avoids multiplying types by road class, and has a small measured
+map-size cost. The evidence also shows potential selector cost and type-slot
+pressure, so release approval should depend on those checks below.
+
+The separate-type candidate retains the existing road type, whereas the naive
+combined-type prototype replaces it with an unknown type. Dual-writing or
+gating combined types, other representations, full routing, different regions
+and release rendering performance were not tested. This recommendation does
+not establish visual equivalence to PR #12692 or require any change to that
+PR's appearance.
 
 ## Method
 
@@ -85,12 +92,26 @@ differences between candidates. Consequently the two timing sequences in
 rendering workloads. They are single debug runs, not release benchmarks. The
 candidate styles are synthetic and neither alters the PR.
 
-For a valid phone comparison, first fix the rule compilation or fixture design
-so both candidates preserve the same ordinary road rules and produce equivalent
-rendering. Verify the actually loaded MWM and generated style, then compare
-identical viewports and rendering output on the same device.
-Use repeated runs, a release-like build and controlled thermal/cache conditions
-before drawing a performance conclusion. Also test older and newer actual app
+An explicit no-cycling-tag fallback was then added to the synthetic tag fixture
+and recompiled. Both variants completed two alternating nine-viewport runs on
+the same Pixel, OpenGLES and debug build. The inspected z14 screenshots show
+the previously missing ordinary roads restored and appear close, but this is
+not a pixel-perfect verification of all zooms or the actual PR style. Across
+the 18 recorded viewport-ready times per candidate, the medians were 309.7 ms
+for combined and 366.2 ms for tags, approximately 18% higher for tags. These
+are small, sequential debug samples with uncontrolled caching and thermal
+state; viewports are not independent samples, so this is a warning about the
+selector path, not a production-speed estimate or proof of a fixed 18% cost.
+The corrected fixture uses three negative predicates for the fallback; a better
+compiler or selector implementation could have a different cost. The original
+combined trace and the corrected tag and repeat traces are saved as JSON beside
+the scripts. Single-run timings in the map-generation report remain historical
+for the initial fixture; do not treat its style size as a measurement of the
+corrected fallback.
+
+Before shipping, verify equivalent output across all relevant viewports and the
+actual cycling style, then benchmark repeated traces on a release-like build
+with controlled thermal/cache conditions. Also test older and newer actual app
 versions, mixed maps, per-feature retained types, routing/access, and multiple
-independent full OSM regions. Until then, the preferred separate-type approach
-is conditional and the requested full comparison is incomplete.
+independent full OSM regions. The recommendation is conditional on acceptable
+selector performance and avoiding loss of routing-critical types.

@@ -102,6 +102,10 @@ def make_resources(source, destination, variant):
                              else f"research:facility={kind}")
                 stream.write(f"line|z14-18[highway={road}][{predicate}]::research "
                              f"{{width: 2; color: {color};}}\n")
+            if variant == "tag":
+                absent = "".join(f"[extra_tag!=hwtag=research_{kind}]" for kind in CATEGORIES)
+                stream.write(f"line|z14-18[highway={road}]{absent}::research "
+                             "{width: 0; color: #000000;}\n")
     env = dict(os.environ, DATA_PATH=str(destination), OMIM_PATH=str(ROOT))
     started = time.monotonic()
     with (destination.parent / "style-build.log").open("w") as log:
