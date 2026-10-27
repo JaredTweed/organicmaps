@@ -298,12 +298,9 @@ def allowedPermissions = [
     // comes from androidx.work:work-runtime:2.10.5
     "name='android.permission.RECEIVE_BOOT_COMPLETED'",
     // comes from androidx.core:core:1.17.0
-    // Regex to allow it for the following app packages:
-    // app.organicmaps
-    // app.organicmaps.(debug|beta|profileable)
-    // app.organicmaps.web
-    // app.organicmaps.web.(debug|beta|profileable)
-    ~/name='app\.organicmaps(\.web)?(\.debug|\.beta|\.profileable)?\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'/
+    // Match the configured application ID and its known flavor/build suffixes.
+    java.util.regex.Pattern.compile("name='" + java.util.regex.Pattern.quote(rootProject.ext.appId)
+      + "(\\.web)?(\\.debug|\\.beta|\\.profileable)?\\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'")
 ]
 registerCheckApkPermissionsTasks(project, allowedPermissions)
 
