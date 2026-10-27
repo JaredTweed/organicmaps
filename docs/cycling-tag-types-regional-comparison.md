@@ -73,9 +73,22 @@ the isolated research app to download an official map; it was stopped, and the
 download was moved to the research app's private archive. No timings from these
 runs should be used as performance results.
 
-For a valid phone run, create a research-only catalogue matching each generated
-map's version **and byte size**, verify the actually loaded MWM and generated
-style, then compare identical viewports and rendering output on the same device.
+On a later attempt, research-only catalogues were rebuilt with the matching map
+sizes and both candidate maps loaded on the Pixel 8 Pro. Both nine-viewport
+OpenGLES debug scenarios completed. However, the generated tag style does not
+preserve ordinary roads: its compiled rules (for example `highway-living_street`
+at z14) place the base line and label inside each `extra_tag` predicate, with
+no equivalent unconditional rule at that zoom. On-screen captures show major
+differences between candidates. Consequently the two timing sequences in
+`regional-phone-tag-result.json` and `regional-phone-combined-result.json` are
+**invalid for deciding relative rendering performance**: they measure different
+rendering workloads. They are single debug runs, not release benchmarks. The
+candidate styles are synthetic and neither alters the PR.
+
+For a valid phone comparison, first fix the rule compilation or fixture design
+so both candidates preserve the same ordinary road rules and produce equivalent
+rendering. Verify the actually loaded MWM and generated style, then compare
+identical viewports and rendering output on the same device.
 Use repeated runs, a release-like build and controlled thermal/cache conditions
 before drawing a performance conclusion. Also test older and newer actual app
 versions, mixed maps, per-feature retained types, routing/access, and multiple
