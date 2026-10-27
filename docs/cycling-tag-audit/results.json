@@ -1,0 +1,134 @@
+{
+  "base_commit": "936c7834fb7012166a0dc722cce67047109dd33b",
+  "designation_split_example": {
+    "after": [
+      "bicycletag|designated",
+      "highway|path"
+    ],
+    "before": [
+      "highway|path|bicycle"
+    ],
+    "slot_delta": 1
+  },
+  "dump": {
+    "all_features_by_stored_count": {
+      "1": 1573640,
+      "2": 178552,
+      "3": 60230,
+      "4": 29727,
+      "5": 11430,
+      "6": 1496,
+      "7": 176,
+      "8": 29
+    },
+    "highway_features_by_stored_count": {
+      "1": 194731,
+      "2": 145359,
+      "3": 56546,
+      "4": 28822,
+      "5": 11090,
+      "6": 1400,
+      "7": 145,
+      "8": 6
+    },
+    "highway_yesbicycle_by_stored_count": {
+      "2": 3519,
+      "3": 16107,
+      "4": 14253,
+      "5": 5133,
+      "6": 1003,
+      "7": 74,
+      "8": 6
+    },
+    "hypothetical_designation_split_slot_deltas": {
+      "0": 427134,
+      "1": 10965
+    },
+    "saturated_highway_combinations": {
+      "highway|path|bicycle + highway|path|bridge": 1,
+      "highway|path|bicycle + highway|path|tunnel": 4,
+      "highway|residential": 1
+    },
+    "warning": "Post-truncation counts; source tags and candidate coverage unknown. Split model is set replacement only, not the generator pipeline."
+  },
+  "dump_sha256": "b046ae410bfde639f2f15bba130183b268ac5b18375a05a1b3adfef9cb3d4be2",
+  "experimental_commit": "955cd49403ed025c24beec09f5551e8d274a38ff",
+  "mapping_differences": [
+    {
+      "base": "waterway|stream|intermittent",
+      "csv_id": 115,
+      "experiment": "waterway|stream|ephemeral",
+      "stored_index": 114
+    },
+    {
+      "base": "waterway|river|intermittent",
+      "csv_id": 557,
+      "experiment": "mapswithme",
+      "stored_index": 556
+    },
+    {
+      "base": "waterway|canal|intermittent",
+      "csv_id": 558,
+      "experiment": "mapswithme",
+      "stored_index": 557
+    },
+    {
+      "base": "waterway|ditch|intermittent",
+      "csv_id": 559,
+      "experiment": "mapswithme",
+      "stored_index": 558
+    },
+    {
+      "base": "waterway|drain|intermittent",
+      "csv_id": 560,
+      "experiment": "mapswithme",
+      "stored_index": 559
+    },
+    {
+      "base": "waterway|fish_pass|intermittent",
+      "csv_id": 561,
+      "experiment": "mapswithme",
+      "stored_index": 560
+    },
+    {
+      "base": "railway|station|subway|suzhou",
+      "csv_id": 1658,
+      "experiment": "cyclewaytag|track",
+      "stored_index": 1657
+    },
+    {
+      "base": "railway|subway_entrance|suzhou",
+      "csv_id": 1659,
+      "experiment": "cyclewaytag|lane",
+      "stored_index": 1658
+    }
+  ],
+  "scope": "Source/data audit only; no size, speed, routing or rendering benchmark",
+  "type_identity_examples": {
+    "cyclewaytag|lane": {
+      "csv_id": 1659,
+      "internal_classifier_value": 16398,
+      "stored_index": 1658
+    },
+    "cyclewaytag|shared_lane": {
+      "csv_id": 1660,
+      "internal_classifier_value": 16526,
+      "stored_index": 1659
+    },
+    "cyclewaytag|track": {
+      "csv_id": 1658,
+      "internal_classifier_value": 16654,
+      "stored_index": 1657
+    },
+    "hwtag|yesbicycle": {
+      "csv_id": 1115,
+      "internal_classifier_value": 17815,
+      "stored_index": 1114
+    },
+    "psurface|paved_good": {
+      "csv_id": 1117,
+      "internal_classifier_value": 16554,
+      "stored_index": 1116
+    }
+  }
+}

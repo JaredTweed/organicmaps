@@ -11,8 +11,17 @@ The latter two are different branches; comparisons below are explicitly scoped.
 
 ## Recommendation
 
-Keep the road's primary classifier type and prototype **side-qualified cycling
-attributes** independently of the road class. The best candidate for a
+Update after reviewing the independent solution: see
+[the decision audit](cycling-tag-types-decision-audit.md) for corrections,
+reproducible checks, alternatives, and coverage of all three maintainer requests.
+For a centerline-only first version, prioritize testing one derived cycling
+attribute alongside a generated-combination baseline. This is a prototype
+priority, not a release verdict. Keep existing designated path types intact
+until decomposition's extra slot and compatibility costs are justified.
+
+Keep the road's primary classifier type and model **side-qualified cycling
+attributes** independently of the road class when side fidelity is required.
+A strong candidate for a
 side-aware design is a small, structured record per side, because it preserves
 the relationships without consuming one classifier slot for every attribute.
 For a narrower centerline-only first version, evaluate one derived
@@ -27,7 +36,8 @@ correlate properties on opposite sides, or make existing styling rules match a
 combination. A compact, versioned side record is a candidate for richer data;
 it has more implementation and compatibility cost and is not yet justified by
 measurements. A limited set of side-qualified classifier types is another
-candidate worth measuring before a format change. This is the strongest
+candidate worth measuring before a format change; existing per-feature metadata
+is also a reuse baseline, not a POI-only mechanism. This is the strongest
 conditional recommendation supported by the evidence; calling one option the
 best overall before the benchmarks and product requirements are known would be
 unjustified.

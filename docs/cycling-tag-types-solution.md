@@ -1,5 +1,11 @@
 # Cycling tag types: recommended solution
 
+**Audit update:** Read [the decision audit](cycling-tag-types-decision-audit.md)
+before treating this recommendation as settled. It corrects the strength of
+the Vancouver inference, designation skip policy, decomposition slot cost,
+truncation ordering, and comparison with alternative encodings. No encoding
+has yet passed a controlled map-generation and phone-rendering benchmark.
+
 Companion to
 [`docs/cycling-tag-types-research.md`](cycling-tag-types-research.md).
 That document collects the evidence and caveats. This one answers the design
@@ -20,19 +26,18 @@ Adopt tag-types, but as a **narrow, derived-attribute mechanism**, not as a
 general decomposition of OSM key/value pairs.
 
 * Keep the road's primary type, for example `highway|tertiary`.
-* For the first cycling release add **one** normalized attribute type per
+* For the centerline prototype evaluate **at most one** normalized attribute type per
   feature: `cyclewaytag|track`, `cyclewaytag|lane`, or
   `cyclewaytag|shared_lane`.
-* Do **not** add `left-*`, `right-*`, direction, access, or protection types.
-  Two or more extra type slots are not justified by the current data, and they
-  still do not preserve the relational side information correctly.
-* If side-aware rendering becomes a product requirement, use a compact,
-  versioned per-feature side record. Do not encode sides as several classifier
-  types.
-* As a separate pilot, decompose the two existing combined cycling types
+* Do not add side, direction, access, or protection types to the centerline
+  prototype without a consumer requirement. Correctly side-qualified types
+  can preserve associations; their slot cost must be measured against records.
+* If side-aware rendering becomes a product requirement, compare a compact,
+  versioned record with side-qualified types and existing metadata storage.
+* As an optional, separate experiment, evaluate decomposing the two combined types
   `highway|path|bicycle` and `highway|footway|bicycle` into their road/path
   class plus a bicycle-designation tag-type. That is the cleanest existing
-  example of where the mechanism pays for itself.
+  example to test whether composition pays for its extra slot and migration cost.
 * Fix the type-ID collision and the truncation priority before any generated
   map is distributed.
 
@@ -44,23 +49,23 @@ separates the low-risk first step from the larger side-aware work.
 The earlier draft left the choice between one derived type and side-qualified
 attributes open. The newer evidence makes the first step much clearer.
 
-1. **A single extra type is effectively free in the measured sample, provided
-   dedicated facilities are skipped.** The reproduced Vancouver type-count
+1. **The sample identifies slot pressure, not the cost of a new encoding.**
+   The reproduced Vancouver type-count
    table is in the companion document. Of 438,099 features with a `highway`
    type, only 6 have eight stored types. Five of those six are already
    bicycle-designated `path` features with a bridge/tunnel subtype. The
-   experimental skip only covers `highway|cycleway`; the recommended rule must
-   also skip `highway|path|bicycle` and `highway|footway|bicycle`. With that
-   widened rule, the sample leaves one residential feature where the new type
-   could compete for a slot. This is not a global guarantee, but it is strong
-   evidence that one derived type does not require a format change or a
-   type-budget expansion.
+   experimental skip only covers `highway|cycleway`. Excluding designated
+   paths would leave one saturated residential feature in this stored dump,
+   but that exclusion is not established as semantically correct. Source tags,
+   pre-truncation type sets and affected candidate coverage are unknown. This
+   does not demonstrate that a new encoding is free or safe to release.
 2. **Two or more extra types start to cost real information.** 151 road-type
    features are at seven or more types. They are concentrated in residential,
    tertiary, trunk, service, and path/footway classes, including roads where
-   cycling infrastructure matters. Adding two types on top would put many of
-   them over the limit; adding three or four is a data-loss policy, not a
-   storage optimization.
+   cycling infrastructure may matter. Adding two new distinct types to every
+   one of those stored sets would exceed eight; the number actually affected
+   requires candidate coverage from source data. More than one attribute is
+   not inherently wrong, but silent information loss is unacceptable.
 3. **The experimental branch's type IDs collide with upstream master.** The
    collision is described precisely below. It is a blocker for distributing
    experimental maps and a reminder that manually appended types are unsafe.
@@ -70,10 +75,10 @@ attributes open. The newer evidence makes the first step much clearer.
 
 The resulting opinion is:
 
-> Use one derived cycling attribute now. Keep the road class as the primary
-> type. Decompose the two existing path/footway bicycle combinations as a
-> pilot. Treat side-aware rendering as a separate product decision backed by a
-> side-record design, not by more classifier types.
+> Test one derived cycling attribute first if centerline display is sufficient.
+> Preserve road types and existing routing semantics. Compare generated
+> combinations fairly, defer designation migration, and evaluate richer
+> side-aware storage only against an agreed consumer requirement.
 
 ## What "tag-type" should mean
 
@@ -164,22 +169,25 @@ oneway processing:
    adjacent motor traffic is confirmed on the relevant side. The experimental
    code's `separation`, `barrier`, and `traffic_mode` checks are a reasonable
    starting point; keep them conservative and test them.
-4. `bicycle_road=*` and `cyclestreet=*` map to `shared_lane` unless a more
-   specific cycling facility is tagged.
-5. Do not add `cyclewaytag` to features whose primary type already expresses a
-   dedicated facility, for example `highway|cycleway`,
-   `highway|path|bicycle`, or `highway|footway|bicycle`. The primary type is
-   already the facility. Note that the experimental
+4. Recognized positive `bicycle_road` and `cyclestreet` values may map to a
+   shared category; missing, negative and unsupported values must not become
+   positive facilities. Resolve more specific facility tags before summarizing.
+5. Avoid redundant attributes only when existing types and the actual style
+   preserve the required facility semantics. Bicycle designation on a path or
+   footway is not proof of protection, exclusivity, or motor-traffic separation.
+   Do not blanket-skip those classes merely to reduce overflow. The experimental
    `IsBicycleDesignatedHighway()` check only covers `highway|cycleway`: it
    truncates to the two-level highway class, so `highway|path` and
-   `highway|footway` do not match. Widen that check or add explicit
-   path/footway-bicycle cases before relying on it.
+   `highway|footway` do not match. A display-specific helper must be separate
+   from this helper used by access classification; changing the shared helper
+   could also change `hwtag|yesbicycle` generation and routing.
 6. When sides differ, choose the least-protected explicitly tagged facility for
    the centerline summary. Document this as a lossy visual rule. Do not claim
    it describes the left or right side.
 7. When tags conflict, apply a documented precedence: specific side over
-   `cycleway:both` over generic `cycleway`; explicit negative values suppress
-   a positive facility; unknown is not the same as `no`. Keep `opposite_*`
+   `cycleway:both` over generic `cycleway`; explicit negatives override only
+   their applicable scope, not a positive facility on the opposite side.
+   Unknown is not the same as `no`. Keep `opposite_*`
    values as bidirectional routing information, not as a separate visual type.
 8. Do not infer bicycle access from a painted or protected facility. Continue
    to let `hwtag`, `oneway:bicycle`, access tags, and conditional restrictions
@@ -207,28 +215,31 @@ facilities on both sides, and often more:
 * Direction restrictions need another relation or combined values such as
   `left_track_forward`.
 * Protection, access, and conditional restrictions add more dimensions.
-* The feature type list is a set: it has no slot that means “left” or “right.”
-  The association between a side, a facility, and a direction is relational.
-  A flat set of types preserves the values but not the relationship.
+* Independent flags such as `{left, right, track, lane}` lose association.
+  Side-qualified values such as `{left_track, right_lane}` preserve it. Fields
+  must remain scoped to the side as direction and protection are added.
 * The renderer still has to draw two parallel geometry lines. The type data
   alone does not solve offset placement at curves, intersections, bridges,
   clipping, or tile boundaries.
 
-One type plus the primary type is a better first version because it fits the
-existing budget, keeps the style simple, and can be shipped without a map
-format change. It is intentionally lossy; that is acceptable for a
-centerline-only cycling style.
+One type plus the primary type is the narrower prototype because it minimizes
+additional slots and reuses current storage. Whether it fits the budget and
+whether its intentional losses are acceptable require measurement and product
+agreement. Reusing serialization is not proof of safe map compatibility.
 
 ### Style duplication does not replace the data model
 
-Generating duplicated style rules, with an LLM or otherwise, can reduce
-authoring effort, but it is not an argument against a tag-type layer:
+Generating duplicated style rules mechanically can reduce authoring effort and
+could avoid a generalized runtime tag layer for a small bounded vocabulary.
+It must be compared rather than rejected in advance:
 
-* Duplicated rules multiply generated rule count and binary size.
+* Duplicated source rules may increase generated count and bytes; measure final
+  output after the compiler's deduplication.
 * Fallback and priority become harder to reason about when every combination
   has its own rule.
-* Duplication does not solve the eight-type budget, the left/right association,
-  the direction relation, or offset rendering.
+* A composite type can preserve side/direction associations in one slot, but
+  its vocabulary grows with the combinations actually represented. Neither
+  generated styles nor runtime predicates implement offset geometry alone.
 * Changing one semantic rule then requires regenerating and auditing every
   duplicate.
 
@@ -263,11 +274,14 @@ matched by the style selector.
 Why this pilot is useful:
 
 * It directly answers “which existing types should become tag-types?”
-* It removes two combined types instead of adding more.
+* It can stop generating two combined types, but their persistent IDs and
+  old-map semantics still need a compatibility plan; they cannot simply vanish.
 * It proves the selector and visibility plumbing with a small, auditable
   surface.
-* It does not touch the eight-type budget for the common case; it replaces a
-  three-level combined type with a two-level primary type plus one attribute.
+* It can reduce vocabulary duplication, but normally replaces one stored type
+  with two and therefore costs one additional slot. Hierarchy depth and stored
+  type count are different. Existing base/attribute types can reduce that delta;
+  the complete filtering and truncation pipeline still needs measurement.
 
 Costs to audit before doing it:
 
@@ -278,8 +292,9 @@ Costs to audit before doing it:
 * Routing and access generation that may assume the combined type.
 * The old app/new map and new app/old map behavior if the pilot ever ships.
 
-Do this as a separate follow-up after the one-type cycling change. It is not a
-prerequisite for the cycling style.
+Do not schedule this migration automatically after the cycling change. Keep it
+as an optional experiment with measured slot cost and a legacy-reader plan.
+It is not a prerequisite for the cycling style.
 
 Do not convert `hwtag` or `psurface`; they already are tag-types. Do not
 convert city-specific types such as the Suzhou railway types; those are
@@ -292,11 +307,11 @@ types with `UselessTypesChecker` and truncates the list when it is longer than
 8. The experimental branch adds `cyclewaytag` to the same “low priority” group
 as `hwtag` and `psurface`.
 
-That is not a guarantee that `cyclewaytag` survives. The sorting is stable
-after types are sorted by ID, and `cyclewaytag` is appended after the older
-namespaces. Under pressure it can be the first score-2 type dropped. For a
-display attribute that is supposed to be the point of the change, that is the
-wrong default.
+That is not a guarantee that `cyclewaytag` survives. Equal-score retention uses
+the internal encoded classifier values, not append order in `types.txt`.
+Those internal values come from the sorted classifier tree. Predicting which
+type is discarded from its persistent mapping index is incorrect. Enumerate
+the actual retained and lost types before changing shared priorities.
 
 Recommended policy:
 
@@ -305,8 +320,10 @@ Recommended policy:
 * Give the primary type and routing/access types a protected retention rank.
   Give the selected cycling display type a rank above purely decorative
   display types.
-* Add a unit fixture with eight types including `cyclewaytag` and assert that
-  the cycling type survives, or document exactly which type is dropped.
+* Add fixtures with eight existing distinct types plus a cycling type (nine
+  before truncation), and with larger combinations. Eight total types alone
+  never exercises overflow. Assert every retained and dropped type, including
+  access, direction, surface, and the display attribute.
 * Do not rely on append order or on the experimental placement in the
   “useless” list.
 * Do not expand `kMaxTypesCount` for this change. It is a feature-header format
@@ -326,15 +343,12 @@ The class breakdown from the reproduced dump is more useful than the totals:
   meaningful cycling infrastructure. The rest include 59 residential, 7
   tertiary, 4 trunk, 6 service (one with a bridge/driveway subtype), 1
   motorway link, and path/footway/bridge/tunnel combinations.
-* Of the 6 features at 8 types, 5 are bicycle-designated path features with a
-  bridge/tunnel subtype. The experimental skip does not cover those; the
-  recommended widened skip rule does, because the primary type already
-  expresses the facility. The remaining feature is residential.
-* Therefore, with the widened skip rule, the one-type proposal would overflow
-  at most one eligible feature in this sample. Without the widened rule, up to
-  six features could compete for a slot if they carry cycling tags. A two-type
-  proposal would affect a meaningful subset of residential, tertiary, and
-  trunk roads.
+* Five of the six saturated features have designated path and bridge/tunnel
+  types; the sixth is residential. Their original cycling tags are unknown.
+  A proposed blanket exclusion of the five paths is not a validated policy.
+* These are observations of stored sets, not predicted generator overflow.
+  Candidate coverage, preprocessing, replacement, and existing truncation must
+  be measured on a controlled source snapshot for every encoding.
 
 Treat this as a reason to measure before choosing two or more types, not as a
 license to ignore truncation.
@@ -403,7 +417,7 @@ The requirements are:
   lanes;
 * routing keeps its existing graph and access rules.
 
-A small, versioned side record is the best fit for those requirements:
+A small, versioned side record is a strong candidate for those requirements:
 
 * one record per feature, indexed by the final feature ID in the MWM;
 * two side entries, each with a bounded facility value, a direction value, and
@@ -414,8 +428,9 @@ A small, versioned side record is the best fit for those requirements:
 * written after feature sorting, against final feature IDs;
 * measured for sparse-index overhead, per-record bytes, and lookup/cache cost.
 
-A separate section avoids consuming two to four classifier slots and preserves
-the left/right association that a flat type set cannot. It is a larger change:
+A separate section avoids consuming classifier slots and preserves side-scoped
+fields. Correctly side-qualified classifier types can also preserve them, and
+existing metadata storage deserves a baseline comparison. A new section is a larger change:
 new generator, storage, reader API, renderer, tests, and migration policy. Do
 not start it until the product requirement and the offset renderer are
 approved.
@@ -435,7 +450,7 @@ Even then, it should be a stopgap, not the general representation.
 
 There are two numbering conventions, and they differ by one:
 
-* the mapping CSV's last column is a **one-based type id** (the file header
+* the mapping CSV's ID field is a **one-based type id** (the file header
   calls it “type id, sequential starting from 1”);
 * the app loads `types.txt` in order and assigns **zero-based stored indices**.
 
@@ -546,9 +561,9 @@ For the side-record future:
    the retention protection, and the centerline style. Measure.
 4. **Measure and review.** Use the acceptance criteria before considering more
    attributes.
-5. **Pilot decomposition.** Convert `highway|path|bicycle` and
-   `highway|footway|bicycle` to primary class plus bicycle-designation
-   tag-type, with style and routing audits.
+5. **Evaluate decomposition, optionally.** Measure replacing designated
+   path/footway types only if there is a concrete benefit that outweighs the
+   extra slots, style/routing audits and legacy compatibility work.
 6. **Only then consider sides.** If the product needs asymmetric rendering,
    design the side record and offset renderer as their own project.
 
