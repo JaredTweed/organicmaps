@@ -1,0 +1,66 @@
+{
+  "counts": {
+    "highway_ways": 74727,
+    "ways_with_explicit_differing_sides": 1400,
+    "ways_with_facility_direction_or_conditional_details": 196,
+    "ways_with_facility_keys": 10799,
+    "ways_with_generic_and_qualified_values": 57,
+    "ways_with_multiple_positive_categories": 107,
+    "ways_with_negative_or_separate_and_positive_values": 775,
+    "ways_with_recognized_positive_category": 1799
+  },
+  "example_way_ids": {
+    "differing_sides": "4231647"
+  },
+  "facility_key_values": {
+    "cycleway:both=lane": 19,
+    "cycleway:both=no": 6814,
+    "cycleway:both=separate": 17,
+    "cycleway:both=share_busway": 18,
+    "cycleway:both=shared_lane": 171,
+    "cycleway:both=shoulder": 2,
+    "cycleway:left=lane": 112,
+    "cycleway:left=no": 1373,
+    "cycleway:left=separate": 282,
+    "cycleway:left=share_busway": 7,
+    "cycleway:left=shared": 3,
+    "cycleway:left=shared_lane": 57,
+    "cycleway:left=track": 48,
+    "cycleway:right=lane": 558,
+    "cycleway:right=no": 259,
+    "cycleway:right=separate": 426,
+    "cycleway:right=share_busway": 27,
+    "cycleway:right=shared": 1,
+    "cycleway:right=shared_lane": 240,
+    "cycleway:right=shoulder": 5,
+    "cycleway:right=track": 17,
+    "cycleway=crossing": 764,
+    "cycleway=designated": 2,
+    "cycleway=lane": 189,
+    "cycleway=link": 29,
+    "cycleway=no": 181,
+    "cycleway=separate": 126,
+    "cycleway=share_busway": 11,
+    "cycleway=shared": 30,
+    "cycleway=shared_lane": 440,
+    "cycleway=track": 11,
+    "cycleway=traffic_island": 24
+  },
+  "limitations": [
+    "Road-only extract is not a representative complete region",
+    "Categories summarize raw values without resolving precedence",
+    "No inference of legal access, protection, comfort or safety",
+    "No correspondence proven between source ways and older stored dump"
+  ],
+  "mixed_category_counts": {
+    "lane+shared_lane": 68,
+    "lane+track": 13,
+    "shared_lane+track": 26
+  },
+  "scope": "Raw source counts, not normalized semantics, retained types or MWM A/B results",
+  "source_bytes": 48603847,
+  "source_metadata": {
+    "osm_base": "2026-08-17T21:14:54Z"
+  },
+  "source_sha256": "d034b4a5f1758e0b856b5bc09057e79200853f2970f5a12cb1ba927881c9ce08"
+}

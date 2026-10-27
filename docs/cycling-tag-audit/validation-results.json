@@ -133,6 +133,21 @@
       }
     }
   },
+  "clean_style": {
+    "baseline_bytes": 227927,
+    "clean_bytes": 190583,
+    "major_road_width_scale": 0.8,
+    "new_types": 0,
+    "scope": "Outdoors surrogate, not the PR cycling mode or a validated usability winner",
+    "variants": {
+      "dark": {
+        "overlay_types_reduced_count": 453
+      },
+      "light": {
+        "overlay_types_reduced_count": 453
+      }
+    }
+  },
   "diff_check": "passed",
   "native_build": {
     "compiler_version": "c++ (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)",
@@ -168,7 +183,7 @@
         "variants": {
           "combined": {
             "binary_bytes": 689,
-            "compile_wall_seconds_single_run": 0.1306430420372635,
+            "compile_wall_seconds_single_run": 0.23914421000517905,
             "drawing_elements": 24,
             "hashes": {
               "mapcss-mapping.csv": "e8873eda5898d32163f4180501fec1b1c1bce459302131fc34c6845f059b9314",
@@ -182,7 +197,7 @@
           },
           "tags": {
             "binary_bytes": 660,
-            "compile_wall_seconds_single_run": 0.14758590899873525,
+            "compile_wall_seconds_single_run": 0.1934550239238888,
             "drawing_elements": 24,
             "hashes": {
               "mapcss-mapping.csv": "e8196a3dfae07c43469a9abfcfea3f88b84ae64a4c8c84f0ec048fa28941ab58",
@@ -201,7 +216,7 @@
         "variants": {
           "combined": {
             "binary_bytes": 1768,
-            "compile_wall_seconds_single_run": 0.15758846094831824,
+            "compile_wall_seconds_single_run": 0.18093509692698717,
             "drawing_elements": 64,
             "hashes": {
               "mapcss-mapping.csv": "14fbd4b59cee65c288b0f8211145f23b3eb0a49a87a832371156fe88de50c971",
@@ -215,7 +230,7 @@
           },
           "tags": {
             "binary_bytes": 1381,
-            "compile_wall_seconds_single_run": 0.153184775961563,
+            "compile_wall_seconds_single_run": 0.18874410900752991,
             "drawing_elements": 64,
             "hashes": {
               "mapcss-mapping.csv": "da2ea165279c6be6c900da0fe950ac63d8b9162d42410f25264e3b6c0072c951",
@@ -235,6 +250,6 @@
   },
   "unit_tests": {
     "exit_code": 0,
-    "log": "test_internal_values_use_sorted_tree_not_mapping_order (test_audit.AuditTests.test_internal_values_use_sorted_tree_not_mapping_order) ... ok\ntest_invalid_dump_rejected (test_audit.AuditTests.test_invalid_dump_rejected) ... ok\ntest_mapping_numbers (test_audit.AuditTests.test_mapping_numbers) ... ok\ntest_pinned_source_conflicts_and_internal_values (test_audit.AuditTests.test_pinned_source_conflicts_and_internal_values) ... ok\ntest_side_qualification_preserves_association (test_audit.AuditTests.test_side_qualification_preserves_association) ... ok\ntest_split_adds_slot_for_single_combined_type (test_audit.AuditTests.test_split_adds_slot_for_single_combined_type) ... ok\ntest_split_reuses_existing_base (test_audit.AuditTests.test_split_reuses_existing_base) ... ok\ntest_split_shares_designation_across_two_classes (test_audit.AuditTests.test_split_shares_designation_across_two_classes) ... ok\ntest_weighted_dump (test_audit.AuditTests.test_weighted_dump) ... ok\ntest_absent_type_and_zoom_do_not_select (test_style_probe.StyleProbeTests.test_absent_type_and_zoom_do_not_select) ... ok\ntest_fixture_does_not_reuse_old_palettes (test_style_probe.StyleProbeTests.test_fixture_does_not_reuse_old_palettes) ... ok\ntest_fixture_mapping_has_contiguous_ids (test_style_probe.StyleProbeTests.test_fixture_mapping_has_contiguous_ids) ... ok\ntest_predicates_are_conjunctive (test_style_probe.StyleProbeTests.test_predicates_are_conjunctive) ... ok\ntest_runner_refuses_generated_output_in_worktree (test_style_probe.StyleProbeTests.test_runner_refuses_generated_output_in_worktree) ... ok\ntest_tag_vocabulary_is_not_cartesian (test_style_probe.StyleProbeTests.test_tag_vocabulary_is_not_cartesian) ... ok\ntest_unknown_predicate_is_not_unconditional (test_style_probe.StyleProbeTests.test_unknown_predicate_is_not_unconditional) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.043s\n\nOK\n"
+    "log": "test_internal_values_use_sorted_tree_not_mapping_order (test_audit.AuditTests.test_internal_values_use_sorted_tree_not_mapping_order) ... ok\ntest_invalid_dump_rejected (test_audit.AuditTests.test_invalid_dump_rejected) ... ok\ntest_mapping_numbers (test_audit.AuditTests.test_mapping_numbers) ... ok\ntest_pinned_source_conflicts_and_internal_values (test_audit.AuditTests.test_pinned_source_conflicts_and_internal_values) ... ok\ntest_side_qualification_preserves_association (test_audit.AuditTests.test_side_qualification_preserves_association) ... ok\ntest_split_adds_slot_for_single_combined_type (test_audit.AuditTests.test_split_adds_slot_for_single_combined_type) ... ok\ntest_split_reuses_existing_base (test_audit.AuditTests.test_split_reuses_existing_base) ... ok\ntest_split_shares_designation_across_two_classes (test_audit.AuditTests.test_split_shares_designation_across_two_classes) ... ok\ntest_weighted_dump (test_audit.AuditTests.test_weighted_dump) ... ok\ntest_clutter_removal_preserves_geometry_and_cycling_services (test_clean_style.CleanStyleTests.test_clutter_removal_preserves_geometry_and_cycling_services) ... ok\ntest_bundle_detects_modified_inputs (test_phone_probe.PhoneProbeTests.test_bundle_detects_modified_inputs) ... ok\ntest_capture_records_every_view_and_never_resets_apps (test_phone_probe.PhoneProbeTests.test_capture_records_every_view_and_never_resets_apps) ... ok\ntest_incomplete_or_failed_viewports_are_not_success (test_phone_probe.PhoneProbeTests.test_incomplete_or_failed_viewports_are_not_success) ... ok\ntest_launcher_alias_in_packaged_manifest (test_phone_probe.PhoneProbeTests.test_launcher_alias_in_packaged_manifest) ... ok\ntest_regular_app_and_unsafe_paths_refused (test_phone_probe.PhoneProbeTests.test_regular_app_and_unsafe_paths_refused) ... ok\ntest_scenario_has_fixed_ready_viewports (test_phone_probe.PhoneProbeTests.test_scenario_has_fixed_ready_viewports) ... ok\ntest_wrong_device_refused_before_install (test_phone_probe.PhoneProbeTests.test_wrong_device_refused_before_install) ... ok\ntest_rejects_default_style_and_wrong_backend (test_phone_summary.PhoneSummaryTests.test_rejects_default_style_and_wrong_backend) ... ok\ntest_preserves_asymmetry_and_designation_uncertainty (test_source_probe.SourceProbeTests.test_preserves_asymmetry_and_designation_uncertainty) ... ok\ntest_absent_type_and_zoom_do_not_select (test_style_probe.StyleProbeTests.test_absent_type_and_zoom_do_not_select) ... ok\ntest_fixture_does_not_reuse_old_palettes (test_style_probe.StyleProbeTests.test_fixture_does_not_reuse_old_palettes) ... ok\ntest_fixture_mapping_has_contiguous_ids (test_style_probe.StyleProbeTests.test_fixture_mapping_has_contiguous_ids) ... ok\ntest_predicates_are_conjunctive (test_style_probe.StyleProbeTests.test_predicates_are_conjunctive) ... ok\ntest_runner_refuses_generated_output_in_worktree (test_style_probe.StyleProbeTests.test_runner_refuses_generated_output_in_worktree) ... ok\ntest_tag_vocabulary_is_not_cartesian (test_style_probe.StyleProbeTests.test_tag_vocabulary_is_not_cartesian) ... ok\ntest_unknown_predicate_is_not_unconditional (test_style_probe.StyleProbeTests.test_unknown_predicate_is_not_unconditional) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 0.052s\n\nOK\n"
   }
 }

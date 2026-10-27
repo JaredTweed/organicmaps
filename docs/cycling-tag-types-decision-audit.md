@@ -30,10 +30,44 @@ rewrite or a premature format commitment:
    decomposition is an optional experiment with additional slot and legacy
    costs, not an automatic follow-up to land.
 
-This branch contains research and read-only audit code, not a production
-implementation. It does not establish map-size, speed, routing, visual quality,
-or old-client compatibility. Those remaining experiments are explicit below.
-The maintainer still owns the product scope and release decision.
+The initial branch contained research and read-only audit code. Subsequent
+work adds a narrow C++ selector prototype, runtime tests and an isolated Android
+research build; [status](cycling-tag-types-status.md) records their execution.
+These are not a production cycling-format implementation. They do not establish
+an encoding winner, phone usability or old-client compatibility. The maintainer
+still owns the product scope and release decision.
+
+### A potentially better option
+
+For the immediate release, **style-only improvement with existing data** may be
+better than any new encoding: it directly serves the third request without
+introducing legacy support obligations. It cannot invent missing facility detail.
+
+For a bounded centerline vocabulary, generated composites can still be better
+than tags if they preserve road semantics and materially reduce hot-path work.
+The compiler experiment has equal line-rule counts for both; fewer type names
+does not establish a runtime win. For richer, sparse attributes, existing
+metadata may beat a new section by reusing its machinery. The raw road extract
+has positive recognized categories on only 1,799 of 74,727 ways, but that is
+not a final-feature coverage estimate and is not sufficient to choose storage.
+
+Use these decision rules rather than an unconditional recommendation:
+
+1. If existing maps suffice for the requested visual improvement, ship no new
+   types as part of that improvement.
+2. If a centerline summary is accepted, compare generated composites and one
+   tag using identical resolved semantics. Disqualify any candidate that newly
+   loses routing/access information; do not trade legal correctness for bytes.
+3. If side/direction fidelity is required, do not release a lossy summary as the
+   only source of truth. Measure qualified types, metadata and a dedicated record.
+4. If the measured differences are within run-to-run noise, prefer the smaller
+   maintenance/compatibility change. Do not invent precision by ranking one run.
+5. Do not require a general classifier rewrite, designation decomposition or
+   side-offset renderer just to deliver the independent clean-style experiment.
+
+Thus there is no justified statement that the previous conclusion is "completely
+correct." The research package now includes initial phone observations, but
+not the controlled comparisons or decisions that belong to maintainers.
 
 ## Maintainer request coverage
 
@@ -223,8 +257,9 @@ dense city, mixed shared paths, a rural network and asymmetric lanes. Compare
 base, clean-style-only and clean-style-plus-facilities in rows, light and dark.
 Include an active route, an imported track, position marker and selected POI.
 Record text collisions, obscured junctions, missed service discovery, route
-legibility and frame/tile preparation times. Screenshots and phone testing
-have **not** been produced for this audit; no usability winner is claimed.
+legibility and frame/tile preparation times. Initial Debug screenshots for an
+Outdoors surrogate are described in [phone validation](cycling-tag-types-phone.md);
+they do not establish a usability winner.
 
 ## Reproduction and release gate
 
@@ -273,8 +308,8 @@ commits/submodules, commands, resource/input hashes and map versions. Require:
    side's facility can justify a centerline summary. Do not invent a universal
    percentage threshold or accept rare legal-access regressions as harmless.
 
-**Remaining work:** controlled regenerated-map comparisons, runtime C++ tests,
-phone/backend rendering and screenshots, compatibility execution, and maintainer
+**Remaining work:** controlled regenerated-map comparisons, end-to-end candidate
+rendering, phone usability and release-performance testing, compatibility execution, and maintainer
 scope/budget decisions. Research coverage is not evidence that these gates have
 passed. Production implementation before those decisions risks doing extensive
 work on the wrong representation; this audit deliberately does not do that.

@@ -19,13 +19,28 @@ Recommended reading order:
 
 All changes stay on `research/cycling-tag-types`. The PR, its branches and
 comments are untouched. No production map, app asset, classifier mapping or
-routing implementation has been changed by this validation work.
+routing implementation has been changed. Subsequent work adds an opt-in Android
+application ID, a research type-selector implementation and native tests; see
+[Pixel 8 Pro preparation](cycling-tag-types-phone.md). These changes are not
+release certification.
+
+## Additional source evidence
+
+[Source results](cycling-tag-audit/source-results.json) inspect a separate
+48,603,847-byte road-only OSM extract dated August 17, 2026 (hash recorded).
+Of 74,727 highway ways, 10,799 carry one of the inspected facility keys;
+1,799 carry a recognized positive category, 1,400 have explicitly differing
+left/right values, 107 have multiple positive categories and 775 mix positive
+values with negative or separately mapped values. These counts do not resolve
+precedence, imply legal access or predict retained feature types. They are not
+an A/B map benchmark and are not proven to correspond to the older stored dump.
+They reinforce the need to state what information a centerline summary loses.
 
 ## Executed checks
 
 | Check | Result | What it establishes |
 | --- | --- | --- |
-| Research/tool unit tests | 16 passed | Mapping numbering, internal encoding, slot arithmetic, weighted dump parsing, fixture construction, palette reset, predicate evaluator and output isolation. |
+| Research/tool unit tests | 26 passed | Mapping numbering, slot arithmetic, source parsing, fixture construction, style derivation, and guarded phone-runner behavior. |
 | Pinned-source audit | Passed | Confirms cycling-specific index conflicts and distinguishes persistent indices from internal classifier values. |
 | Existing Vancouver dump audit | Completed | Reproduces the stored count table; hypothetical designation split adds a slot on 10,965 stored highway-feature sets. Not regenerated-map coverage. |
 | Native C++ parser build | Passed, GCC 16.2.1, C++23, RELEASE | Compiles the repository's unmodified `drules_selector_parser.cpp` with the research probe, rather than mocking that parser. |
@@ -33,6 +48,10 @@ routing implementation has been changed by this validation work.
 | Real Kothic compilation | Four fixtures compiled | Uses pinned `c5546e4f70128a301fc2f08b391baeafe29e5ee9`; generates real binary drawing rules and decodes them with that compiler's reader. |
 | Equivalent fixture cases | 88 passed | Expected single stroke width/color/priority matches across both representations, absent/track/lane/shared categories and zooms 14/15. Selection uses a restricted Python evaluator, not C++ Stylist. |
 | Generated predicate syntax | 132 accepted by native parser | Real compiler-generated expressions pass C++ lexical parsing; does not prove runtime type resolution. |
+| C++ selector and rules loader | Three focused tests passed | Type and hierarchy predicates, unknown-selector rejection, rules loaded against their own classifier, and a nine-input/eight-retained feature serialized to and read from a test MWM. This is not a regional A/B map. |
+| Native regression suites | Indexer, generator, routing and routing-common passed | CTest against the research build; renderer tests without GPU passed separately. The GPU test could not create a host OpenGL context. |
+| Pixel 8 Pro functional screenshots | Five nine-viewport traces passed | Baseline and clean Outdoors surrogate in light and dark on OpenGL ES 3, plus clean/light on Vulkan. Screenshots were inspected at one matched zoom-18 location. Debug traces are not an encoding or release-performance benchmark. |
+| Imported track | One Vulkan/light view inspected | A synthetic KML track was imported into the research app and appeared distinct from nearby blue bicycle-route context. Computed routes, dark-mode track overlap and real-world usability remain untested. |
 | Whitespace checks | Passed | `git diff --check`. |
 
 ### Controlled compiler fixture results
@@ -85,10 +104,10 @@ dirty/wrong-version compiler sources or whitespace errors.
 | Remaining item | Why the local checks do not replace it | Required next evidence |
 | --- | --- | --- |
 | Controlled real-map A/B generation | Existing dump has no raw candidate tags or pre-truncation history. Synthetic styles do not run the map generator. | Identical source snapshots and runnable candidate generator/storage implementations; retained/lost semantics, total/section bytes, generation time and memory. |
-| Full C++ type selector, Stylist and routing execution | The native probe compiles the lexical parser only. The fixture evaluator is not the renderer. | Build/test selected candidate against current sources/resources; nine-plus-type cases, routing/access/direction/conditional regressions and generated-rule integration. |
+| Full generator-to-style candidate execution | The new native tests exercise the selector, rule loader, one saturated MWM fixture and existing regression suites; the Kothic fixture evaluator is still not C++ Stylist. | Test generated candidate maps and their rules end to end, including routing/access/direction/conditional behavior. |
 | Old/new app-map compatibility | Pinned mapping comparison detects conflicts but does not run old clients or download policy. | Matching old/new app builds and generated maps in all version directions, mixed regions and fallback cases. |
-| GPU/backend and phone performance | Binary equivalence does not validate shaders, priorities, labels, clipping, metalines or frame times. | Representative viewport traces and screenshots on supported backends and mobile hardware. |
-| Cyclist-focused usability | A clutter hierarchy is a design/test plan, not a tested style. | Same-place/zoom comparisons with active route, imported track, position, POIs and overlays; daylight/night planning/navigation tests. |
+| GPU/backend and phone performance | Debug OpenGL phone traces and the headless CPU renderer tests do not establish release performance; the host GPU context test could not start. | Matched optimized candidate builds, repeated cold/warm traces, and supported-backend testing. |
+| Cyclist-focused usability | Initial same-place, light/dark screenshots exist for an Outdoors surrogate, not the dedicated cycling mode. | Active route, imported track, position, POIs and overlays; daylight/night planning/navigation tests and participant feedback. |
 | Product and release decisions | No benchmark can decide required side fidelity or acceptable display loss for maintainers. | Agreement on centerline versus sides, priority/loss policy, scope and performance budgets. |
 
 These are genuine remaining tasks, not completed checkboxes. The current

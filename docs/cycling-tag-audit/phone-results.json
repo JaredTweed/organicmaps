@@ -1,0 +1,177 @@
+{
+  "captures": [
+    {
+      "backend": "OpenGLES3",
+      "model": "Pixel 8 Pro",
+      "name": "outdoors-baseline-light",
+      "renderer": "Mali-G715",
+      "screenshot_sha256": [
+        "5ad8a2e33e322131f9d34fc6f9fb6673ee0fcf6b3adae6d7b63601c9c3ab5907",
+        "5c0bf95ddb0aa77a04065ae8771d79748c755e9dca5f2383c1734d5bbef13d17",
+        "3f1cd58f022410deb3bdee7a4f67ae839dfa871eca796d163538da1df7e09580",
+        "d707ca30bd17eaf9a88ad4c29c1c2323957145e7ab2831e1a9e25bd2229c409b",
+        "8e4ef0c2a15630a3ea07c45cb3d2b9b196e39bb052b3aaf57f2b0f1684f543ce",
+        "5a41d6e537574d7bc2c810fce0d23e2b4ed9e483e2a5acb66f0a4ed845112d2e",
+        "e464c0a06471bbea13e0aa4642016e638d94123a738164a808103ae8624fd96c",
+        "07bc3ad0dde78c1fb2dc167cbad0c6da58d8c2c97ac25d5f61113b81c78b6121",
+        "30db8ea8362d3d285f65bd29ab66f593afc5f243df0e8a427aeef8b3d158098d"
+      ],
+      "style": "baseline",
+      "theme": "light",
+      "viewport_elapsed_ms": [
+        1775.3384609999998,
+        1080.7815349999998,
+        406.56909199999996,
+        1037.558838,
+        670.603882,
+        206.70483399999998,
+        1214.3651539999998,
+        1113.8977869999999,
+        328.790121
+      ],
+      "viewports_ready": 9
+    },
+    {
+      "backend": "OpenGLES3",
+      "model": "Pixel 8 Pro",
+      "name": "outdoors-clean-light",
+      "renderer": "Mali-G715",
+      "screenshot_sha256": [
+        "dabee242a8536c23a52e5ce2cfe100904147d8e5f0d77261af9adc51f7f35817",
+        "0b21675d9b412059a56ab9a36b9c16cd10aa741d0ebaf9c4fdfc43e3256999c2",
+        "d2f24d7f585a9ebb0a84bc88fa02449f6a1f9fe374a2f46c4ca1c651d5626093",
+        "4f54d3fee15bbd6edcf81daea6d2db42326f045987677876005ffb9f15ff2916",
+        "674d35706c44341b74fec79f5fa58f03785eb9ab2893a24c54aaf80aac750a73",
+        "1b1ea75df40e147dd30322e3a01474398cc4e789b76924cfcbf8d933e312fa89",
+        "6dfbf9fde856c0dd9e7186b23af051cc5eed52eb9355e08cd80dba96321c7319",
+        "8115f4872bc0069ce5f6eba37b1e31780379df731426d897d5836773bc24d7c4",
+        "aaf41bbb6432f74a367e427abdadfcb9e43e29b5e813c7abfb1fdfd881587249"
+      ],
+      "style": "clean",
+      "theme": "light",
+      "viewport_elapsed_ms": [
+        2949.804444,
+        1729.5437829999998,
+        479.19624899999997,
+        1450.124228,
+        1088.121257,
+        299.327841,
+        1653.6878259999999,
+        1296.810873,
+        399.82955
+      ],
+      "viewports_ready": 9
+    },
+    {
+      "backend": "OpenGLES3",
+      "model": "Pixel 8 Pro",
+      "name": "outdoors-baseline-dark",
+      "renderer": "Mali-G715",
+      "screenshot_sha256": [
+        "97a164e23414ce50b51181cc9142f9f0eac46ce2c6bf6fa8fec3bfd258ef4b04",
+        "1b99237daeb431ee96f838514ccdd777f3a340dcb8e85b90f15a8d9e5ed448bb",
+        "db22ce05849dcd22668a1309a6fe22710c5837adb371d3636be0b7a29e2a90dc",
+        "8fe9d7457e65223d215a55f3f86d4798a2c7c5635e2c07db202ca433045dabc7",
+        "cd610fcc5e7576f77d9ca9b2cf0523c91b510bfcc48e3a8516e05a8661a94fc2",
+        "3ca5a6475852ada6a15ee5c257b2ed83ec02c228f5be1fb0563a62a6dd257479",
+        "4ba190a9643acd7854dcf2632765b68785fb488ded9734f309c3f7397315bfbe",
+        "5db83a2efad556bdaebc1358c1a1484f3a895650ea49ecd86138e8a6b3f1b6b0",
+        "327ecc58ca01a3a419e46ca81e12d05cd20e079efeef1231b332607c7b6ecd54"
+      ],
+      "style": "baseline",
+      "theme": "dark",
+      "viewport_elapsed_ms": [
+        3128.589195,
+        1773.613363,
+        662.810669,
+        1634.9981289999998,
+        1137.628377,
+        275.292562,
+        1736.8929859999998,
+        1366.7172859999998,
+        525.713257
+      ],
+      "viewports_ready": 9
+    },
+    {
+      "backend": "OpenGLES3",
+      "model": "Pixel 8 Pro",
+      "name": "outdoors-clean-dark",
+      "renderer": "Mali-G715",
+      "screenshot_sha256": [
+        "0aca7e81dc5cb4b1e8fedb50d45fd37de0e8d7878b7c576a671b83f7b9ab6f64",
+        "0059d650de1a0431ffaf8b50a53ee89ca01548d7204d8129f8fe9dbe4b414000",
+        "1ea7e7b415c5ce407d6cf5dd55488dc7fd818d6769616a1122051e0279b62633",
+        "ac1ee6dee1820b21f9a30a9c286eca4704d41ea0ddf30d4d5e6a0f8fc3cc72d9",
+        "54b028d9df73a6e5816ca3e7666884f42bcb97f8ba0ade2f4bfdb332d04dee2c",
+        "6d8312f9a43237fdd13c28387294c645cdabdbdd473a9118b4085c069b078d53",
+        "8dffe0f587a366523d5101512581c073a179d76f00069ed93b3f095686d964d2",
+        "cfdf1f9d3a9fdb26c9c2a98dec4c4c424b85b420458c80e9c64c174f8c280617",
+        "e139dce438d93daca498c49b76b148968a30a50b238450e64cb84b2efa52eb4e"
+      ],
+      "style": "clean",
+      "theme": "dark",
+      "viewport_elapsed_ms": [
+        3145.4684669999997,
+        1664.438559,
+        454.165528,
+        1484.771973,
+        1202.542237,
+        264.539632,
+        1602.655111,
+        1359.245525,
+        423.800415
+      ],
+      "viewports_ready": 9
+    },
+    {
+      "backend": "Vulkan",
+      "model": "Pixel 8 Pro",
+      "name": "outdoors-clean-light-vulkan",
+      "renderer": "Mali-G715",
+      "screenshot_sha256": [
+        "c2502c9a9ad75b7854f96810f34b5f3e8cc33604b43b23bd3da10c235a8f690e",
+        "99ee4648d65a52e28eba84e3e59354f9c543e5915b95de67da3fbb90024efa39",
+        "8358335385f8323d7451f0794bfacdce8449188dbf59b63356f510e9a1607d18",
+        "6ec76ee5a2b6002fd3f045ea89d3bb84bc62e8d6d873c3b3a75d1e3b33b49cfd",
+        "5ee2112960be1338b8ed0328a46a24950de12604785bc06c09d10b89e871ae26",
+        "67eac4bfa7fcd4bebb6e8c67101ac8a6448514f7b1fe1d1f58b3681b69fc1d0d",
+        "da4e6a0a66a5a9dd7bbf6664a5c520138fb22ce0d79c249ec661f852fec12762",
+        "56b2d34038d3a526dd8386f4c8e267de7623bfa41f16d39561d26933704b0b7b",
+        "08666337d2ac98385c7ac3f420b3666e9c8172e0726dda133c9f512b26b7f629"
+      ],
+      "style": "clean",
+      "theme": "light",
+      "viewport_elapsed_ms": [
+        1671.922486,
+        926.9959319999999,
+        277.585897,
+        915.9093429999999,
+        705.7577319999999,
+        202.664795,
+        1017.7293709999999,
+        828.08309,
+        280.600708
+      ],
+      "viewports_ready": 9
+    }
+  ],
+  "input_sha256": {
+    "OrganicMaps-26102702-google-debug.apk": "59c05c0fbf23839c755d91a5b38b2d07033f9a2dd71eecedf329b9b6f8469762",
+    "Vancouver.mwm": "51e18ad39f64e70db8edb039fd5bc53425f9ba7e393bf8735a3624a7f08a7efb",
+    "badging.txt": "5e7ee77364e5dfee825638d59644d442c4fe4f415911064e3eb0540647271e84",
+    "baseline.bin": "8da9d7836cae04ae343f445004449f41db25455ee0d8f5dcb92d690447601b96",
+    "clean.bin": "5c546230e0bb0b6d28c950cc43d7ab28cde76bceb6f94130bea7746344051a34",
+    "display-track.kml": "f0cb587ca346313c69b09948d089b8210b6fe26d086725b5ed4371b0693d5166",
+    "scenario.json": "c1640945bae5523ce5a24f87940f10875f06abc86ab64bfe27f98b84c7747fa2",
+    "style-report.json": "5c3f42a13d7866dc3b229d4eae924f816f82c068448c13edbe2c26b14724b8c7"
+  },
+  "limitations": [
+    "Debug build: no release-performance conclusion",
+    "Outdoors surrogate, not the dedicated cycling mode",
+    "No controlled map-encoding comparison or usability study",
+    "Screenshots and device logs remain local"
+  ],
+  "package": "app.organicmaps.cyclingresearch.debug",
+  "scope": "baseline functional capture, not candidate A/B or release performance"
+}

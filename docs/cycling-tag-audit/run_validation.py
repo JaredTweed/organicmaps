@@ -9,6 +9,7 @@ import subprocess
 import sys
 
 from audit import ROOT, audit
+from clean_style import compile_pair
 from style_probe import run
 
 
@@ -31,6 +32,12 @@ def validate(kothic, output, dump=None, cxx="c++"):
                        str(parser_source), str(probe_source), "-o", str(binary)]
     execute(compile_command, cwd=ROOT)
     compiled = run(kothic, output / "styles", binary)
+    clean_output = output / "clean-style"
+    clean_output.mkdir(exist_ok=True)
+    compile_pair((ROOT / "data/drules_outdoors.bin").read_bytes(), kothic, clean_output)
+    clean = json.loads((clean_output / "style-report.json").read_text())
+    clean["variants"] = {name: {"overlay_types_reduced_count": variant["count"]}
+                         for name, variant in clean["variants"].items()}
     execute(["git", "diff", "--check"], cwd=ROOT)
     return {
         "scope": "Local research validation, not release certification",
@@ -43,6 +50,7 @@ def validate(kothic, output, dump=None, cxx="c++"):
                               for p in (parser_source, probe_source)},
         },
         "style_probe": compiled,
+        "clean_style": clean,
         "diff_check": "passed",
         "not_validated": ["Controlled regional MWM generation for alternative encodings",
                           "C++ TypeSelector/Stylist dispatch and full generator/routing suites",

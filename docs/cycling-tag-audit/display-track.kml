@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Cycling Research Display Fixture</name>
+    <description>Synthetic display comparison only, not navigation instructions.</description>
+    <Style id="display-track">
+      <LineStyle><color>ffcc00cc</color><width>6</width></LineStyle>
+    </Style>
+    <Placemark>
+      <name>Research Imported Track</name>
+      <styleUrl>#display-track</styleUrl>
+      <LineString>
+        <coordinates>
+          -123.1163,49.2766,0 -123.1153,49.2772,0
+          -123.1143,49.2778,0 -123.1133,49.2784,0
+          -123.1123,49.2790,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>
