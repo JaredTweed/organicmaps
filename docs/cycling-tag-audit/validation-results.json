@@ -1,0 +1,240 @@
+{
+  "audit": {
+    "base_commit": "936c7834fb7012166a0dc722cce67047109dd33b",
+    "designation_split_example": {
+      "after": [
+        "bicycletag|designated",
+        "highway|path"
+      ],
+      "before": [
+        "highway|path|bicycle"
+      ],
+      "slot_delta": 1
+    },
+    "dump": {
+      "all_features_by_stored_count": {
+        "1": 1573640,
+        "2": 178552,
+        "3": 60230,
+        "4": 29727,
+        "5": 11430,
+        "6": 1496,
+        "7": 176,
+        "8": 29
+      },
+      "highway_features_by_stored_count": {
+        "1": 194731,
+        "2": 145359,
+        "3": 56546,
+        "4": 28822,
+        "5": 11090,
+        "6": 1400,
+        "7": 145,
+        "8": 6
+      },
+      "highway_yesbicycle_by_stored_count": {
+        "2": 3519,
+        "3": 16107,
+        "4": 14253,
+        "5": 5133,
+        "6": 1003,
+        "7": 74,
+        "8": 6
+      },
+      "hypothetical_designation_split_slot_deltas": {
+        "0": 427134,
+        "1": 10965
+      },
+      "saturated_highway_combinations": {
+        "highway|path|bicycle + highway|path|bridge": 1,
+        "highway|path|bicycle + highway|path|tunnel": 4,
+        "highway|residential": 1
+      },
+      "warning": "Post-truncation counts; source tags and candidate coverage unknown. Split model is set replacement only, not the generator pipeline."
+    },
+    "dump_sha256": "b046ae410bfde639f2f15bba130183b268ac5b18375a05a1b3adfef9cb3d4be2",
+    "experimental_commit": "955cd49403ed025c24beec09f5551e8d274a38ff",
+    "mapping_differences": [
+      {
+        "base": "waterway|stream|intermittent",
+        "csv_id": 115,
+        "experiment": "waterway|stream|ephemeral",
+        "stored_index": 114
+      },
+      {
+        "base": "waterway|river|intermittent",
+        "csv_id": 557,
+        "experiment": "mapswithme",
+        "stored_index": 556
+      },
+      {
+        "base": "waterway|canal|intermittent",
+        "csv_id": 558,
+        "experiment": "mapswithme",
+        "stored_index": 557
+      },
+      {
+        "base": "waterway|ditch|intermittent",
+        "csv_id": 559,
+        "experiment": "mapswithme",
+        "stored_index": 558
+      },
+      {
+        "base": "waterway|drain|intermittent",
+        "csv_id": 560,
+        "experiment": "mapswithme",
+        "stored_index": 559
+      },
+      {
+        "base": "waterway|fish_pass|intermittent",
+        "csv_id": 561,
+        "experiment": "mapswithme",
+        "stored_index": 560
+      },
+      {
+        "base": "railway|station|subway|suzhou",
+        "csv_id": 1658,
+        "experiment": "cyclewaytag|track",
+        "stored_index": 1657
+      },
+      {
+        "base": "railway|subway_entrance|suzhou",
+        "csv_id": 1659,
+        "experiment": "cyclewaytag|lane",
+        "stored_index": 1658
+      }
+    ],
+    "scope": "Source/data audit only; no size, speed, routing or rendering benchmark",
+    "type_identity_examples": {
+      "cyclewaytag|lane": {
+        "csv_id": 1659,
+        "internal_classifier_value": 16398,
+        "stored_index": 1658
+      },
+      "cyclewaytag|shared_lane": {
+        "csv_id": 1660,
+        "internal_classifier_value": 16526,
+        "stored_index": 1659
+      },
+      "cyclewaytag|track": {
+        "csv_id": 1658,
+        "internal_classifier_value": 16654,
+        "stored_index": 1657
+      },
+      "hwtag|yesbicycle": {
+        "csv_id": 1115,
+        "internal_classifier_value": 17815,
+        "stored_index": 1114
+      },
+      "psurface|paved_good": {
+        "csv_id": 1117,
+        "internal_classifier_value": 16554,
+        "stored_index": 1116
+      }
+    }
+  },
+  "diff_check": "passed",
+  "native_build": {
+    "compiler_version": "c++ (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)",
+    "flags": [
+      "-std=c++23",
+      "-DRELEASE"
+    ],
+    "source_sha256": {
+      "docs/cycling-tag-audit/native_parser_probe.cpp": "5218c83ecca4c9844ce6028d2796d652264f8b4172479bfb687bf7a98e4f2589",
+      "libs/indexer/drules_selector_parser.cpp": "dbf2028521296748a604ca6553082f02202aaaa68b445305f132ecb9effb83db"
+    }
+  },
+  "not_validated": [
+    "Controlled regional MWM generation for alternative encodings",
+    "C++ TypeSelector/Stylist dispatch and full generator/routing suites",
+    "Old/new app-map compatibility execution",
+    "GPU screenshots and mobile frame/tile timings",
+    "Phone usability and maintainer product/release decisions"
+  ],
+  "scope": "Local research validation, not release certification",
+  "style_probe": {
+    "compiler_sha256": "2d2dadca7051a6173b6d49a95a33077e766af873c90f747719562e1dce354866",
+    "kothic_commit": "c5546e4f70128a301fc2f08b391baeafe29e5ee9",
+    "native_parser": {
+      "binary_sha256": "140b263d8dab9b39c5b0bac656b87e97aa84ccf68f82347891720127d98a13b8",
+      "generated_predicates_parsed": 132,
+      "native_parser_cases": 8
+    },
+    "python": "3.14.8",
+    "results": {
+      "3": {
+        "equivalent_fixture_cases": 24,
+        "variants": {
+          "combined": {
+            "binary_bytes": 689,
+            "compile_wall_seconds_single_run": 0.1306430420372635,
+            "drawing_elements": 24,
+            "hashes": {
+              "mapcss-mapping.csv": "e8873eda5898d32163f4180501fec1b1c1bce459302131fc34c6845f059b9314",
+              "rules.bin": "9c6b912c34ee2c557a065ce2c91f42d6396c50682566fa0241c7d7396a8693b1",
+              "style.mapcss": "032c7cb5f1b2d1e91b868832d38bac2c8b5377d5fb29b0686aefe6c05606aa10",
+              "types.txt": "723dda5d8de0e451ac828344a3825f41e5315632dfb938f8eb138c3101e95e9c"
+            },
+            "line_rules": 24,
+            "runtime_predicates": 0,
+            "stored_type_entries": 12
+          },
+          "tags": {
+            "binary_bytes": 660,
+            "compile_wall_seconds_single_run": 0.14758590899873525,
+            "drawing_elements": 24,
+            "hashes": {
+              "mapcss-mapping.csv": "e8196a3dfae07c43469a9abfcfea3f88b84ae64a4c8c84f0ec048fa28941ab58",
+              "rules.bin": "0707fe51ad96e0da271bcfb71e2cf0520db048cd7f40a64ea57c74f499d579dd",
+              "style.mapcss": "00732235785110ed2fa0fc23fd7bf206a254d75b37d94f8f217bbb1534b96fd4",
+              "types.txt": "20f4ac37fab4d05605911bd360abfa84265556ff072340194770dd0e21b23f50"
+            },
+            "line_rules": 24,
+            "runtime_predicates": 36,
+            "stored_type_entries": 6
+          }
+        }
+      },
+      "8": {
+        "equivalent_fixture_cases": 64,
+        "variants": {
+          "combined": {
+            "binary_bytes": 1768,
+            "compile_wall_seconds_single_run": 0.15758846094831824,
+            "drawing_elements": 64,
+            "hashes": {
+              "mapcss-mapping.csv": "14fbd4b59cee65c288b0f8211145f23b3eb0a49a87a832371156fe88de50c971",
+              "rules.bin": "b734aa226f2507ca0648fc5a2ea5bbb00902452c78a5d76482543ed7b288dca6",
+              "style.mapcss": "f9426c9a7c2ac2b1558cf84283a7819870f5bb62ab3ef3faeed16ab0315f98f0",
+              "types.txt": "0776917667da9906f38b29cec67559106666e295a6fc39ea95793fa7904be2f0"
+            },
+            "line_rules": 64,
+            "runtime_predicates": 0,
+            "stored_type_entries": 32
+          },
+          "tags": {
+            "binary_bytes": 1381,
+            "compile_wall_seconds_single_run": 0.153184775961563,
+            "drawing_elements": 64,
+            "hashes": {
+              "mapcss-mapping.csv": "da2ea165279c6be6c900da0fe950ac63d8b9162d42410f25264e3b6c0072c951",
+              "rules.bin": "472c921d2c287bffdfcc1c8651a76584a064caad93b682daecfd774f4ea76d72",
+              "style.mapcss": "11b95b32111de3f1c7e022a19b75f68b768c31f65bd82195b781869d53ad4ea6",
+              "types.txt": "c539001154062897f6b68a73e12974618aff146a5f20321d37b513e7e6572bc2"
+            },
+            "line_rules": 64,
+            "runtime_predicates": 96,
+            "stored_type_entries": 11
+          }
+        }
+      }
+    },
+    "scope": "Synthetic compiler/binary-decoder fixture; not C++ runtime, MWM or GPU performance",
+    "single_run_timing_warning": "Includes interpreter startup and multiprocessing; not a performance ranking"
+  },
+  "unit_tests": {
+    "exit_code": 0,
+    "log": "test_internal_values_use_sorted_tree_not_mapping_order (test_audit.AuditTests.test_internal_values_use_sorted_tree_not_mapping_order) ... ok\ntest_invalid_dump_rejected (test_audit.AuditTests.test_invalid_dump_rejected) ... ok\ntest_mapping_numbers (test_audit.AuditTests.test_mapping_numbers) ... ok\ntest_pinned_source_conflicts_and_internal_values (test_audit.AuditTests.test_pinned_source_conflicts_and_internal_values) ... ok\ntest_side_qualification_preserves_association (test_audit.AuditTests.test_side_qualification_preserves_association) ... ok\ntest_split_adds_slot_for_single_combined_type (test_audit.AuditTests.test_split_adds_slot_for_single_combined_type) ... ok\ntest_split_reuses_existing_base (test_audit.AuditTests.test_split_reuses_existing_base) ... ok\ntest_split_shares_designation_across_two_classes (test_audit.AuditTests.test_split_shares_designation_across_two_classes) ... ok\ntest_weighted_dump (test_audit.AuditTests.test_weighted_dump) ... ok\ntest_absent_type_and_zoom_do_not_select (test_style_probe.StyleProbeTests.test_absent_type_and_zoom_do_not_select) ... ok\ntest_fixture_does_not_reuse_old_palettes (test_style_probe.StyleProbeTests.test_fixture_does_not_reuse_old_palettes) ... ok\ntest_fixture_mapping_has_contiguous_ids (test_style_probe.StyleProbeTests.test_fixture_mapping_has_contiguous_ids) ... ok\ntest_predicates_are_conjunctive (test_style_probe.StyleProbeTests.test_predicates_are_conjunctive) ... ok\ntest_runner_refuses_generated_output_in_worktree (test_style_probe.StyleProbeTests.test_runner_refuses_generated_output_in_worktree) ... ok\ntest_tag_vocabulary_is_not_cartesian (test_style_probe.StyleProbeTests.test_tag_vocabulary_is_not_cartesian) ... ok\ntest_unknown_predicate_is_not_unconditional (test_style_probe.StyleProbeTests.test_unknown_predicate_is_not_unconditional) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.043s\n\nOK\n"
+  }
+}

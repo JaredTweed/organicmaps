@@ -8,6 +8,9 @@ benchmark. Source inspection is pinned to upstream master
 cycling-style base [`7af82a316a`](https://github.com/organicmaps/organicmaps/tree/7af82a316a),
 and experimental PR head [`955cd49403`](https://github.com/JaredTweed/organicmaps/tree/955cd49403).
 The latter two are different branches; comparisons below are explicitly scoped.
+See [validation status](cycling-tag-types-status.md) for later executed compiler
+fixtures, native parser checks and the distinction between completed local
+research and outstanding release validation.
 
 ## Recommendation
 

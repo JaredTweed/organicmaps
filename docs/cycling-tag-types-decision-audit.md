@@ -1,5 +1,10 @@
 # Cycling tag types: decision audit
 
+For the latest executed checks and the remaining release work, read
+[validation status](cycling-tag-types-status.md). The later validation adds a
+real compiler/binary-decoder comparison and native C++ parser execution; it
+does not supply mobile or regenerated-map benchmarks.
+
 ## Status and conclusion
 
 The previous solution is **not proven completely correct**. Its implementation
@@ -242,9 +247,10 @@ second field in short rows, not necessarily the last CSV column).
 Unit tests cover the audit functions and counterexamples, not the C++ generator,
 renderer or routing. The existing dump is optional and is not bundled; original
 map/tool/resource hashes and provenance caveats are in the companion research.
-Validation for this update: all nine audit tests passed, the optional Vancouver
+Validation for the initial audit update: all nine audit tests passed, the optional Vancouver
 dump audit completed, and `git diff --check` passed. No app build, C++ test run,
-map regeneration or mobile test was performed.
+map regeneration or mobile test was performed in that initial update. Subsequent
+native parser and compiler-fixture checks are recorded in the status document.
 
 Before selecting a release encoding, generate identical OSM snapshots with the
 same normalized semantics under all relevant candidates. Record compiler,

@@ -1,0 +1,80 @@
+{
+  "compiler_sha256": "2d2dadca7051a6173b6d49a95a33077e766af873c90f747719562e1dce354866",
+  "kothic_commit": "c5546e4f70128a301fc2f08b391baeafe29e5ee9",
+  "native_parser": {
+    "binary_sha256": "140b263d8dab9b39c5b0bac656b87e97aa84ccf68f82347891720127d98a13b8",
+    "generated_predicates_parsed": 132,
+    "native_parser_cases": 8
+  },
+  "python": "3.14.8",
+  "results": {
+    "3": {
+      "equivalent_fixture_cases": 24,
+      "variants": {
+        "combined": {
+          "binary_bytes": 689,
+          "compile_wall_seconds_single_run": 0.13106848997995257,
+          "drawing_elements": 24,
+          "hashes": {
+            "mapcss-mapping.csv": "e8873eda5898d32163f4180501fec1b1c1bce459302131fc34c6845f059b9314",
+            "rules.bin": "9c6b912c34ee2c557a065ce2c91f42d6396c50682566fa0241c7d7396a8693b1",
+            "style.mapcss": "032c7cb5f1b2d1e91b868832d38bac2c8b5377d5fb29b0686aefe6c05606aa10",
+            "types.txt": "723dda5d8de0e451ac828344a3825f41e5315632dfb938f8eb138c3101e95e9c"
+          },
+          "line_rules": 24,
+          "runtime_predicates": 0,
+          "stored_type_entries": 12
+        },
+        "tags": {
+          "binary_bytes": 660,
+          "compile_wall_seconds_single_run": 0.14404713606927544,
+          "drawing_elements": 24,
+          "hashes": {
+            "mapcss-mapping.csv": "e8196a3dfae07c43469a9abfcfea3f88b84ae64a4c8c84f0ec048fa28941ab58",
+            "rules.bin": "0707fe51ad96e0da271bcfb71e2cf0520db048cd7f40a64ea57c74f499d579dd",
+            "style.mapcss": "00732235785110ed2fa0fc23fd7bf206a254d75b37d94f8f217bbb1534b96fd4",
+            "types.txt": "20f4ac37fab4d05605911bd360abfa84265556ff072340194770dd0e21b23f50"
+          },
+          "line_rules": 24,
+          "runtime_predicates": 36,
+          "stored_type_entries": 6
+        }
+      }
+    },
+    "8": {
+      "equivalent_fixture_cases": 64,
+      "variants": {
+        "combined": {
+          "binary_bytes": 1768,
+          "compile_wall_seconds_single_run": 0.15345371200237423,
+          "drawing_elements": 64,
+          "hashes": {
+            "mapcss-mapping.csv": "14fbd4b59cee65c288b0f8211145f23b3eb0a49a87a832371156fe88de50c971",
+            "rules.bin": "b734aa226f2507ca0648fc5a2ea5bbb00902452c78a5d76482543ed7b288dca6",
+            "style.mapcss": "f9426c9a7c2ac2b1558cf84283a7819870f5bb62ab3ef3faeed16ab0315f98f0",
+            "types.txt": "0776917667da9906f38b29cec67559106666e295a6fc39ea95793fa7904be2f0"
+          },
+          "line_rules": 64,
+          "runtime_predicates": 0,
+          "stored_type_entries": 32
+        },
+        "tags": {
+          "binary_bytes": 1381,
+          "compile_wall_seconds_single_run": 0.1588027080288157,
+          "drawing_elements": 64,
+          "hashes": {
+            "mapcss-mapping.csv": "da2ea165279c6be6c900da0fe950ac63d8b9162d42410f25264e3b6c0072c951",
+            "rules.bin": "472c921d2c287bffdfcc1c8651a76584a064caad93b682daecfd774f4ea76d72",
+            "style.mapcss": "11b95b32111de3f1c7e022a19b75f68b768c31f65bd82195b781869d53ad4ea6",
+            "types.txt": "c539001154062897f6b68a73e12974618aff146a5f20321d37b513e7e6572bc2"
+          },
+          "line_rules": 64,
+          "runtime_predicates": 96,
+          "stored_type_entries": 11
+        }
+      }
+    }
+  },
+  "scope": "Synthetic compiler/binary-decoder fixture; not C++ runtime, MWM or GPU performance",
+  "single_run_timing_warning": "Includes interpreter startup and multiprocessing; not a performance ranking"
+}

@@ -5,6 +5,8 @@ before treating this recommendation as settled. It corrects the strength of
 the Vancouver inference, designation skip policy, decomposition slot cost,
 truncation ordering, and comparison with alternative encodings. No encoding
 has yet passed a controlled map-generation and phone-rendering benchmark.
+The [validation status](cycling-tag-types-status.md) records the executed local
+checks and the real compiler comparison; it is the completion checklist.
 
 Companion to
 [`docs/cycling-tag-types-research.md`](cycling-tag-types-research.md).
