@@ -1,0 +1,104 @@
+{
+  "annotated_sha256": "6d09f0b6df237933b9ade859c6c39a77ce71221991ff1f05fdc44b9b6a007948",
+  "candidates": {
+    "combined": {
+      "category_feature_counts": {
+        "lane": 190,
+        "shared_lane": 573,
+        "track": 12
+      },
+      "dump_sha256": "da317e89200f0a6753ac48b4a51a608689adbed07e834daa06e741b60f0ee6c6",
+      "existing_attribute_counts": {
+        "hwtag|bidir_bicycle": 185,
+        "hwtag|lit": 7984,
+        "hwtag|nobicycle": 749,
+        "hwtag|nocar": 619,
+        "hwtag|nocycleway": 5970,
+        "hwtag|nofoot": 1125,
+        "hwtag|nosidewalk": 6658,
+        "hwtag|onedir_bicycle": 103,
+        "hwtag|oneway": 5832,
+        "hwtag|private": 1933,
+        "hwtag|toll": 66,
+        "hwtag|yesbicycle": 4206,
+        "hwtag|yescar": 15,
+        "hwtag|yesfoot": 569,
+        "psurface|paved_bad": 1418,
+        "psurface|paved_good": 39610,
+        "psurface|unpaved_bad": 821,
+        "psurface|unpaved_good": 875
+      },
+      "map_bytes": 2234373,
+      "map_sha256": "dc0e48c5dd6c62201f55a821d4b52ea07ddd90ee5aad8cf5984c041a3bd3eb80",
+      "overflow_warnings": [
+        "W(3) 12.33608 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223381 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit",
+        "W(3) 12.33643 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223385 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit"
+      ],
+      "stage_seconds_single_run": {
+        "features": 15.535595442052,
+        "geometry": 1.0294291250174865,
+        "preprocess": 2.297808118048124
+      },
+      "stored_count_histogram": {
+        "1": 31027,
+        "2": 26248,
+        "3": 9782,
+        "4": 7265,
+        "5": 3406,
+        "6": 432,
+        "7": 78
+      }
+    },
+    "tag": {
+      "category_feature_counts": {
+        "lane": 190,
+        "shared_lane": 573,
+        "track": 12
+      },
+      "dump_sha256": "414e30905be55b07cd36b84e72f19311c4a9aea5da75064651a89f2385767ca3",
+      "existing_attribute_counts": {
+        "hwtag|bidir_bicycle": 185,
+        "hwtag|lit": 7984,
+        "hwtag|nobicycle": 749,
+        "hwtag|nocar": 619,
+        "hwtag|nocycleway": 5970,
+        "hwtag|nofoot": 1125,
+        "hwtag|nosidewalk": 6658,
+        "hwtag|onedir_bicycle": 103,
+        "hwtag|oneway": 5832,
+        "hwtag|private": 1933,
+        "hwtag|toll": 66,
+        "hwtag|yesbicycle": 4206,
+        "hwtag|yescar": 15,
+        "hwtag|yesfoot": 569,
+        "psurface|paved_bad": 1418,
+        "psurface|paved_good": 39610,
+        "psurface|unpaved_bad": 821,
+        "psurface|unpaved_good": 875
+      },
+      "map_bytes": 2235526,
+      "map_sha256": "032f436259f5f2dbca66bf3a53355b1a30205552fe13e484d9504aac57a157fc",
+      "overflow_warnings": [
+        "W(3) 12.17938 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223381 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit",
+        "W(3) 12.17962 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223385 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit"
+      ],
+      "stage_seconds_single_run": {
+        "features": 15.727841673069634,
+        "geometry": 1.1500853339675814,
+        "preprocess": 0.9689577639801428
+      },
+      "stored_count_histogram": {
+        "1": 31027,
+        "2": 26244,
+        "3": 9674,
+        "4": 6979,
+        "5": 3591,
+        "6": 622,
+        "7": 84,
+        "8": 17
+      }
+    }
+  },
+  "generator_sha256": "ca44eb4b75c709fb81aad8fb43e7cf98c0b6fa8516812162f6f56f378e8befbc",
+  "scope": "Overlapping downtown subregion, not an independent geographic sample"
+}

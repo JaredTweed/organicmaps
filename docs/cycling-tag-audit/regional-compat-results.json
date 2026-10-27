@@ -1,0 +1,30 @@
+{
+  "baseline_types_sha256": "645de931097e38d8a655f3cf3252f218dfff05fa505410b579691d292da37828",
+  "candidates": {
+    "combined": {
+      "baseline_dump_sha256": "aa82b388059c63a56c7953d4e8c0925e45594e2cfeb9c84f3975b51ed0755406",
+      "baseline_reader": {
+        "features_total": 82785,
+        "features_with_highway_type": 78808
+      },
+      "candidate_reader": {
+        "features_total": 82785,
+        "features_with_highway_type": 79690,
+        "features_with_research_type": 890
+      }
+    },
+    "tag": {
+      "baseline_dump_sha256": "e9491c636f7398ab11ffda5d3f2700fee4e1d4bdaff6155fb9e259229df2d7e0",
+      "baseline_reader": {
+        "features_total": 82785,
+        "features_with_highway_type": 79690
+      },
+      "candidate_reader": {
+        "features_total": 82785,
+        "features_with_highway_type": 79690,
+        "features_with_research_type": 890
+      }
+    }
+  },
+  "scope": "Pinned current reader and baseline type mapping reading newer research maps; not a historical released client or complete app/map migration test"
+}

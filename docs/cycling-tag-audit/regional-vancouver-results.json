@@ -1,0 +1,128 @@
+{
+  "annotated_categories": {
+    "lane": 252,
+    "shared_lane": 626,
+    "track": 12
+  },
+  "annotated_sha256": "6d09f0b6df237933b9ade859c6c39a77ce71221991ff1f05fdc44b9b6a007948",
+  "candidates": {
+    "combined": {
+      "map": {
+        "category_feature_counts": {
+          "lane": 252,
+          "shared_lane": 626,
+          "track": 12
+        },
+        "dump_sha256": "9850554b924deedb641c03470c254812e2c29cf82bf96e8770db9c92ba2e6f3c",
+        "existing_attribute_counts": {
+          "hwtag|bidir_bicycle": 188,
+          "hwtag|lit": 8282,
+          "hwtag|nobicycle": 850,
+          "hwtag|nocar": 765,
+          "hwtag|nocycleway": 6060,
+          "hwtag|nofoot": 1137,
+          "hwtag|nosidewalk": 6804,
+          "hwtag|onedir_bicycle": 103,
+          "hwtag|oneway": 6268,
+          "hwtag|private": 2198,
+          "hwtag|toll": 66,
+          "hwtag|yesbicycle": 4835,
+          "hwtag|yescar": 16,
+          "hwtag|yesfoot": 663,
+          "psurface|paved_bad": 1487,
+          "psurface|paved_good": 41534,
+          "psurface|unpaved_bad": 1008,
+          "psurface|unpaved_good": 1066
+        },
+        "map_bytes": 2384838,
+        "map_sha256": "f1647b2d97775d21296146f779ee2caccb832005556e6dc2cb3184473d842422",
+        "overflow_warnings": [
+          "W(3) 13.36092 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223381 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit",
+          "W(3) 13.36117 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223385 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit"
+        ],
+        "stage_seconds_single_run": {
+          "features": 17.039939934038557,
+          "geometry": 1.3097034309757873,
+          "preprocess": 1.172684047021903
+        },
+        "stored_count_histogram": {
+          "1": 32762,
+          "2": 27891,
+          "3": 10340,
+          "4": 7688,
+          "5": 3574,
+          "6": 451,
+          "7": 79
+        }
+      },
+      "styles": {
+        "classifier_sha256": "2b328c3f3c618368b32d8ccb62b99c8490650385a0ae6cccab7d0824f2f1ed4f",
+        "drules_merged_bytes": 231989,
+        "mapping_sha256": "bca799020ae89fce58aeff8ac7fbcdc9497d883aff700eb49080958ecf698b57",
+        "seconds_single_run": 29.831146455020644,
+        "types_sha256": "18674158828c77755828bd8d762db35e3520a9aba7dd252fc1de29d414bbcf1c"
+      }
+    },
+    "tag": {
+      "map": {
+        "category_feature_counts": {
+          "lane": 252,
+          "shared_lane": 626,
+          "track": 12
+        },
+        "dump_sha256": "ef8d50eefdcc345d87427e14b28fd58e5afcc4a02c912ea16a48054c3120070f",
+        "existing_attribute_counts": {
+          "hwtag|bidir_bicycle": 188,
+          "hwtag|lit": 8282,
+          "hwtag|nobicycle": 850,
+          "hwtag|nocar": 765,
+          "hwtag|nocycleway": 6060,
+          "hwtag|nofoot": 1137,
+          "hwtag|nosidewalk": 6804,
+          "hwtag|onedir_bicycle": 103,
+          "hwtag|oneway": 6268,
+          "hwtag|private": 2198,
+          "hwtag|toll": 66,
+          "hwtag|yesbicycle": 4835,
+          "hwtag|yescar": 16,
+          "hwtag|yesfoot": 663,
+          "psurface|paved_bad": 1487,
+          "psurface|paved_good": 41534,
+          "psurface|unpaved_bad": 1008,
+          "psurface|unpaved_good": 1066
+        },
+        "map_bytes": 2386179,
+        "map_sha256": "a133119a029dc5bbed1b54a480cddf1b46a3bf8a6cf73e87d5fb95a25cd74998",
+        "overflow_warnings": [
+          "W(3) 10.95623 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223381 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit",
+          "W(3) 10.95645 generator/osm2type.cpp:1461 GetNameAndType(): Exceeded types count for: Osm Way 87223385 Types: 11 public_transport-platform amenity-bench railway-platform amenity-shelter highway-footway-area highway-footway-bicycle highway-footway-bridge psurface-paved_good wheelchair-yes hwtag-yesbicycle hwtag-lit"
+        ],
+        "stage_seconds_single_run": {
+          "features": 13.970268642995507,
+          "geometry": 1.0214658579789102,
+          "preprocess": 1.1159648660104722
+        },
+        "stored_count_histogram": {
+          "1": 32762,
+          "2": 27887,
+          "3": 10198,
+          "4": 7370,
+          "5": 3811,
+          "6": 654,
+          "7": 86,
+          "8": 17
+        }
+      },
+      "styles": {
+        "classifier_sha256": "01af770b8f7c511f93a7a4ac68e0b5a8d83f67017d04bc34e241cb644b300e00",
+        "drules_merged_bytes": 223764,
+        "mapping_sha256": "c52ef9cbcc8b47380d642a731cda23c49396133a37ba59eb33ba14d3962d6476",
+        "seconds_single_run": 27.718390010064468,
+        "types_sha256": "8be6f203825343b4fec01f33fd778309c946377b3c8ef16014587491432200e9"
+      }
+    }
+  },
+  "generator_sha256": "ca44eb4b75c709fb81aad8fb43e7cf98c0b6fa8516812162f6f56f378e8befbc",
+  "scope": "One road-only region; centerline fixture, not release or side-aware comparison",
+  "source_sha256": "d034b4a5f1758e0b856b5bc09057e79200853f2970f5a12cb1ba927881c9ce08"
+}
