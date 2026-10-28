@@ -21,3 +21,12 @@ Stacked on the cycling-types PR because the phase is currently applied to patter
 - Clean debug build of `generator_tests` and `drape_frontend_tests`.
 - Metalines and clip-splines tests pass.
 - Device visual check is still required at all zoom levels and in both themes before this leaves draft.
+
+## Stack
+
+Part 3 of 4, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [fork#1 — cycling types](https://github.com/JaredTweed/organicmaps/pull/1)
+3. **fork#2 — dash phase (this PR)**
+4. [fork#3 — cycling style preview](https://github.com/JaredTweed/organicmaps/pull/3)

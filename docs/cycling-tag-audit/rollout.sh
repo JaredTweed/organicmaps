@@ -52,10 +52,15 @@ readonly DASH_HEAD=352e040b4cc06499261dbe4d516afb872e37c86f
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
 readonly STYLE_HEAD=ca0586974cc376ce048faf9c4b5449d3d4756f23
 
-readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types'
-readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure'
-readonly DASH_TITLE='[drape] Keep a continuous dash phase across road features'
-readonly STYLE_TITLE='[styles] Apply cycleway infrastructure to the cycling style (preview)'
+readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/4)'
+readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure (2/4)'
+readonly DASH_TITLE='[drape] Keep a continuous dash phase across road features (3/4)'
+readonly STYLE_TITLE='[styles] Apply cycleway infrastructure to the cycling style (4/4, preview)'
+
+readonly STACK_URL_1=https://github.com/organicmaps/organicmaps/pull/14040
+readonly STACK_URL_2=https://github.com/JaredTweed/organicmaps/pull/1
+readonly STACK_URL_3=https://github.com/JaredTweed/organicmaps/pull/2
+readonly STACK_URL_4=https://github.com/JaredTweed/organicmaps/pull/3
 
 readonly GH=${GH:-gh}
 readonly GIT=${GIT:-git}
@@ -158,6 +163,22 @@ step_head_filter() {
   fi
 }
 
+# Shared "Stack" section, identical in every PR except the bolded current part.
+stack_block() { # current part number
+  local current=$1 i
+  local labels=(selector 'cycling types' 'dash phase' 'cycling style preview')
+  local refs=('organicmaps#14040' 'fork#1' 'fork#2' 'fork#3')
+  local urls=("$STACK_URL_1" "$STACK_URL_2" "$STACK_URL_3" "$STACK_URL_4")
+  printf '\n## Stack\n\nPart %s of 4, in review order:\n\n' "$current"
+  for i in 1 2 3 4; do
+    if [[ "$i" == "$current" ]]; then
+      printf '%s. **%s — %s (this PR)**\n' "$i" "${refs[$((i - 1))]}" "${labels[$((i - 1))]}"
+    else
+      printf '%s. [%s — %s](%s)\n' "$i" "${refs[$((i - 1))]}" "${labels[$((i - 1))]}" "${urls[$((i - 1))]}"
+    fi
+  done
+}
+
 body_selector() {
   cat <<'EOF'
 ## Summary
@@ -179,6 +200,7 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 
 Related: #12692 (read-only reference; this PR does not modify it).
 EOF
+  stack_block 1
 }
 
 body_tag_data() {
@@ -212,9 +234,8 @@ Draft: the access and direction changes in this PR affect bicycle routing and ne
 - The cycling style uses `hwtag=yescar` to render ways where motor vehicles are allowed as shared space. This PR now treats `motor_vehicle=permissive` like `yes`, so two additional `hwtag|yescar` combinations appeared on the test extract: one pedestrian way and one sidewalk. The intent is cycling-related, but the pedestrian/sidewalk side effect deserves review.
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
-
-Stacked on the selector PR.
 EOF
+  stack_block 2
 }
 
 body_dash() {
@@ -243,6 +264,7 @@ Stacked on the cycling-types PR because the phase is currently applied to patter
 - Metalines and clip-splines tests pass.
 - Device visual check is still required at all zoom levels and in both themes before this leaves draft.
 EOF
+  stack_block 3
 }
 
 body_style() {
@@ -269,6 +291,7 @@ This draft exists so the appearance can be reviewed against the intended data mo
 
 Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
 EOF
+  stack_block 4
 }
 
 dump_body() {
@@ -471,7 +494,7 @@ publish() {
     push_branch "$branch" "$(step_head "$step")"
   done
 
-  local step branch repo base title body n url head_ref state_file_path
+  local head_ref state_file_path
   state_file_path=$(state_file)
   mkdir -p "$(dirname "$state_file_path")"
   : > "$state_file_path.tmp"
@@ -490,6 +513,10 @@ publish() {
     n=$(pr_number "$step")
     if [[ -n "$n" ]]; then
       [[ "$n" != "$FORBIDDEN_PR" ]] || die "refusing to operate on PR #$FORBIDDEN_PR"
+      if [[ "${UPDATE_PR_TITLES:-}" == YES ]]; then
+        "$GH" pr edit "$n" --repo "$repo" --title "$title"
+        note "Updated title of PR #$n"
+      fi
       if [[ "${UPDATE_PR_BODIES:-}" == YES ]]; then
         printf '%s\n' "$body" | "$GH" pr edit "$n" --repo "$repo" --body-file -
         note "Updated body of PR #$n"

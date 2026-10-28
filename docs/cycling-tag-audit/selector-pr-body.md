@@ -16,3 +16,12 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 - New tests cover equality, inequality, nested types, multiple types, and invalid selectors.
 
 Related: #12692 (read-only reference; this PR does not modify it).
+
+## Stack
+
+Part 1 of 4, in review order:
+
+1. **organicmaps#14040 — selector (this PR)**
+2. [fork#1 — cycling types](https://github.com/JaredTweed/organicmaps/pull/1)
+3. [fork#2 — dash phase](https://github.com/JaredTweed/organicmaps/pull/2)
+4. [fork#3 — cycling style preview](https://github.com/JaredTweed/organicmaps/pull/3)

@@ -309,6 +309,21 @@ class RolloutTests(unittest.TestCase):
         self.assertEqual(len(edits), 1, edits)
         self.assertEqual(edits[0]["edit"][2], "103")
 
+    def test_publish_updates_title_only_when_explicitly_allowed(self):
+        prs = {f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}|{PINS['TAG_DATA_BRANCH']}": 103}
+        pr_state = {"103": {"state": "open", "draft": True,
+                            "base": PINS["TAG_DATA_BRANCH"], "headSha": PINS["DASH_HEAD"]}}
+        result = self.run_script(
+            ["--publish"],
+            {"PUBLISH_CYCLING_STACK": "YES", "UPDATE_PR_TITLES": "YES"},
+            prs=prs, pr_state=pr_state,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        edits = [call for call in self.gh_calls() if "edit" in call]
+        self.assertEqual(len(edits), 1, edits)
+        self.assertIn("--title", edits[0]["edit"])
+        self.assertTrue(any("(3/4)" in arg for arg in edits[0]["edit"]), edits[0])
+
     # verify / rollback ---------------------------------------------------
 
     def test_verify_reports_missing_pr(self):

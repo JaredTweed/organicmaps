@@ -9,6 +9,9 @@ Status: **published as drafts on 2026-10-28**. PR #12692 was not modified.
 | 3 | https://github.com/JaredTweed/organicmaps/pull/2 | `prepare/cycling-dash` | `352e040b4c` |
 | 4 | https://github.com/JaredTweed/organicmaps/pull/3 | `prepare/cycling-style` | `ca0586974c` |
 
+Titles are numbered `1/4` through `4/4`, and every body carries the same
+stack block with links to all four drafts.
+
 The single publication entry point is [`rollout.sh`](rollout.sh). It is
 self-contained: pins, PR titles, and PR bodies live inside it. The `*-pr-body.md`
 files next to it are generated copies (`rollout.sh --dump-bodies DIR`) and are

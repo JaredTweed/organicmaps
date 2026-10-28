@@ -28,4 +28,11 @@ Draft: the access and direction changes in this PR affect bicycle routing and ne
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
 
-Stacked on the selector PR.
+## Stack
+
+Part 2 of 4, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. **fork#1 — cycling types (this PR)**
+3. [fork#2 — dash phase](https://github.com/JaredTweed/organicmaps/pull/2)
+4. [fork#3 — cycling style preview](https://github.com/JaredTweed/organicmaps/pull/3)

@@ -27,7 +27,7 @@ release certification.
 ## Published review stack
 
 The maintainer feedback led to a four-PR stack split from #12692. It is
-published as drafts: [upstream selector PR](https://github.com/organicmaps/organicmaps/pull/14040)
+published as drafts, numbered `1/4` to `4/4`: [upstream selector PR](https://github.com/organicmaps/organicmaps/pull/14040)
 and the fork review drafts [cycling types](https://github.com/JaredTweed/organicmaps/pull/1),
 [dash phase](https://github.com/JaredTweed/organicmaps/pull/2), and
 [style preview](https://github.com/JaredTweed/organicmaps/pull/3).

@@ -19,3 +19,12 @@ This draft exists so the appearance can be reviewed against the intended data mo
 - How the classifier-type limit should be handled when a road already carries many types.
 
 Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
+
+## Stack
+
+Part 4 of 4, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [fork#1 — cycling types](https://github.com/JaredTweed/organicmaps/pull/1)
+3. [fork#2 — dash phase](https://github.com/JaredTweed/organicmaps/pull/2)
+4. **fork#3 — cycling style preview (this PR)**
