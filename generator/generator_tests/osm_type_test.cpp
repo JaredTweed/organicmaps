@@ -1386,6 +1386,21 @@ UNIT_CLASS_TEST(TestWithClassificator, OsmType_Hwtag)
   }
 }
 
+UNIT_CLASS_TEST(TestWithClassificator, OsmType_CyclewayTagOrder)
+{
+  Tags const first = {{"highway", "secondary"}, {"cycleway", "no"}, {"cycleway:left", "lane"}};
+  Tags const second = {{"highway", "secondary"}, {"cycleway:left", "lane"}, {"cycleway", "no"}};
+  auto const a = GetFeatureBuilderParams(first);
+  auto const b = GetFeatureBuilderParams(second);
+  for (auto const * tag : {"yesbicycle", "nocycleway"})
+    TEST_EQUAL(a.IsTypeExist(GetType({"hwtag", tag})), b.IsTypeExist(GetType({"hwtag", tag})), (tag, a, b));
+  TEST(a.IsTypeExist(GetType({"hwtag", "yesbicycle"})), (a));
+  TEST(!a.IsTypeExist(GetType({"hwtag", "nocycleway"})), (a));
+  TEST(a.IsTypeExist(GetType({"cyclewaytag", "lane"})), (a));
+  TEST_EQUAL(a.IsTypeExist(GetType({"cyclewaytag", "lane"})),
+             b.IsTypeExist(GetType({"cyclewaytag", "lane"})), (a, b));
+}
+
 UNIT_CLASS_TEST(TestWithClassificator, OsmType_Surface)
 {
   TestSurfaceTypes("asphalt", "excellent", "", "paved_good");
