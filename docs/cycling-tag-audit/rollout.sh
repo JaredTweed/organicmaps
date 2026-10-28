@@ -58,9 +58,9 @@ readonly DASH_TITLE='[drape] Keep a continuous dash phase across road features (
 readonly STYLE_TITLE='[styles] Apply cycleway infrastructure to the cycling style (4/4, preview)'
 
 readonly STACK_URL_1=https://github.com/organicmaps/organicmaps/pull/14040
-readonly STACK_URL_2=https://github.com/JaredTweed/organicmaps/pull/1
-readonly STACK_URL_3=https://github.com/JaredTweed/organicmaps/pull/2
-readonly STACK_URL_4=https://github.com/JaredTweed/organicmaps/pull/3
+readonly STACK_URL_2=https://github.com/organicmaps/organicmaps/pull/14041
+readonly STACK_URL_3=https://github.com/organicmaps/organicmaps/pull/14042
+readonly STACK_URL_4=https://github.com/organicmaps/organicmaps/pull/14043
 
 readonly GH=${GH:-gh}
 readonly GIT=${GIT:-git}
@@ -143,31 +143,27 @@ step_title() {
   esac
 }
 step_repo() {
-  [[ "$1" == selector ]] && printf '%s' "$UPSTREAM" || printf '%s' "$FORK"
+  printf '%s' "$UPSTREAM"
 }
 step_base() {
   case "$1" in
     selector) printf '%s' master ;;
-    tag-data) printf '%s' "$SELECTOR_BRANCH" ;;
-    dash) printf '%s' "$TAG_DATA_BRANCH" ;;
-    style) printf '%s' "$STYLE_BASE_BRANCH" ;;
+    tag-data) printf '%s' master ;;
+    dash) printf '%s' master ;;
+    style) printf '%s' ab/cycling-style ;;
     *) die "unknown step $1" ;;
   esac
 }
-# Head filter form accepted by the GitHub pulls API.
+# Head filter form accepted by the GitHub pulls API. Every head lives on the fork.
 step_head_filter() {
-  if [[ "$1" == selector ]]; then
-    printf '%s' "$(urlenc "$FORK_OWNER")%3A$(urlenc "$SELECTOR_BRANCH")"
-  else
-    printf '%s' "$(urlenc "$(step_branch "$1")")"
-  fi
+  printf '%s' "$(urlenc "$FORK_OWNER")%3A$(urlenc "$(step_branch "$1")")"
 }
 
 # Shared "Stack" section, identical in every PR except the bolded current part.
 stack_block() { # current part number
   local current=$1 i
   local labels=(selector 'cycling types' 'dash phase' 'cycling style preview')
-  local refs=('organicmaps#14040' 'fork#1' 'fork#2' 'fork#3')
+  local refs=('organicmaps#14040' 'organicmaps#14041' 'organicmaps#14042' 'organicmaps#14043')
   local urls=("$STACK_URL_1" "$STACK_URL_2" "$STACK_URL_3" "$STACK_URL_4")
   printf '\n## Stack\n\nPart %s of 4, in review order:\n\n' "$current"
   for i in 1 2 3 4; do
@@ -211,6 +207,8 @@ Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as a
 
 Draft: the access and direction changes in this PR affect bicycle routing and need review.
 
+This upstream PR is cumulative because the clean stack bases are fork-only: it also contains part 1 (the selector). Review the `[generator]` commits, or use the isolated fork draft for the clean 2/4 diff: https://github.com/JaredTweed/organicmaps/pull/1.
+
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional type, with `track` > `lane` > `shared_lane` precedence and side/forward/backward handling.
@@ -246,6 +244,8 @@ Keeps the dash phase continuous across adjacent road features instead of restart
 
 Stacked on the cycling-types PR because the phase is currently applied to patterned cycling infrastructure (`cyclewaytag=lane` and `cyclewaytag=shared_lane`).
 
+This upstream PR is cumulative: it also contains parts 1-2. Review the `[drape]` commit, or use the isolated fork draft for the clean 3/4 diff: https://github.com/JaredTweed/organicmaps/pull/2.
+
 ## Changes
 
 - The MWM metalines section version goes from 1 to 3 and stores one double dash-phase offset per feature. The reader accepts versions 1-3; version 2 was only an intermediate development format and is never written.
@@ -274,6 +274,8 @@ body_style() {
 Applies the cycling style to the new `cyclewaytag` types while preserving the current solid, dashed, and dotted presentation.
 
 This draft exists so the appearance can be reviewed against the intended data model. It is based on `ab/cycling-style` plus the selector, cycling-types, and dash-phase PRs, because the cycling style itself is not on `master` yet.
+
+This upstream PR targets `ab/cycling-style` and also contains parts 1-3. Review the `[styles]` commits, or use the isolated fork draft for the clean 4/4 diff: https://github.com/JaredTweed/organicmaps/pull/3.
 
 ## What to review
 
@@ -505,11 +507,7 @@ publish() {
     base=$(step_base "$step")
     title=$(step_title "$step")
     body=$(dump_body "$step")
-    if [[ "$step" == selector ]]; then
-      head_ref="JaredTweed:$branch"
-    else
-      head_ref="$branch"
-    fi
+    head_ref="$FORK_OWNER:$branch"
     n=$(pr_number "$step")
     if [[ -n "$n" ]]; then
       [[ "$n" != "$FORBIDDEN_PR" ]] || die "refusing to operate on PR #$FORBIDDEN_PR"

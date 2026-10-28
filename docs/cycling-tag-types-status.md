@@ -26,11 +26,14 @@ release certification.
 
 ## Published review stack
 
-The maintainer feedback led to a four-PR stack split from #12692. It is
-published as drafts, numbered `1/4` to `4/4`: [upstream selector PR](https://github.com/organicmaps/organicmaps/pull/14040)
-and the fork review drafts [cycling types](https://github.com/JaredTweed/organicmaps/pull/1),
-[dash phase](https://github.com/JaredTweed/organicmaps/pull/2), and
-[style preview](https://github.com/JaredTweed/organicmaps/pull/3).
+The maintainer feedback led to a four-PR stack split from #12692. All four are
+published as official drafts, numbered `1/4` to `4/4`:
+[selector](https://github.com/organicmaps/organicmaps/pull/14040),
+[cycling types](https://github.com/organicmaps/organicmaps/pull/14041),
+[dash phase](https://github.com/organicmaps/organicmaps/pull/14042), and
+[style preview](https://github.com/organicmaps/organicmaps/pull/14043). Parts 2
+and 3 are cumulative against `master` because the clean stack bases are
+fork-only; the isolated diffs remain in the fork drafts.
 [Stack readiness](cycling-tag-audit/stack-readiness.md) lists the branches, pins,
 evidence, and open questions. #12692 was not modified.
 

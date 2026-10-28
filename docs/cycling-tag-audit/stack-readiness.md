@@ -5,9 +5,9 @@ Status: **published as drafts on 2026-10-28**. PR #12692 was not modified.
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `6f9330d5c0` |
-| 2 | https://github.com/JaredTweed/organicmaps/pull/1 | `prepare/cycling-tag-data` | `8e641f3e90` |
-| 3 | https://github.com/JaredTweed/organicmaps/pull/2 | `prepare/cycling-dash` | `352e040b4c` |
-| 4 | https://github.com/JaredTweed/organicmaps/pull/3 | `prepare/cycling-style` | `ca0586974c` |
+| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `8e641f3e90` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `352e040b4c` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `ca0586974c` |
 
 Titles are numbered `1/4` through `4/4`, and every body carries the same
 stack block with links to all four drafts.
@@ -22,18 +22,21 @@ checked against the script by the tests.
 | # | Branch on `JaredTweed/organicmaps` | Head | PR base | Target | Draft |
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `6f9330d5c0` | `master` | `organicmaps/organicmaps` | yes |
-| 2 | `prepare/cycling-tag-data` | `8e641f3e90` | `prepare/cycling-selector` | `JaredTweed/organicmaps` | yes |
-| 3 | `prepare/cycling-dash` | `352e040b4c` | `prepare/cycling-tag-data` | `JaredTweed/organicmaps` | yes |
-| 4 | `prepare/cycling-style` | `ca0586974c` | `prepare/cycling-style-base` | `JaredTweed/organicmaps` | yes |
+| 2 | `prepare/cycling-tag-data` | `8e641f3e90` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 3 | `prepare/cycling-dash` | `352e040b4c` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-style` | `ca0586974c` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
-`ab/cycling-style` at `7af82a316a` and exists so the style preview has a base
-inside the fork.
+`ab/cycling-style` at `7af82a316a` and is kept for provenance.
 
-Step 1 is the only upstream PR: a self-contained selector capability with no new
-types and no MWM format change. Steps 2-4 are fork review PRs because GitHub's
-native stacked PRs do not work across forks and the author has read-only access
-to `organicmaps/organicmaps`.
+All four PRs are on the official repository. Parts 2 and 3 target `master` and
+are **cumulative** because the fork cannot host stack base branches: the 2/4 PR
+also contains part 1, and the 3/4 PR also contains parts 1-2. Part 4 targets the
+existing `ab/cycling-style` branch. The isolated per-PR diffs remain in the fork
+drafts [#1](https://github.com/JaredTweed/organicmaps/pull/1),
+[#2](https://github.com/JaredTweed/organicmaps/pull/2), and
+[#3](https://github.com/JaredTweed/organicmaps/pull/3), linked from the official
+bodies.
 
 ## What each step contains
 
@@ -82,7 +85,7 @@ upstream `master` at `1b9a011b` and no existing PR for any stack branch.
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
 - Metalines v3: version-1 readers reject the whole section, so merged-line labels and shields fall back to per-feature placement on all new maps. Is an append-only extension better than the version bump?
-- Whether the style PR should eventually target `ab/cycling-style` directly.
+- Whether the style preview should merge into `ab/cycling-style` or wait for that branch to reach `master`.
 
 ## Publishing
 
@@ -102,8 +105,9 @@ PUBLISH_CYCLING_STACK=YES ./rollout.sh --publish
 - the target is PR #12692.
 
 It pushes only branches that do not exist yet, creates only new draft PRs, and
-records them in `~/.local/state/organicmaps-cycling-rollout/state.tsv`. It does
-not edit existing PR bodies unless `UPDATE_PR_BODIES=YES` is set.
+records them in `~/.local/state/organicmaps-cycling-rollout/state.tsv`. Existing
+titles and bodies are left alone unless `UPDATE_PR_TITLES=YES` and/or
+`UPDATE_PR_BODIES=YES` is set.
 
 To undo a publish before review starts:
 
@@ -125,18 +129,24 @@ still open drafts, and never deletes branches.
 
 ## Promotion path after review
 
-The fork PRs are for review visibility, not for merging. As each step is
-accepted:
+All four are already official drafts. Parts 2 and 3 are cumulative because their
+clean bases are fork-only. As each step is accepted:
 
-1. Merge the selector PR upstream.
-2. Rebase `prepare/cycling-tag-data` onto the new `master`, check that no new
-   classifier IDs were appended, retest, and open it upstream.
-3. Rebase `prepare/cycling-dash` onto the accepted cycling-types head and open it
-   upstream. The metalines version change still needs its own compatibility
-   review.
+1. Merge part 1.
+2. Rebase `prepare/cycling-tag-data` onto the new `master`. Its 2/4 diff then
+   contains only the cycling types; check that no new classifier IDs were
+   appended and retest.
+3. Rebase `prepare/cycling-dash` onto the accepted cycling-types head. Its 3/4
+   diff then contains only the dash work. The metalines version change still
+   needs its own compatibility review.
 4. Rebase the style work onto `ab/cycling-style` (or `master` once that lands),
-   regenerate the rules, and verify the visual checklist before opening a final
-   style PR. Do not reuse the preview branch as-is.
+   regenerate the rules, and verify the visual checklist before merging. Do not
+   merge the preview as-is.
+
+The isolated fork drafts [#1](https://github.com/JaredTweed/organicmaps/pull/1),
+[#2](https://github.com/JaredTweed/organicmaps/pull/2), and
+[#3](https://github.com/JaredTweed/organicmaps/pull/3) continue to show the
+per-PR diffs while the official ones are cumulative.
 
 `rollout.sh --check` fails if `master` changes a file a stack PR edits, so an
 upstream ID append or a renderer change blocks publication until the branch is

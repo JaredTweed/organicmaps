@@ -4,6 +4,8 @@ Applies the cycling style to the new `cyclewaytag` types while preserving the cu
 
 This draft exists so the appearance can be reviewed against the intended data model. It is based on `ab/cycling-style` plus the selector, cycling-types, and dash-phase PRs, because the cycling style itself is not on `master` yet.
 
+This upstream PR targets `ab/cycling-style` and also contains parts 1-3. Review the `[styles]` commits, or use the isolated fork draft for the clean 4/4 diff: https://github.com/JaredTweed/organicmaps/pull/3.
+
 ## What to review
 
 - Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
@@ -25,6 +27,6 @@ Do not merge: the base branch is a maintainer branch mirror and the visual check
 Part 4 of 4, in review order:
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
-2. [fork#1 — cycling types](https://github.com/JaredTweed/organicmaps/pull/1)
-3. [fork#2 — dash phase](https://github.com/JaredTweed/organicmaps/pull/2)
-4. **fork#3 — cycling style preview (this PR)**
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [organicmaps#14042 — dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+4. **organicmaps#14043 — cycling style preview (this PR)**

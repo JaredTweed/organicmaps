@@ -22,6 +22,6 @@ Related: #12692 (read-only reference; this PR does not modify it).
 Part 1 of 4, in review order:
 
 1. **organicmaps#14040 — selector (this PR)**
-2. [fork#1 — cycling types](https://github.com/JaredTweed/organicmaps/pull/1)
-3. [fork#2 — dash phase](https://github.com/JaredTweed/organicmaps/pull/2)
-4. [fork#3 — cycling style preview](https://github.com/JaredTweed/organicmaps/pull/3)
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [organicmaps#14042 — dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+4. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)

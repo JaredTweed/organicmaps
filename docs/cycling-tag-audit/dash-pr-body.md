@@ -4,6 +4,8 @@ Keeps the dash phase continuous across adjacent road features instead of restart
 
 Stacked on the cycling-types PR because the phase is currently applied to patterned cycling infrastructure (`cyclewaytag=lane` and `cyclewaytag=shared_lane`).
 
+This upstream PR is cumulative: it also contains parts 1-2. Review the `[drape]` commit, or use the isolated fork draft for the clean 3/4 diff: https://github.com/JaredTweed/organicmaps/pull/2.
+
 ## Changes
 
 - The MWM metalines section version goes from 1 to 3 and stores one double dash-phase offset per feature. The reader accepts versions 1-3; version 2 was only an intermediate development format and is never written.
@@ -27,6 +29,6 @@ Stacked on the cycling-types PR because the phase is currently applied to patter
 Part 3 of 4, in review order:
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
-2. [fork#1 — cycling types](https://github.com/JaredTweed/organicmaps/pull/1)
-3. **fork#2 — dash phase (this PR)**
-4. [fork#3 — cycling style preview](https://github.com/JaredTweed/organicmaps/pull/3)
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. **organicmaps#14042 — dash phase (this PR)**
+4. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)

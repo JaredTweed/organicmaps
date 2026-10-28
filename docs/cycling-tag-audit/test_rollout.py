@@ -236,9 +236,9 @@ class RolloutTests(unittest.TestCase):
     def test_publish_refuses_non_draft_existing_pr(self):
         result = self.run_script(
             ["--publish"], {"PUBLISH_CYCLING_STACK": "YES"},
-            prs={f"JaredTweed/organicmaps|{PINS['TAG_DATA_BRANCH']}|{PINS['SELECTOR_BRANCH']}": 12},
+            prs={f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 12},
             pr_state={"12": {"state": "open", "draft": False,
-                             "base": PINS["SELECTOR_BRANCH"], "headSha": PINS["TAG_DATA_HEAD"]}},
+                             "base": "master", "headSha": PINS["TAG_DATA_HEAD"]}},
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("no longer a draft", result.stderr)
@@ -253,9 +253,9 @@ class RolloutTests(unittest.TestCase):
         self.assertEqual(len(calls), 4, calls)
         expected = [
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['SELECTOR_BRANCH']}"),
-            ("JaredTweed/organicmaps", PINS["SELECTOR_BRANCH"], PINS["TAG_DATA_BRANCH"]),
-            ("JaredTweed/organicmaps", PINS["TAG_DATA_BRANCH"], PINS["DASH_BRANCH"]),
-            ("JaredTweed/organicmaps", PINS["STYLE_BASE_BRANCH"], PINS["STYLE_BRANCH"]),
+            ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['TAG_DATA_BRANCH']}"),
+            ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['DASH_BRANCH']}"),
+            ("organicmaps/organicmaps", "ab/cycling-style", f"JaredTweed:{PINS['STYLE_BRANCH']}"),
         ]
         for call, (repo, base, head) in zip(calls, expected):
             self.assertEqual(call["repo"], repo)
@@ -279,15 +279,15 @@ class RolloutTests(unittest.TestCase):
     def test_publish_is_idempotent_and_never_edits_by_default(self):
         prs = {
             f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
-            f"JaredTweed/organicmaps|{PINS['TAG_DATA_BRANCH']}|{PINS['SELECTOR_BRANCH']}": 102,
-            f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}|{PINS['TAG_DATA_BRANCH']}": 103,
-            f"JaredTweed/organicmaps|{PINS['STYLE_BRANCH']}|{PINS['STYLE_BASE_BRANCH']}": 104,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 102,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['STYLE_BRANCH']}|ab/cycling-style": 104,
         }
         pr_state = {
             "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
-            "102": {"state": "open", "draft": True, "base": PINS["SELECTOR_BRANCH"], "headSha": PINS["TAG_DATA_HEAD"]},
-            "103": {"state": "open", "draft": True, "base": PINS["TAG_DATA_BRANCH"], "headSha": PINS["DASH_HEAD"]},
-            "104": {"state": "open", "draft": True, "base": PINS["STYLE_BASE_BRANCH"], "headSha": PINS["STYLE_HEAD"]},
+            "102": {"state": "open", "draft": True, "base": "master", "headSha": PINS["TAG_DATA_HEAD"]},
+            "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
+            "104": {"state": "open", "draft": True, "base": "ab/cycling-style", "headSha": PINS["STYLE_HEAD"]},
         }
         result = self.run_script(["--publish"], {"PUBLISH_CYCLING_STACK": "YES"},
                                  prs=prs, pr_state=pr_state)
@@ -296,9 +296,9 @@ class RolloutTests(unittest.TestCase):
         self.assertEqual(len(self.state_path.read_text().strip().splitlines()), 4)
 
     def test_publish_updates_body_only_when_explicitly_allowed(self):
-        prs = {f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}|{PINS['TAG_DATA_BRANCH']}": 103}
+        prs = {f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103}
         pr_state = {"103": {"state": "open", "draft": True,
-                            "base": PINS["TAG_DATA_BRANCH"], "headSha": PINS["DASH_HEAD"]}}
+                            "base": "master", "headSha": PINS["DASH_HEAD"]}}
         result = self.run_script(
             ["--publish"],
             {"PUBLISH_CYCLING_STACK": "YES", "UPDATE_PR_BODIES": "YES"},
@@ -310,9 +310,9 @@ class RolloutTests(unittest.TestCase):
         self.assertEqual(edits[0]["edit"][2], "103")
 
     def test_publish_updates_title_only_when_explicitly_allowed(self):
-        prs = {f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}|{PINS['TAG_DATA_BRANCH']}": 103}
+        prs = {f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103}
         pr_state = {"103": {"state": "open", "draft": True,
-                            "base": PINS["TAG_DATA_BRANCH"], "headSha": PINS["DASH_HEAD"]}}
+                            "base": "master", "headSha": PINS["DASH_HEAD"]}}
         result = self.run_script(
             ["--publish"],
             {"PUBLISH_CYCLING_STACK": "YES", "UPDATE_PR_TITLES": "YES"},
@@ -334,15 +334,15 @@ class RolloutTests(unittest.TestCase):
     def test_verify_accepts_the_full_draft_stack(self):
         prs = {
             f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
-            f"JaredTweed/organicmaps|{PINS['TAG_DATA_BRANCH']}|{PINS['SELECTOR_BRANCH']}": 102,
-            f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}|{PINS['TAG_DATA_BRANCH']}": 103,
-            f"JaredTweed/organicmaps|{PINS['STYLE_BRANCH']}|{PINS['STYLE_BASE_BRANCH']}": 104,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 102,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['STYLE_BRANCH']}|ab/cycling-style": 104,
         }
         pr_state = {
             "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
-            "102": {"state": "open", "draft": True, "base": PINS["SELECTOR_BRANCH"], "headSha": PINS["TAG_DATA_HEAD"]},
-            "103": {"state": "open", "draft": True, "base": PINS["TAG_DATA_BRANCH"], "headSha": PINS["DASH_HEAD"]},
-            "104": {"state": "open", "draft": True, "base": PINS["STYLE_BASE_BRANCH"], "headSha": PINS["STYLE_HEAD"]},
+            "102": {"state": "open", "draft": True, "base": "master", "headSha": PINS["TAG_DATA_HEAD"]},
+            "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
+            "104": {"state": "open", "draft": True, "base": "ab/cycling-style", "headSha": PINS["STYLE_HEAD"]},
         }
         result = self.run_script(["--verify"], prs=prs, pr_state=pr_state)
         self.assertEqual(result.returncode, 0, result.stderr)
