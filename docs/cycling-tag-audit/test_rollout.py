@@ -316,6 +316,23 @@ class RolloutTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("no PR exists", result.stderr)
 
+    def test_verify_accepts_the_full_draft_stack(self):
+        prs = {
+            f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
+            f"JaredTweed/organicmaps|{PINS['TAG_DATA_BRANCH']}|{PINS['SELECTOR_BRANCH']}": 102,
+            f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}|{PINS['TAG_DATA_BRANCH']}": 103,
+            f"JaredTweed/organicmaps|{PINS['STYLE_BRANCH']}|{PINS['STYLE_BASE_BRANCH']}": 104,
+        }
+        pr_state = {
+            "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
+            "102": {"state": "open", "draft": True, "base": PINS["SELECTOR_BRANCH"], "headSha": PINS["TAG_DATA_HEAD"]},
+            "103": {"state": "open", "draft": True, "base": PINS["TAG_DATA_BRANCH"], "headSha": PINS["DASH_HEAD"]},
+            "104": {"state": "open", "draft": True, "base": PINS["STYLE_BASE_BRANCH"], "headSha": PINS["STYLE_HEAD"]},
+        }
+        result = self.run_script(["--verify"], prs=prs, pr_state=pr_state)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Verification passed", result.stdout)
+
     def test_rollback_requires_opt_in(self):
         result = self.run_script(["--rollback"])
         self.assertNotEqual(result.returncode, 0)
@@ -345,6 +362,13 @@ class RolloutTests(unittest.TestCase):
                               "base": "master", "headSha": PINS["SELECTOR_HEAD"]}},
         )
         self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.gh_calls(), [])
+
+    def test_rollback_refuses_forbidden_pr(self):
+        self.state_path.write_text("selector\torganicmaps/organicmaps\t12692\thttps://x/12692\n")
+        result = self.run_script(["--rollback"], {"ROLLBACK_CYCLING_STACK": "YES"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("12692", result.stderr)
         self.assertEqual(self.gh_calls(), [])
 
 

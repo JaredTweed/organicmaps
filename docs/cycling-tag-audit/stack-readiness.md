@@ -31,7 +31,9 @@ to `organicmaps/organicmaps`.
 
 1. **Selector.** `ParseSelector` receives the `Classificator`; drawing rules can
    use `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`. Nested types
-   match by truncation. Invalid selectors are rejected instead of asserted.
+   match by truncation. Invalid selectors are rejected. No generated rule on
+   `master` currently uses `extra_tag`, so activating it cannot change existing
+   rendering.
 2. **Cycling types.** Adds `cyclewaytag|track`, `lane`, and `shared_lane` while
    keeping the road's main `highway` type. Includes access/direction refinements
    and an order-invariance fix for `cycleway=no` plus a positive side value. The
@@ -68,7 +70,7 @@ upstream `master` at `1b9a011b` and no existing PR for any stack branch.
 
 - Side-specific facilities: one centerline summary today; is that enough before
   separate left/right rendering and routing are added?
-- The classifier type limit: which type should lose when a road already has many?
+- The eight-type limit: `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped on type-heavy roads. Should lane rendering outrank `hwtag`/`psurface` types instead?
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
 - Metalines v3: older clients ignore the section and fall back to per-feature
@@ -113,6 +115,25 @@ still open drafts, and never deletes branches.
   suites.
 - A decision on the `motor_vehicle=permissive` side effect.
 - Upstream CI on step 1 once the draft exists.
+
+## Promotion path after review
+
+The fork PRs are for review visibility, not for merging. As each step is
+accepted:
+
+1. Merge the selector PR upstream.
+2. Rebase `prepare/cycling-tag-data` onto the new `master`, check that no new
+   classifier IDs were appended, retest, and open it upstream.
+3. Rebase `prepare/cycling-dash` onto the accepted cycling-types head and open it
+   upstream. The metalines version change still needs its own compatibility
+   review.
+4. Rebase the style work onto `ab/cycling-style` (or `master` once that lands),
+   regenerate the rules, and verify the visual checklist before opening a final
+   style PR. Do not reuse the preview branch as-is.
+
+`rollout.sh --check` fails if `master` changes a file a stack PR edits, so an
+upstream ID append or a renderer change blocks publication until the branch is
+rebased and retested.
 
 ## Notes
 
