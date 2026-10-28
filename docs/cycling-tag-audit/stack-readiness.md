@@ -1,90 +1,128 @@
 # Cycling PR stack readiness
 
-This is a preparation plan, not approval to publish. No command in this kit
-updates PR #12692. The only prepared publication target is a **draft** selector
-PR, from `JaredTweed:prepare/cycling-selector` to `organicmaps:master`.
+Status: **prepared, not published**. No pull request was created, edited, closed,
+or commented on while building this kit. PR #12692 is untouched and the rollout
+script has a hard guard against ever targeting it.
 
-| Stage | State | Required before submission |
-| --- | --- | --- |
-| Type selector | Prototype on upstream master `303ef27fbc`; fork head `6f9330d5c0`; exact-branch full debug `indexer_tests` passes | Maintainer agreement that this is the right first PR; inspect all existing generated rules and compiler integration; review selector semantics and performance. |
-| Bicycle attributes and generation | Experimental fork branch `prepare/cycling-tag-data`, head `7db63dcb40`, with extracted generator changes and newly appended classifier IDs; debug OSM-type and full routing-common suites pass | Agree centerline vs side information, routing/pedestrian contracts, retention and compatibility; prove routing/old-map behavior. Not ready for a PR. |
-| Cycling style | Existing experimental implementation only | Rebase on agreed data design; verify exact solid/dashed/dotted appearance with same roads, zooms and themes; account for compiler selector fallback. |
-| Dash rendering / metalines | Existing experimental implementation only | Separate independently useful rendering changes; establish MWM section version compatibility and cross-feature phase correctness. |
+The single publication entry point is [`rollout.sh`](rollout.sh). It is
+self-contained: pins, PR titles, and PR bodies live inside it. The `*-pr-body.md`
+files next to it are generated copies (`rollout.sh --dump-bodies DIR`) and are
+checked against the script by the tests.
 
-Do not publish placeholder dependent PRs, assume side requirements are
-settled, or label the experimental phone timings a production benchmark. The
-maintainer explicitly requested a reviewable first PR, not simultaneous
-publication of unreviewed architectural work.
+## The stack
 
-## GitHub stack constraint
+| # | Branch on `JaredTweed/organicmaps` | Head | PR base | Target | Draft |
+| - | --- | --- | --- | --- | --- |
+| 1 | `prepare/cycling-selector` | `6f9330d5c0` | `master` | `organicmaps/organicmaps` | yes |
+| 2 | `prepare/cycling-tag-data` | `7db63dcb40` | `prepare/cycling-selector` | `JaredTweed/organicmaps` | yes |
+| 3 | `prepare/cycling-dash` | `f9c9fa676f` | `prepare/cycling-tag-data` | `JaredTweed/organicmaps` | yes |
+| 4 | `prepare/cycling-style` | `ca0586974c` | `prepare/cycling-style-base` | `JaredTweed/organicmaps` | yes |
 
-On 2026-10-28 `gh repo view organicmaps/organicmaps --json viewerPermission`
-returned `READ`. GitHub's documented native stacked-PR feature requires all
-branches in the same repository and does not support cross-fork stacks:
-[GitHub stacked PR requirements](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests).
-The first fork-to-upstream PR can target upstream `master`, but later upstream
-PRs cannot be assumed to target branches that exist only on the fork. This is
-separate from keeping local Git branches stacked.
+`prepare/cycling-style-base` is a byte-for-byte mirror of upstream
+`ab/cycling-style` at `7af82a316a` and exists so the style preview has a base
+inside the fork.
 
-The user chose to prepare dependent review PRs in the fork. These will be fork
-PRs, not upstream PRs; moving each change upstream after review still requires
-an explicit follow-up workflow and coordination. Review visibility, CI,
-retargeting and merge behavior must be communicated to maintainers. The
-current selector-only launcher does not require upstream branch-write access.
-No fork PRs exist yet and no dependent draft is ready to publish.
+Step 1 is the only upstream PR: a self-contained selector capability with no new
+types and no MWM format change. Steps 2-4 are fork review PRs because GitHub's
+native stacked PRs do not work across forks and the author has read-only access
+to `organicmaps/organicmaps`.
 
-The data prototype initially resolved `cycleway=no` plus a side-specific lane
-according to the order of OSM tags, producing either `hwtag|yesbicycle` or
-`hwtag|nocycleway`. The added order-invariance regression reproduced the bug;
-`7db63dcb40` makes positive side information take precedence over a negative
-whole-road flag and passes the `OsmType` debug generator suite. This policy
-needs review alongside other conflicting side, generic and directional tags;
-the tests do not prove that routing is correct in all cases. The full
-`routing_common_tests` debug suite also passed, but does not substitute for
-end-to-end routing over generated graphs or old-app/new-map tests.
+## What each step contains
 
-An actual-generator comparison used the same road-only Vancouver OSM extract,
-the selector baseline (`6f9330d5c0`) and data prototype (`7db63dcb40`), debug
-generator binaries and geometry/index-only MWMs. Both produced 82,785 decoded
-features; the MWM grew from 2,383,926 to 2,387,686 bytes (+3,760, about 0.16%).
-The candidate had 787 lane, 963 shared-lane and 108 track type occurrences.
-Aggregate existing `hwtag` and `psurface` counts were unchanged except for two
-additional `hwtag|yescar` occurrences. These are aggregate counts, not matched
-features; do not infer individual routing correctness, exact causation, or
-absence of other semantic changes from them. The input excludes the data needed
-for representative routing graphs and full-region compatibility. Reproducible
-hashes and all count deltas are in
+1. **Selector.** `ParseSelector` receives the `Classificator`; drawing rules can
+   use `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`. Nested types
+   match by truncation. Invalid selectors are rejected instead of asserted.
+2. **Cycling types.** Adds `cyclewaytag|track`, `lane`, and `shared_lane` while
+   keeping the road's main `highway` type. Includes access/direction refinements
+   and an order-invariance fix for `cycleway=no` plus a positive side value.
+3. **Dash phase.** Metalines section version 2 -> 3, one dash-phase offset per
+   feature; readers accept 1-3. Continuous phase across adjacent ways, limited
+   to patterned cycling infrastructure. Vulkan shader pack regenerated.
+4. **Style preview.** The cycling style from #12692 replayed on the selector and
+   cycling-type work. This is a visual preview, not a merge candidate; its base
+   is a maintainer branch.
+
+## Verification performed
+
+| Step | Evidence |
+| --- | --- |
+| 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`. |
+| 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. |
+| 3 | Clean debug build of `generator_tests` and `drape_frontend_tests`; metalines and clip-splines suites. |
+| 4 | Sources are identical to #12692 except the selector and generator commits, both verified above. Not re-built end-to-end in this environment; the appearance checklist below is still open. |
+
+A real-generator comparison on the same road-only Vancouver extract retained
+82,785 features in both builds. The MWM grew from 2,383,926 to 2,387,686 bytes
+(+3,760, 0.16%). The candidate added 787 `lane`, 963 `shared_lane`, and 108
+`track` type occurrences. Aggregate `hwtag`/`psurface` counts were unchanged
+except two additional `hwtag|yescar` occurrences, explained by the new
+`motor_vehicle=permissive` handling. Counts are aggregate, not matched features;
+they do not prove per-road routing correctness. Raw data is in
 [`actual-generator-results.json`](actual-generator-results.json).
 
-The existing cycling style is based on upstream `ab/cycling-style`
-(`7af82a316a`), not on `master`. Its branch introduces the cycling map mode,
-style sources and associated platform work; it is not just the line styling
-in #12692. A dependent style branch built solely on the selector/data stack
-cannot be assumed to have that infrastructure. Decide with maintainers how
-the cycling-style base will land or how the later style work should be based;
-do not import its entire branch invisibly into an unrelated generator PR.
-As of the pinned snapshots, a read-only merge-tree trial of `7af82a316a` and
-`7db63dcb40` reports conflicts in 20 paths, including generated style assets,
-renderer/stylist code, classifier rule loading, Qt configuration, and the
-Kothic submodule. This does not prove the merge is impossible, but it cannot
-be safely automated by choosing one side or preserving generated binaries
-without reconciling sources and regenerating/testing the result.
+`rollout.sh --check` passed against the live repository on 2026-10-28, with
+upstream `master` at `1b9a011b` and no existing PR for any stack branch.
 
-`publish-selector.sh --check` performs only read-only GitHub queries and fails
-if upstream moved, the prepared branch changed, or a PR already exists.
-`PUBLISH_CYCLING_SELECTOR=YES ./publish-selector.sh --publish-selector` creates
-only the draft selector PR; it never pushes, updates or comments on existing
-PRs. This command has **not** been run. It deliberately does not claim that the
-later stack is complete. A future full-stack launcher needs actual reviewed
-commits, checked tests and explicit approval for each existing PR update.
+## Known open questions for review
 
-An exact-branch debug build of `indexer_tests` passed both the focused
-`CyclingResearch|DruleSelector` tests and the full `indexer_tests` suite on
-2026-10-28. The debug run found fixture problems fixed in `6f9330d5c0`; it
-does not establish cross-platform, compiler-integration or production
-performance coverage. The
-default temporary filesystem hit its disk quota, so the build used a temporary
-directory inside the worktree and locally available pinned submodule objects.
-Upstream later advanced to `b55c734f33b2`; the only intervening change was
-`.github/FUNDING.yml`, so the branch was not rewritten. The launcher checks
-this newer reviewed upstream tip and fails on any further advance.
+- Side-specific facilities: one centerline summary today; is that enough before
+  separate left/right rendering and routing are added?
+- The classifier type limit: which type should lose when a road already has many?
+- `motor_vehicle=permissive`: does this belong in the cycling-types PR?
+- Metalines v3: older clients ignore the section and fall back to per-feature
+  text/shield placement. Is that acceptable degradation?
+- Whether the style PR should eventually target `ab/cycling-style` directly.
+
+## Publishing
+
+```bash
+cd docs/cycling-tag-audit
+./rollout.sh --check                     # read-only, default
+PUBLISH_CYCLING_STACK=YES ./rollout.sh --publish
+./rollout.sh --verify
+```
+
+`--publish` fails closed if:
+
+- a branch tip differs from its pin, or a fork branch would be overwritten;
+- `ab/cycling-style` moved;
+- a source file touched by a stack PR changed on `master` since its base;
+- an existing PR is not one of our open drafts, or its base/head moved;
+- the target is PR #12692.
+
+It pushes only branches that do not exist yet, creates only new draft PRs, and
+records them in `~/.local/state/organicmaps-cycling-rollout/state.tsv`. It does
+not edit existing PR bodies unless `UPDATE_PR_BODIES=YES` is set.
+
+To undo a publish before review starts:
+
+```bash
+ROLLBACK_CYCLING_STACK=YES ./rollout.sh --rollback
+```
+
+Rollback closes only the drafts recorded in the state file, only if they are
+still open drafts, and never deletes branches.
+
+## Remaining gates before any PR leaves draft
+
+- Device screenshots for step 4 at several zoom levels in light and dark themes,
+  on the same roads used for #12692.
+- End-to-end bicycle route tests on generated graphs for step 2, not just unit
+  suites.
+- A decision on the `motor_vehicle=permissive` side effect.
+- Upstream CI on step 1 once the draft exists.
+
+## Notes
+
+- Classifier IDs are assigned relative to each branch's base. On current
+  `master` the cycling types are `1660-1662`; on the older `ab/cycling-style`
+  base they are `1658-1660`. This is why the style preview cannot be squashed
+  blindly into the stack: after the types land, the style branch must be rebased
+  and its generated rules regenerated once.
+- A separate, unmodified local branch `feature/bicycle-routing-improvements`
+  also adds bicycle types (`hwtag|bicycle_access`, `cyclewaytag|*`,
+  `hwtag|bicycle_ramp`) on an August base. It was not touched. If revived, its
+  IDs will collide with the current stack and must be renumbered.
+- The earlier experimental `prepare/cycling-kothic` branch in the Kothic fork is
+  not part of this stack; the style preview uses the Kothic revision already
+  pinned by `ab/cycling-style`.

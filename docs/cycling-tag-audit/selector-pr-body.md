@@ -1,21 +1,18 @@
 ## Summary
 
-Add runtime drawing-rule predicates for classifier types already attached to a
-feature. This allows a rule associated with a main type to test an additional
-type without introducing new feature types or changing the MWM format.
+Lets a drawing rule test whether a feature also carries a given classifier type, using the existing runtime selector syntax `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`.
 
-The selector supports equality and inequality, including parent-type matching.
-Invalid operators and unknown or malformed type paths are rejected. Rules are
-resolved against the classifier used to load them.
+This is the first, self-contained step extracted from the cycling infrastructure work. It adds no new map types and does not change the MWM format, so it can be reviewed and merged on its own.
 
-This is a standalone infrastructure proposal for discussion; it does not add
-cycling attributes or change the existing cycling style. Related: #12692.
+## Details
+
+- `ParseSelector` now receives the `Classificator`, so selectors can resolve type paths.
+- A feature type matches when it equals the selector type after truncation to that type's depth, so a parent type matches its nested children.
+- Invalid operators, empty values, and malformed paths are rejected instead of asserting.
 
 ## Testing
 
-- Clean debug build and the full `indexer_tests` suite passed on the exact
-  prepared branch (`6f9330d5c0`), with `SKIP_QT_GUI=ON`.
-- Generated-style integration, compatibility with existing drawing rules and
-  the runtime cost of selectors require additional review.
+- Full `indexer_tests` suite passes on a clean debug build of this branch.
+- New tests cover equality, inequality, nested types, multiple types, and invalid selectors.
 
-LLM tools were used while developing and testing these changes.
+Related: #12692 (read-only reference; this PR does not modify it).

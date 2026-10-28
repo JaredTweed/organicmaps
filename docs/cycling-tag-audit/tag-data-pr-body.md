@@ -1,34 +1,30 @@
-## Draft: cycling facility attributes
+## Summary
 
-This is a fork-only review draft based on `prepare/cycling-selector`. It is not
-yet a proposal to release a new map format or to merge into upstream.
+Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as additional types while keeping the road's main `highway` type. Styles can then distinguish cycling infrastructure without replacing the road classification.
 
-The prototype retains the road's existing classifier type and adds one derived
-`cyclewaytag` value for a centerline cycling style: `track`, `lane`, or
-`shared_lane`. It extracts the generator-side changes from
-organicmaps/organicmaps#12692, including
-changes to bicycle access and direction classification. The new mapping entries
-are appended after the existing upstream entries. This draft contains no cycling
-style, renderer, shader or metalines changes.
+Draft: the access and direction changes in this PR affect bicycle routing and need review.
 
-Tag-order aggregation is deterministic when a negative whole-road cycleway tag
-and an explicitly tagged side lane coexist; a regression test covers that case.
-That policy and other generic/side conflicts need review. The type list remains
-limited to eight; the prototype does not yet prove that access, direction or
-surface types cannot be dropped under pressure.
+## What changes
 
-## Validation and blockers
+- The generator classifies `cycleway*` tags into one additional type, with `track` > `lane` > `shared_lane` precedence and side/forward/backward handling.
+- `cycleway=no` combined with a positive side-specific value now resolves independently of OSM tag order; a regression test reproduces the previous bug.
+- Bicycle direction and access flags are refined in the same classification pass.
 
-- Debug `generator_tests --filter=OsmType` and full `routing_common_tests`
-  passed on the prepared branch. These tests do not prove end-to-end routing.
-- On the same road-only Vancouver extract, the geometry/index-only MWM grew by
-  3,760 bytes; two additional `hwtag|yescar` occurrences were observed in
-  aggregate. These are not per-feature routing checks. Full-map,
-  old-client/new-map, mixed-version, and routing-graph tests remain necessary.
-- Confirm whether centerline-only information is sufficient and how the design
-  relates to future side-specific cycling and pedestrian attributes.
-- The cycling style depends on the separate `ab/cycling-style` foundation.
-  No claim of preserved organicmaps/organicmaps#12692 appearance is made without
-  visual comparisons.
+## Compatibility
 
-LLM tools were used while developing and testing these changes.
+- New types are appended after the existing classifier IDs; no MWM section format change.
+- Old maps remain readable, and old readers ignore unknown types.
+
+## Testing
+
+- `generator_tests --filter=OsmType` passes on a clean debug build.
+- Full `routing_common_tests` suite passes.
+- On a road-only Vancouver extract, both builds retained 82,785 features; the MWM grew by 3,760 bytes (0.16%), with 787 lane, 963 shared-lane, and 108 track occurrences.
+- The new order-invariance regression fails before the fix and passes after it.
+
+## Review notes
+
+- This PR also adds explicit `motor_vehicle=permissive` handling. Two additional `hwtag|yescar` combinations appeared on the test extract (one pedestrian way, one sidewalk), so this is not a visual-only change.
+- Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
+
+Stacked on the selector PR.
