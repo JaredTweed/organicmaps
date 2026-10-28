@@ -49,7 +49,7 @@ to `organicmaps/organicmaps`.
 | 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`. |
 | 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. |
 | 3 | Clean debug build of `generator_tests` and `drape_frontend_tests`; metalines and clip-splines suites. |
-| 4 | Sources are identical to #12692 except the selector and generator commits, both verified above. Not re-built end-to-end in this environment; the appearance checklist below is still open. |
+| 4 | Full `indexer_tests` debug suite passes on the preview branch itself. Sources are identical to #12692 except the selector and generator commits, both also verified above. The appearance checklist below is still open. |
 
 A real-generator comparison on the same road-only Vancouver extract retained
 82,785 features in both builds. The MWM grew from 2,383,926 to 2,387,686 bytes

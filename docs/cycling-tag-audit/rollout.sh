@@ -261,6 +261,7 @@ This draft exists so the appearance can be reviewed against the intended data mo
 - Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
 - The generator and selector parts are already split into their own PRs; only the style delta is new here.
+- The selector and generator changes pass the full `indexer_tests` suite on this branch.
 
 ## Open questions
 
