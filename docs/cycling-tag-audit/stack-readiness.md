@@ -38,8 +38,8 @@ to `organicmaps/organicmaps`.
    keeping the road's main `highway` type. Includes access/direction refinements
    and an order-invariance fix for `cycleway=no` plus a positive side value. The
    PR keeps the seven original incremental commits instead of squashing them.
-3. **Dash phase.** Metalines section version 2 -> 3, one dash-phase offset per
-   feature; readers accept 1-3. Continuous phase across adjacent ways, limited
+3. **Dash phase.** Metalines section version 1 -> 3, one double dash-phase offset
+   per feature (8 bytes per chained feature); readers accept 1-3. Continuous phase across adjacent ways, limited
    to patterned cycling infrastructure. Vulkan shader pack regenerated.
 4. **Style preview.** The cycling style from #12692 replayed on the selector and
    cycling-type work. This is a visual preview, not a merge candidate; its base
@@ -73,8 +73,7 @@ upstream `master` at `1b9a011b` and no existing PR for any stack branch.
 - The eight-type limit: `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped on type-heavy roads. Should lane rendering outrank `hwtag`/`psurface` types instead?
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
-- Metalines v3: older clients ignore the section and fall back to per-feature
-  text/shield placement. Is that acceptable degradation?
+- Metalines v3: version-1 readers reject the whole section, so merged-line labels and shields fall back to per-feature placement on all new maps. Is an append-only extension better than the version bump?
 - Whether the style PR should eventually target `ab/cycling-style` directly.
 
 ## Publishing

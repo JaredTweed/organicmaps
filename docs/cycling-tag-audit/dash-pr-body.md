@@ -6,14 +6,15 @@ Stacked on the cycling-types PR because the phase is currently applied to patter
 
 ## Changes
 
-- The MWM metalines section version is bumped from 2 to 3 and stores a per-feature dash phase offset; readers accept versions 1-3.
+- The MWM metalines section version goes from 1 to 3 and stores one double dash-phase offset per feature. The reader accepts versions 1-3; version 2 was only an intermediate development format and is never written.
 - The renderer combines the stored offset with the geometry direction.
 - Shader sources are updated and the Vulkan shader pack is regenerated.
 
 ## Compatibility
 
-- Older maps (versions 1-2) still load; the reader accepts them.
-- New maps are readable by older clients, but those clients ignore the version-3 metalines section and fall back to per-feature text/shield placement instead of the merged metaline. This is a graceful visual degradation, not a crash.
+- Older maps (version 1, and the intermediate version 2) still load; without offsets the renderer falls back to a running chain offset.
+- New maps are readable by older clients, but a version-1 reader rejects the whole version-3 section, so merged-line labels and shields fall back to per-feature placement on every new map, not only cycling ways. This is graceful visual degradation, not a crash, but it is the main cost of the format change.
+- An append-only alternative (keep version 1 and add a trailing offset block that old readers ignore) would avoid that regression. It is the main design choice to settle before merging this PR.
 
 ## Testing
 
