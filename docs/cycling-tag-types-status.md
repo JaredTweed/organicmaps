@@ -24,6 +24,14 @@ application ID, a research type-selector implementation and native tests; see
 [Pixel 8 Pro preparation](cycling-tag-types-phone.md). These changes are not
 release certification.
 
+## Prepared review stack
+
+The maintainer feedback led to a four-PR stack split from #12692. It is
+prepared but **not published**: [stack readiness](cycling-tag-audit/stack-readiness.md)
+lists the branches, pins, evidence and open questions, and the single
+[`rollout.sh`](cycling-tag-audit/rollout.sh) launcher creates all four draft PRs
+after an explicit opt-in. No command in that kit touches #12692.
+
 ## Additional source evidence
 
 [Source results](cycling-tag-audit/source-results.json) inspect a separate

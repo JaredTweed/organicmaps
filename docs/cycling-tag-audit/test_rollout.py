@@ -88,7 +88,7 @@ sys.exit("unexpected gh invocation: " + repr(args))
 '''
 
 GIT_MOCK = r'''#!/usr/bin/env bash
-if [[ "$1" == "push" ]]; then
+if [[ "$1" == "push" || "$1" == "fetch" ]]; then
   printf '%s\n' "$*" >> "$MOCK_GIT_MARKER"
   exit 0
 fi
@@ -180,7 +180,7 @@ class RolloutTests(unittest.TestCase):
         result = self.run_script()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.gh_calls(), [])
-        self.assertEqual(self.git_calls(), [])
+        self.assertEqual(self.git_calls(), ["fetch --quiet upstream master"])
 
     def test_plan_lists_the_whole_stack_without_network(self):
         result = self.run_script(["--plan"])
@@ -212,7 +212,7 @@ class RolloutTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.gh_calls(), [])
-        self.assertEqual(self.git_calls(), [])
+        self.assertEqual([c for c in self.git_calls() if c.startswith("push")], [])
 
     def test_publish_refuses_moved_upstream_style_branch(self):
         result = self.run_script(
@@ -271,7 +271,7 @@ class RolloutTests(unittest.TestCase):
                    f"JaredTweed/organicmaps|{PINS['STYLE_BRANCH']}": ""}
         result = self.run_script(["--publish"], {"PUBLISH_CYCLING_STACK": "YES"}, branches=missing)
         self.assertEqual(result.returncode, 0, result.stderr)
-        pushes = self.git_calls()
+        pushes = [call for call in self.git_calls() if call.startswith("push")]
         self.assertEqual(len(pushes), 2, pushes)
         self.assertTrue(any(PINS["STYLE_BASE_BRANCH"] in push for push in pushes))
         self.assertTrue(any(PINS["STYLE_BRANCH"] in push for push in pushes))

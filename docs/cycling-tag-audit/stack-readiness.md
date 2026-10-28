@@ -68,7 +68,8 @@ upstream `master` at `1b9a011b` and no existing PR for any stack branch.
 - Side-specific facilities: one centerline summary today; is that enough before
   separate left/right rendering and routing are added?
 - The classifier type limit: which type should lose when a road already has many?
-- `motor_vehicle=permissive`: does this belong in the cycling-types PR?
+- `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
+  but it also changes two pedestrian/sidewalk classifications in the test extract.
 - Metalines v3: older clients ignore the section and fall back to per-feature
   text/shield placement. Is that acceptable degradation?
 - Whether the style PR should eventually target `ab/cycling-style` directly.

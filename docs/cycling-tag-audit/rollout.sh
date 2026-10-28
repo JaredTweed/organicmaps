@@ -33,6 +33,7 @@ IFS=$'\n\t'
 readonly SCRIPT_NAME=${0##*/}
 readonly UPSTREAM=organicmaps/organicmaps
 readonly FORK=JaredTweed/organicmaps
+readonly FORK_OWNER=JaredTweed
 readonly UPSTREAM_REMOTE=upstream
 readonly FORK_REMOTE=origin
 readonly FORBIDDEN_PR=12692
@@ -68,11 +69,19 @@ urlenc() { printf '%s' "$1" | sed 's|/|%2F|g'; }
 
 branch_head() { "$GIT" rev-parse --verify --quiet "refs/heads/$1"; }
 merge_base() { "$GIT" merge-base "$1" "$2"; }
-is_ancestor() { "$GIT" merge-base --is-ancestor "$1" "$2"; }
 
 signed_off() {
   local sha=$1
   "$GIT" log -1 --format=%B "$sha" | grep -qE '^Signed-off-by: .+ <.+>$'
+}
+
+check_dco() { # base head label
+  local sha commits
+  commits=$("$GIT" rev-list --no-merges "$1..$2") || die "cannot list commits for $3"
+  while IFS= read -r sha; do
+    [[ -n "$sha" ]] || continue
+    signed_off "$sha" || die "$3: commit $sha lacks a DCO Signed-off-by line"
+  done <<< "$commits"
 }
 
 # Files whose upstream movement never invalidates a focused PR.
@@ -143,7 +152,7 @@ step_base() {
 # Head filter form accepted by the GitHub pulls API.
 step_head_filter() {
   if [[ "$1" == selector ]]; then
-    printf '%s' "JaredTweed%3A$(urlenc "$SELECTOR_BRANCH")"
+    printf '%s' "$(urlenc "$FORK_OWNER")%3A$(urlenc "$SELECTOR_BRANCH")"
   else
     printf '%s' "$(urlenc "$(step_branch "$1")")"
   fi
@@ -200,8 +209,13 @@ Draft: the access and direction changes in this PR affect bicycle routing and ne
 
 ## Review notes
 
-- This PR also adds explicit `motor_vehicle=permissive` handling. Two additional `hwtag|yescar` combinations appeared on the test extract (one pedestrian way, one sidewalk), so this is not a visual-only change.
-- Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
+- The cycling style uses `hwtag=yescar` to render ways where motor vehicles are
+  allowed as shared space. This PR now treats `motor_vehicle=permissive` like
+  `yes`, so two additional `hwtag|yescar` combinations appeared on the test
+  extract: one pedestrian way and one sidewalk. The intent is cycling-related,
+  but the pedestrian/sidewalk side effect deserves review.
+- Aggregate counts are not matched features; individual routing correctness still
+  needs route-graph tests.
 
 Stacked on the selector PR.
 EOF
@@ -305,10 +319,14 @@ check_local() {
     else
       branch=$(step_branch "$step"); expected=$(step_head "$step")
     fi
-    actual=$(branch_head "$branch") || die "missing local branch $branch"
+    actual=$(branch_head "$branch") || die "missing local branch $branch (fetch it from $FORK_REMOTE first)"
     [[ "$actual" == "$expected" ]] || die "$branch is at $actual, expected $expected"
-    signed_off "$actual" || die "$branch tip lacks a DCO Signed-off-by line"
   done
+
+  check_dco "$SELECTOR_BASE" "$SELECTOR_HEAD" selector
+  check_dco "$SELECTOR_HEAD" "$TAG_DATA_HEAD" tag-data
+  check_dco "$TAG_DATA_HEAD" "$DASH_HEAD" dash
+  check_dco "$STYLE_BASE_HEAD" "$STYLE_HEAD" style
 
   [[ "$(merge_base "$SELECTOR_BRANCH" "$UPSTREAM_REMOTE/master")" == "$SELECTOR_BASE" ]] \
     || die "selector branch is not based on the reviewed upstream commit $SELECTOR_BASE"
@@ -320,8 +338,9 @@ check_local() {
     || die "style branch is not based on the style-base head"
 
   local pair
-  for pair in "$SELECTOR_HEAD" "$TAG_DATA_HEAD" "$DASH_HEAD" "$STYLE_HEAD"; do
-    "$GIT" diff --check "$pair^..$pair" >/dev/null || die "whitespace error at $pair"
+  for pair in "$SELECTOR_BASE:$SELECTOR_HEAD" "$SELECTOR_HEAD:$TAG_DATA_HEAD" \
+              "$TAG_DATA_HEAD:$DASH_HEAD" "$STYLE_BASE_HEAD:$STYLE_HEAD"; do
+    "$GIT" diff --check "${pair%%:*}" "${pair##*:}" >/dev/null || die "whitespace error in ${pair}"
   done
 
   # The style preview may include unrelated upstream churn, but the three
@@ -401,6 +420,7 @@ check_remote() {
 # --------------------------------------------------------------------- modes
 
 check() {
+  "$GIT" fetch --quiet "$UPSTREAM_REMOTE" master || die "cannot fetch upstream master"
   check_local
   check_remote
   note ""
