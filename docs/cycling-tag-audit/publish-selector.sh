@@ -11,8 +11,8 @@ fi
 repo=organicmaps/organicmaps
 owner=JaredTweed
 branch=prepare/cycling-selector
-expected_base=303ef27fbc99d238965d7ced471c8920944110e6
-expected_head=c47447c9aa1b29fc1800447f017921bba5dc211e
+expected_base=b55c734f33b278c452a070c1465904c4144dc1ad
+expected_head=6f9330d5c002abd40fb7fb425ad6cbc33cf377db
 body_file=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/selector-pr-body.md
 
 command -v gh >/dev/null

@@ -13,9 +13,8 @@ cycling attributes or change the existing cycling style. Related: #12692.
 
 ## Testing
 
-- Focused `indexer_tests` selector and research tests passed on the existing
-  research build with identical modified source files. A clean build and tests
-  on this exact branch are still required before removing draft status.
+- Clean debug build and the full `indexer_tests` suite passed on the exact
+  prepared branch (`6f9330d5c0`), with `SKIP_QT_GUI=ON`.
 - Generated-style integration, compatibility with existing drawing rules and
   the runtime cost of selectors require additional review.
 
