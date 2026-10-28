@@ -1137,6 +1137,8 @@ void PostprocessElement(OsmElement * p, FeatureBuilderParams & params)
     {
       bool addOneway = false;
       bool noOneway = false;
+      bool hasPositiveCycleway = false;
+      bool hasNegativeWholeRoadCycleway = false;
       CachedTypes::Type cyclewayType = CachedTypes::Count;
       auto const IsPositiveCyclewayProtection = [](std::string const & kind, std::string const & value)
       {
@@ -1297,15 +1299,15 @@ void PostprocessElement(OsmElement * p, FeatureBuilderParams & params)
           bool const isCyclewayLaneTag = tag.m_key.ends_with(":lane") &&
                                          IsCyclewayKey(tag.m_key.substr(0, tag.m_key.size() - string(":lane").size()));
           if (isCyclewayLaneTag && ProcessCyclewayLaneTag(tag.m_key, tag.m_value))
-            flags[Flags::Cycleway] = 1;
+            hasPositiveCycleway = true;
           continue;
         }
 
         bool const appliesToWholeRoad = tag.m_key == "cycleway" || tag.m_key == "cycleway:both";
         if (appliesToWholeRoad && IsNegativeRoutingTagValue(tag.m_value))
-          flags[Flags::Cycleway] = -1;
+          hasNegativeWholeRoadCycleway = true;
         else if (IsPositiveRoutingTagValue(tag.m_value))
-          flags[Flags::Cycleway] = 1;
+          hasPositiveCycleway = true;
 
         if (tag.m_value == "opposite" || tag.m_value == "opposite_lane" ||
             tag.m_value == "opposite_track" || tag.m_value == "opposite_share_busway")
@@ -1315,6 +1317,11 @@ void PostprocessElement(OsmElement * p, FeatureBuilderParams & params)
 
         ProcessCyclewayTypeTag(tag.m_key, tag.m_value);
       }
+
+      if (hasPositiveCycleway)
+        flags[Flags::Cycleway] = 1;
+      else if (hasNegativeWholeRoadCycleway)
+        flags[Flags::Cycleway] = -1;
 
       if (addOneway && !noOneway)
         params.AddType(types.Get(CachedTypes::OneWay));
