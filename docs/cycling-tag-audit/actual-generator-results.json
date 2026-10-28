@@ -1,0 +1,88 @@
+{
+  "attribute_count_deltas": {
+    "cyclewaytag|lane": 787,
+    "cyclewaytag|shared_lane": 963,
+    "cyclewaytag|track": 108,
+    "hwtag|yescar": 2
+  },
+  "baseline": {
+    "attribute_counts": {
+      "hwtag|bidir_bicycle": 188,
+      "hwtag|lit": 8282,
+      "hwtag|nobicycle": 850,
+      "hwtag|nocar": 765,
+      "hwtag|nocycleway": 6060,
+      "hwtag|nofoot": 1137,
+      "hwtag|nosidewalk": 6804,
+      "hwtag|onedir_bicycle": 103,
+      "hwtag|oneway": 6268,
+      "hwtag|private": 2198,
+      "hwtag|toll": 66,
+      "hwtag|yesbicycle": 4835,
+      "hwtag|yescar": 16,
+      "hwtag|yesfoot": 663,
+      "psurface|paved_bad": 1487,
+      "psurface|paved_good": 41534,
+      "psurface|unpaved_bad": 1008,
+      "psurface|unpaved_good": 1066
+    },
+    "commit": "6f9330d5c002abd40fb7fb425ad6cbc33cf377db",
+    "dump_sha256": "aa1fd63ec2eed84008bc4a7d3570eef699ba853734b824b7e682f1120e737d03",
+    "features": 82785,
+    "generator_sha256": "f9b07c41992ae5bba4952d3f5e3b38fc554a3443839fdae3e3a93572da531968",
+    "map_bytes": 2383926,
+    "map_sha256": "a856b1378ccf507859a4d475f0039ee9f22c711ae822d7c352638af8ac6bdaa0",
+    "type_count_histogram": {
+      "1": 32762,
+      "2": 27891,
+      "3": 10341,
+      "4": 7694,
+      "5": 3567,
+      "6": 451,
+      "7": 79
+    }
+  },
+  "candidate": {
+    "attribute_counts": {
+      "cyclewaytag|lane": 787,
+      "cyclewaytag|shared_lane": 963,
+      "cyclewaytag|track": 108,
+      "hwtag|bidir_bicycle": 188,
+      "hwtag|lit": 8282,
+      "hwtag|nobicycle": 850,
+      "hwtag|nocar": 765,
+      "hwtag|nocycleway": 6060,
+      "hwtag|nofoot": 1137,
+      "hwtag|nosidewalk": 6804,
+      "hwtag|onedir_bicycle": 103,
+      "hwtag|oneway": 6268,
+      "hwtag|private": 2198,
+      "hwtag|toll": 66,
+      "hwtag|yesbicycle": 4835,
+      "hwtag|yescar": 18,
+      "hwtag|yesfoot": 663,
+      "psurface|paved_bad": 1487,
+      "psurface|paved_good": 41534,
+      "psurface|unpaved_bad": 1008,
+      "psurface|unpaved_good": 1066
+    },
+    "commit": "7db63dcb40190b76d96adb015de93d81d98acb46",
+    "dump_sha256": "867eb1e87687bbe0bc08c44e05b6d253e21f7a1bf5cf233afcc02a61b8b070cb",
+    "features": 82785,
+    "generator_sha256": "e547d5027aa8a965b83b665ba8b9a86aa51afdc1d505f38a7202bca3ad4190aa",
+    "map_bytes": 2387686,
+    "map_sha256": "160472fd2a14ba1e31e5a1ad4cad772742235e72f7ae70f84db7ed14aeff12f1",
+    "type_count_histogram": {
+      "1": 32762,
+      "2": 27887,
+      "3": 10156,
+      "4": 6932,
+      "5": 3977,
+      "6": 869,
+      "7": 150,
+      "8": 52
+    }
+  },
+  "scope": "Road-only geometry/index MWM; aggregate types, not per-feature routing or compatibility",
+  "source_sha256": "d034b4a5f1758e0b856b5bc09057e79200853f2970f5a12cb1ba927881c9ce08"
+}

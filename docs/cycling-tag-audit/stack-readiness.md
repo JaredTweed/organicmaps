@@ -43,6 +43,19 @@ the tests do not prove that routing is correct in all cases. The full
 `routing_common_tests` debug suite also passed, but does not substitute for
 end-to-end routing over generated graphs or old-app/new-map tests.
 
+An actual-generator comparison used the same road-only Vancouver OSM extract,
+the selector baseline (`6f9330d5c0`) and data prototype (`7db63dcb40`), debug
+generator binaries and geometry/index-only MWMs. Both produced 82,785 decoded
+features; the MWM grew from 2,383,926 to 2,387,686 bytes (+3,760, about 0.16%).
+The candidate had 787 lane, 963 shared-lane and 108 track type occurrences.
+Aggregate existing `hwtag` and `psurface` counts were unchanged except for two
+additional `hwtag|yescar` occurrences. These are aggregate counts, not matched
+features; do not infer individual routing correctness, exact causation, or
+absence of other semantic changes from them. The input excludes the data needed
+for representative routing graphs and full-region compatibility. Reproducible
+hashes and all count deltas are in
+[`actual-generator-results.json`](actual-generator-results.json).
+
 The existing cycling style is based on upstream `ab/cycling-style`
 (`7af82a316a`), not on `master`. Its branch introduces the cycling map mode,
 style sources and associated platform work; it is not just the line styling
@@ -50,6 +63,12 @@ in #12692. A dependent style branch built solely on the selector/data stack
 cannot be assumed to have that infrastructure. Decide with maintainers how
 the cycling-style base will land or how the later style work should be based;
 do not import its entire branch invisibly into an unrelated generator PR.
+As of the pinned snapshots, a read-only merge-tree trial of `7af82a316a` and
+`7db63dcb40` reports conflicts in 20 paths, including generated style assets,
+renderer/stylist code, classifier rule loading, Qt configuration, and the
+Kothic submodule. This does not prove the merge is impossible, but it cannot
+be safely automated by choosing one side or preserving generated binaries
+without reconciling sources and regenerating/testing the result.
 
 `publish-selector.sh --check` performs only read-only GitHub queries and fails
 if upstream moved, the prepared branch changed, or a PR already exists.

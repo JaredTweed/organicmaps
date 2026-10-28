@@ -21,7 +21,9 @@ surface types cannot be dropped under pressure.
 
 - Debug `generator_tests --filter=OsmType` and full `routing_common_tests`
   passed on the prepared branch. These tests do not prove end-to-end routing.
-- A controlled road-extract generation comparison is in progress; full-map,
+- On the same road-only Vancouver extract, the geometry/index-only MWM grew by
+  3,760 bytes; two additional `hwtag|yescar` occurrences were observed in
+  aggregate. These are not per-feature routing checks. Full-map,
   old-client/new-map, mixed-version, and routing-graph tests remain necessary.
 - Confirm whether centerline-only information is sufficient and how the design
   relates to future side-specific cycling and pedestrian attributes.
