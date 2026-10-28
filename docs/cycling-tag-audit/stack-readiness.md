@@ -141,6 +141,12 @@ rebased and retested.
   base they are `1658-1660`. This is why the style preview cannot be squashed
   blindly into the stack: after the types land, the style branch must be rebased
   and its generated rules regenerated once.
+- A first phone preview mixed a map generated on `master` (IDs `1660-1662`) with
+  the preview app's rules (IDs `1658-1660`). The rules then matched the wrong
+  types, so Cambie Street lost its lane dashes and only a few shared/track
+  segments rendered. Regenerating the map from the preview branch fixed it:
+  track is solid, lane is dashed, shared_lane is dotted. Never test the preview
+  with a map generated from a different branch's classifier.
 - A separate, unmodified local branch `feature/bicycle-routing-improvements`
   also adds bicycle types (`hwtag|bicycle_access`, `cyclewaytag|*`,
   `hwtag|bicycle_ramp`) on an August base. It was not touched. If revived, its

@@ -259,6 +259,7 @@ This draft exists so the appearance can be reviewed against the intended data mo
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
 - The diff against this base includes the selector, cycling-types, and dash-phase work because the preview depends on them. Those commits are identical to the separate PRs above; review the `[styles]` commits and the screenshots.
 - The selector and generator changes pass the full `indexer_tests` suite on this branch.
+- Generate the preview map from this branch or its `ab/cycling-style` base, not from `master`. `cyclewaytag` is allocated as 1658-1660 here and 1660-1662 on current `master`; a master-generated map makes these rules match the wrong types, so lane/track/shared styling looks inconsistent.
 
 ## Open questions
 
