@@ -1,8 +1,13 @@
 # Cycling PR stack readiness
 
-Status: **prepared, not published**. No pull request was created, edited, closed,
-or commented on while building this kit. PR #12692 is untouched and the rollout
-script has a hard guard against ever targeting it.
+Status: **published as drafts on 2026-10-28**. PR #12692 was not modified.
+
+| # | Draft PR | Branch | Head |
+| - | --- | --- | --- |
+| 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `6f9330d5c0` |
+| 2 | https://github.com/JaredTweed/organicmaps/pull/1 | `prepare/cycling-tag-data` | `8e641f3e90` |
+| 3 | https://github.com/JaredTweed/organicmaps/pull/2 | `prepare/cycling-dash` | `352e040b4c` |
+| 4 | https://github.com/JaredTweed/organicmaps/pull/3 | `prepare/cycling-style` | `ca0586974c` |
 
 The single publication entry point is [`rollout.sh`](rollout.sh). It is
 self-contained: pins, PR titles, and PR bodies live inside it. The `*-pr-body.md`

@@ -24,13 +24,15 @@ application ID, a research type-selector implementation and native tests; see
 [Pixel 8 Pro preparation](cycling-tag-types-phone.md). These changes are not
 release certification.
 
-## Prepared review stack
+## Published review stack
 
 The maintainer feedback led to a four-PR stack split from #12692. It is
-prepared but **not published**: [stack readiness](cycling-tag-audit/stack-readiness.md)
-lists the branches, pins, evidence and open questions, and the single
-[`rollout.sh`](cycling-tag-audit/rollout.sh) launcher creates all four draft PRs
-after an explicit opt-in. No command in that kit touches #12692.
+published as drafts: [upstream selector PR](https://github.com/organicmaps/organicmaps/pull/14040)
+and the fork review drafts [cycling types](https://github.com/JaredTweed/organicmaps/pull/1),
+[dash phase](https://github.com/JaredTweed/organicmaps/pull/2), and
+[style preview](https://github.com/JaredTweed/organicmaps/pull/3).
+[Stack readiness](cycling-tag-audit/stack-readiness.md) lists the branches, pins,
+evidence, and open questions. #12692 was not modified.
 
 ## Additional source evidence
 
