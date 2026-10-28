@@ -7,7 +7,7 @@ PR, from `JaredTweed:prepare/cycling-selector` to `organicmaps:master`.
 | Stage | State | Required before submission |
 | --- | --- | --- |
 | Type selector | Prototype on upstream master `303ef27fbc`; fork head `6f9330d5c0`; exact-branch full debug `indexer_tests` passes | Maintainer agreement that this is the right first PR; inspect all existing generated rules and compiler integration; review selector semantics and performance. |
-| Bicycle attributes and generation | Design not agreed; no publication branch | Agree centerline vs side information, routing/pedestrian contracts, retention and compatibility; implement and test without compromising routing or old maps. |
+| Bicycle attributes and generation | Experimental fork branch `prepare/cycling-tag-data`, head `7db63dcb40`, with extracted generator changes and newly appended classifier IDs; debug OSM-type and full routing-common suites pass | Agree centerline vs side information, routing/pedestrian contracts, retention and compatibility; prove routing/old-map behavior. Not ready for a PR. |
 | Cycling style | Existing experimental implementation only | Rebase on agreed data design; verify exact solid/dashed/dotted appearance with same roads, zooms and themes; account for compiler selector fallback. |
 | Dash rendering / metalines | Existing experimental implementation only | Separate independently useful rendering changes; establish MWM section version compatibility and cross-feature phase correctness. |
 
@@ -32,6 +32,24 @@ an explicit follow-up workflow and coordination. Review visibility, CI,
 retargeting and merge behavior must be communicated to maintainers. The
 current selector-only launcher does not require upstream branch-write access.
 No fork PRs exist yet and no dependent draft is ready to publish.
+
+The data prototype initially resolved `cycleway=no` plus a side-specific lane
+according to the order of OSM tags, producing either `hwtag|yesbicycle` or
+`hwtag|nocycleway`. The added order-invariance regression reproduced the bug;
+`7db63dcb40` makes positive side information take precedence over a negative
+whole-road flag and passes the `OsmType` debug generator suite. This policy
+needs review alongside other conflicting side, generic and directional tags;
+the tests do not prove that routing is correct in all cases. The full
+`routing_common_tests` debug suite also passed, but does not substitute for
+end-to-end routing over generated graphs or old-app/new-map tests.
+
+The existing cycling style is based on upstream `ab/cycling-style`
+(`7af82a316a`), not on `master`. Its branch introduces the cycling map mode,
+style sources and associated platform work; it is not just the line styling
+in #12692. A dependent style branch built solely on the selector/data stack
+cannot be assumed to have that infrastructure. Decide with maintainers how
+the cycling-style base will land or how the later style work should be based;
+do not import its entire branch invisibly into an unrelated generator PR.
 
 `publish-selector.sh --check` performs only read-only GitHub queries and fails
 if upstream moved, the prepared branch changed, or a PR already exists.
