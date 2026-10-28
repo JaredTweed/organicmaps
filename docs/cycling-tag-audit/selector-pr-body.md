@@ -2,7 +2,7 @@
 
 Lets a drawing rule test whether a feature also carries a given classifier type, using the existing runtime selector syntax `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`.
 
-This is the first, self-contained step extracted from the cycling infrastructure work. It adds no new map types and does not change the MWM format, so it can be reviewed and merged on its own.
+The parser and the `extra_tag` syntax already exist; the runtime implementation was left disabled behind a commented-out block. This PR activates it, passes the rules' own `Classificator` in, and adds tests. It adds no new map types and does not change the MWM format, so it can be reviewed and merged on its own.
 
 ## Details
 

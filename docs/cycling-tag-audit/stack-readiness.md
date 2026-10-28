@@ -14,8 +14,8 @@ checked against the script by the tests.
 | # | Branch on `JaredTweed/organicmaps` | Head | PR base | Target | Draft |
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `6f9330d5c0` | `master` | `organicmaps/organicmaps` | yes |
-| 2 | `prepare/cycling-tag-data` | `7db63dcb40` | `prepare/cycling-selector` | `JaredTweed/organicmaps` | yes |
-| 3 | `prepare/cycling-dash` | `f9c9fa676f` | `prepare/cycling-tag-data` | `JaredTweed/organicmaps` | yes |
+| 2 | `prepare/cycling-tag-data` | `8e641f3e90` | `prepare/cycling-selector` | `JaredTweed/organicmaps` | yes |
+| 3 | `prepare/cycling-dash` | `352e040b4c` | `prepare/cycling-tag-data` | `JaredTweed/organicmaps` | yes |
 | 4 | `prepare/cycling-style` | `ca0586974c` | `prepare/cycling-style-base` | `JaredTweed/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
@@ -34,7 +34,8 @@ to `organicmaps/organicmaps`.
    match by truncation. Invalid selectors are rejected instead of asserted.
 2. **Cycling types.** Adds `cyclewaytag|track`, `lane`, and `shared_lane` while
    keeping the road's main `highway` type. Includes access/direction refinements
-   and an order-invariance fix for `cycleway=no` plus a positive side value.
+   and an order-invariance fix for `cycleway=no` plus a positive side value. The
+   PR keeps the seven original incremental commits instead of squashing them.
 3. **Dash phase.** Metalines section version 2 -> 3, one dash-phase offset per
    feature; readers accept 1-3. Continuous phase across adjacent ways, limited
    to patterned cycling infrastructure. Vulkan shader pack regenerated.
@@ -47,8 +48,8 @@ to `organicmaps/organicmaps`.
 | Step | Evidence |
 | --- | --- |
 | 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`. |
-| 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. |
-| 3 | Clean debug build of `generator_tests` and `drape_frontend_tests`; metalines and clip-splines suites. |
+| 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. The branch keeps the seven original incremental commits; its tree is identical to the commit the tests ran on. |
+| 3 | Clean debug build of `generator_tests` and `drape_frontend_tests`; metalines and clip-splines suites. Rebased onto the cycling-types head after the history change; tree identical to the tested commit. |
 | 4 | Full `indexer_tests` debug suite passes on the preview branch itself. Sources are identical to #12692 except the selector and generator commits, both also verified above. The appearance checklist below is still open. |
 
 A real-generator comparison on the same road-only Vancouver extract retained

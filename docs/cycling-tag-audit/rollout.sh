@@ -47,8 +47,8 @@ readonly STYLE_BRANCH=prepare/cycling-style
 
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=6f9330d5c002abd40fb7fb425ad6cbc33cf377db
-readonly TAG_DATA_HEAD=7db63dcb40190b76d96adb015de93d81d98acb46
-readonly DASH_HEAD=f9c9fa676fbc38faa1b8eb1889a3b1c1db263037
+readonly TAG_DATA_HEAD=8e641f3e90591e296a9d03b8d732100b6929f83b
+readonly DASH_HEAD=352e040b4cc06499261dbe4d516afb872e37c86f
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
 readonly STYLE_HEAD=ca0586974cc376ce048faf9c4b5449d3d4756f23
 
@@ -164,7 +164,7 @@ body_selector() {
 
 Lets a drawing rule test whether a feature also carries a given classifier type, using the existing runtime selector syntax `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`.
 
-This is the first, self-contained step extracted from the cycling infrastructure work. It adds no new map types and does not change the MWM format, so it can be reviewed and merged on its own.
+The parser and the `extra_tag` syntax already exist; the runtime implementation was left disabled behind a commented-out block. This PR activates it, passes the rules' own `Classificator` in, and adds tests. It adds no new map types and does not change the MWM format, so it can be reviewed and merged on its own.
 
 ## Details
 
@@ -209,13 +209,8 @@ Draft: the access and direction changes in this PR affect bicycle routing and ne
 
 ## Review notes
 
-- The cycling style uses `hwtag=yescar` to render ways where motor vehicles are
-  allowed as shared space. This PR now treats `motor_vehicle=permissive` like
-  `yes`, so two additional `hwtag|yescar` combinations appeared on the test
-  extract: one pedestrian way and one sidewalk. The intent is cycling-related,
-  but the pedestrian/sidewalk side effect deserves review.
-- Aggregate counts are not matched features; individual routing correctness still
-  needs route-graph tests.
+- The cycling style uses `hwtag=yescar` to render ways where motor vehicles are allowed as shared space. This PR now treats `motor_vehicle=permissive` like `yes`, so two additional `hwtag|yescar` combinations appeared on the test extract: one pedestrian way and one sidewalk. The intent is cycling-related, but the pedestrian/sidewalk side effect deserves review.
+- Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
 
 Stacked on the selector PR.
 EOF
@@ -260,7 +255,7 @@ This draft exists so the appearance can be reviewed against the intended data mo
 
 - Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
-- The generator and selector parts are already split into their own PRs; only the style delta is new here.
+- The diff against this base includes the selector, cycling-types, and dash-phase work because the preview depends on them. Those commits are identical to the separate PRs above; review the `[styles]` commits and the screenshots.
 - The selector and generator changes pass the full `indexer_tests` suite on this branch.
 
 ## Open questions
@@ -331,6 +326,8 @@ check_local() {
 
   [[ "$(merge_base "$SELECTOR_BRANCH" "$UPSTREAM_REMOTE/master")" == "$SELECTOR_BASE" ]] \
     || die "selector branch is not based on the reviewed upstream commit $SELECTOR_BASE"
+  "$GIT" merge-base --is-ancestor "$SELECTOR_BASE" "$UPSTREAM_REMOTE/master" \
+    || die "selector base $SELECTOR_BASE is no longer in upstream master (force-push?)"
   [[ "$(merge_base "$TAG_DATA_BRANCH" "$SELECTOR_BRANCH")" == "$SELECTOR_HEAD" ]] \
     || die "tag-data branch is not stacked on the selector head"
   [[ "$(merge_base "$DASH_BRANCH" "$TAG_DATA_BRANCH")" == "$TAG_DATA_HEAD" ]] \
