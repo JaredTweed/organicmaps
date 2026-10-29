@@ -8,15 +8,25 @@
 #include "coding/reader.hpp"
 #include "coding/write_to_sink.hpp"
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace feature
 {
+enum class MetalineKind : uint8_t
+{
+  Named,
+  Lane,
+  SharedLane
+};
+using MetalineKey = std::tuple<MetalineKind, std::string, std::string>;
+
 // A string of connected ways.
 class LineString
 {
@@ -65,8 +75,8 @@ class LineStringMerger
 {
 public:
   using LinePtr = std::shared_ptr<LineString>;
-  using InputData = std::unordered_multimap<size_t, LinePtr>;
-  using OutputData = std::map<size_t, std::vector<LinePtr>>;
+  using InputData = std::map<MetalineKey, std::vector<LinePtr>>;
+  using OutputData = InputData;
 
   static OutputData Merge(InputData const & data);
 
