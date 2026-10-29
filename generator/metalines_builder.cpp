@@ -4,6 +4,9 @@
 #include "drape_frontend/read_metaline_task.hpp"  // for kMetaLinesSectionVersion
 
 #include "indexer/classificator.hpp"
+#include "indexer/feature.hpp"
+#include "indexer/feature_processor.hpp"
+#include "indexer/ftypes_matcher.hpp"
 
 #include "coding/files_container.hpp"
 #include "coding/read_write_utils.hpp"
@@ -20,6 +23,43 @@
 
 namespace feature
 {
+namespace
+{
+// Stable chain separators for patterned cycling infrastructure. These are
+// written to the intermediate metalines file and must not depend on the
+// platform's std::hash implementation.
+uint64_t constexpr kCyclewayLaneChainKey = 0x9E3779B97F4A7C15ULL;
+uint64_t constexpr kCyclewaySharedLaneChainKey = 0x9E3779B97F4A7C16ULL;
+
+std::vector<double> ReadFeatureLengths(std::string const & mwmPath)
+{
+  std::vector<double> lengths;
+  ForEachFeature(mwmPath, [&lengths](FeatureType & feature, uint32_t featureId)
+  {
+    if (lengths.size() <= featureId)
+      lengths.resize(featureId + 1);
+
+    feature.ParseGeometry(FeatureType::BEST_GEOMETRY);
+    double length = 0.0;
+    if (feature.GetPointsCount() > 1)
+    {
+      auto previous = feature.GetPoint(0);
+      for (size_t i = 1; i < feature.GetPointsCount(); ++i)
+      {
+        auto const & point = feature.GetPoint(i);
+        if (!previous.EqualDxDy(point, kMwmPointAccuracy))
+        {
+          length += previous.Length(point);
+          previous = point;
+        }
+      }
+    }
+    lengths[featureId] = length;
+  });
+  return lengths;
+}
+}  // namespace
+
 LineString::LineString(OsmElement const & way)
 {
   std::string const oneway = way.GetTag("oneway");
@@ -78,9 +118,22 @@ LineStringMerger::OutputData LineStringMerger::Merge(InputData const & data)
   auto const intermediateData = OrderData(data);
   for (auto & p : intermediateData)
   {
+    std::unordered_map<uint64_t, size_t> endpointCounts;
+    for (auto const & lineString : p.second)
+    {
+      ++endpointCounts[lineString->GetStart()];
+      ++endpointCounts[lineString->GetEnd()];
+    }
+    BlockedNodes blockedNodes;
+    for (auto const & [node, count] : endpointCounts)
+    {
+      if (count > 2)
+        blockedNodes.insert(node);
+    }
+
     Buffer buffer;
     for (auto & lineString : p.second)
-      TryMerge(lineString, buffer);
+      TryMerge(lineString, buffer, blockedNodes);
 
     std::unordered_set<LinePtr> uniqLineStrings;
     for (auto const & pb : buffer)
@@ -95,19 +148,21 @@ LineStringMerger::OutputData LineStringMerger::Merge(InputData const & data)
 }
 
 // static
-bool LineStringMerger::TryMerge(LinePtr const & lineString, Buffer & buffer)
+bool LineStringMerger::TryMerge(LinePtr const & lineString, Buffer & buffer, BlockedNodes const & blockedNodes)
 {
   bool merged = false;
-  while (TryMergeOne(lineString, buffer))
+  while (TryMergeOne(lineString, buffer, blockedNodes))
     merged = true;
 
-  buffer.emplace(lineString->GetStart(), lineString);
-  buffer.emplace(lineString->GetEnd(), lineString);
+  if (blockedNodes.find(lineString->GetStart()) == blockedNodes.end())
+    buffer.emplace(lineString->GetStart(), lineString);
+  if (blockedNodes.find(lineString->GetEnd()) == blockedNodes.end())
+    buffer.emplace(lineString->GetEnd(), lineString);
   return merged;
 }
 
 // static
-bool LineStringMerger::TryMergeOne(LinePtr const & lineString, Buffer & buffer)
+bool LineStringMerger::TryMergeOne(LinePtr const & lineString, Buffer & buffer, BlockedNodes const & blockedNodes)
 {
   auto static const kUndef = std::numeric_limits<int>::max();
   uint64_t index = kUndef;
@@ -123,11 +178,15 @@ bool LineStringMerger::TryMergeOne(LinePtr const & lineString, Buffer & buffer)
     buffer.erase(bufferedLineString->GetEnd());
     if (!lineString->Add(*bufferedLineString))
     {
-      buffer.emplace(bufferedLineString->GetStart(), bufferedLineString);
-      buffer.emplace(bufferedLineString->GetEnd(), bufferedLineString);
+      if (blockedNodes.find(bufferedLineString->GetStart()) == blockedNodes.end())
+        buffer.emplace(bufferedLineString->GetStart(), bufferedLineString);
+      if (blockedNodes.find(bufferedLineString->GetEnd()) == blockedNodes.end())
+        buffer.emplace(bufferedLineString->GetEnd(), bufferedLineString);
 
-      buffer.emplace(lineString->GetStart(), lineString);
-      buffer.emplace(lineString->GetEnd(), lineString);
+      if (blockedNodes.find(lineString->GetStart()) == blockedNodes.end())
+        buffer.emplace(lineString->GetStart(), lineString);
+      if (blockedNodes.find(lineString->GetEnd()) == blockedNodes.end())
+        buffer.emplace(lineString->GetEnd(), lineString);
       return false;
     }
   }
@@ -179,7 +238,20 @@ void MetalinesBuilder::CollectFeature(FeatureBuilder const & feature, OsmElement
   auto const & params = feature.GetParams();
   auto const name = feature.GetName();
   if (name.empty() && params.ref.empty())
+  {
+    // Unnamed painted cycle lanes are common and still need a stable dash
+    // phase across OSM way boundaries. Keep the two patterns in separate
+    // chains so an intersection cannot join incompatible stipples.
+    if (ftypes::IsCyclewayLaneChecker::Instance()(feature.GetTypes()))
+      WriteVarUint(*m_writer, kCyclewayLaneChainKey);
+    else if (ftypes::IsCyclewaySharedLaneChecker::Instance()(feature.GetTypes()))
+      WriteVarUint(*m_writer, kCyclewaySharedLaneChainKey);
+    else
+      return;
+
+    LineString(element).Serialize(*m_writer);
     return;
+  }
 
   WriteVarUint(*m_writer, static_cast<uint64_t>(std::hash<std::string>{}(std::string(name) + '\0' + params.ref)));
   LineString(element).Serialize(*m_writer);
@@ -250,6 +322,7 @@ bool WriteMetalinesSection(std::string const & mwmPath, std::string const & meta
 {
   routing::OsmIdToFeatureIds osmIdToFeatureIds;
   routing::ParseWaysOsmIdToFeatureIdMapping(osmIdsToFeatureIdsPath, osmIdToFeatureIds);
+  auto const featureLengths = ReadFeatureLengths(mwmPath);
 
   FileReader reader(metalinesPath);
   ReaderSource<FileReader> src(reader);
@@ -280,8 +353,17 @@ bool WriteMetalinesSection(std::string const & mwmPath, std::string const & meta
     {
       // Write vector to buffer if we have got at least two segments.
       WriteVarUint(memWriter, featureIds.size());
+      double chainOffset = 0.0;
       for (auto const & fid : featureIds)
+      {
         WriteVarInt(memWriter, fid);
+        auto const featureId = static_cast<uint32_t>(std::abs(fid));
+        CHECK_LESS(featureId, featureLengths.size(), ());
+        double const length = featureLengths[featureId];
+        double const phaseOffset = chainOffset + (fid < 0 ? length : 0.0);
+        memWriter.Write(&phaseOffset, sizeof(phaseOffset));
+        chainOffset += length;
+      }
       ++count;
     }
   }
