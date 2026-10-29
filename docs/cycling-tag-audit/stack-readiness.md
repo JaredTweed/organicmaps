@@ -5,11 +5,11 @@ completed 2026-10-29). PR #12692 was not modified.
 
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
-| 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `6f9330d5c0` |
-| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `8e641f3e90` |
-| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `f9fe7f0d69` |
-| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `c70a80f87d` |
-| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `a7c103e8f5` |
+| 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `c24dc38dfe` |
+| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `0a9b94bcef` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `aff18a6bda` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `e9e62a1618` |
+| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `22f7af8d9d` |
 
 Titles are numbered `1/5` through `5/5`, and every body carries the same stack
 block with links to all five drafts.
@@ -23,11 +23,11 @@ checked against the script by the tests.
 
 | # | Branch on `JaredTweed/organicmaps` | Head | PR base | Target | Draft |
 | - | --- | --- | --- | --- | --- |
-| 1 | `prepare/cycling-selector` | `6f9330d5c0` | `master` | `organicmaps/organicmaps` | yes |
-| 2 | `prepare/cycling-tag-data` | `8e641f3e90` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 3 | `prepare/cycling-metalines` | `f9fe7f0d69` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 4 | `prepare/cycling-dash` | `c70a80f87d` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 5 | `prepare/cycling-style` | `a7c103e8f5` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
+| 1 | `prepare/cycling-selector` | `c24dc38dfe` | `master` | `organicmaps/organicmaps` | yes |
+| 2 | `prepare/cycling-tag-data` | `0a9b94bcef` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 3 | `prepare/cycling-metalines` | `aff18a6bda` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-dash` | `e9e62a1618` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 5 | `prepare/cycling-style` | `22f7af8d9d` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
 `ab/cycling-style` at `7af82a316a` and is kept for provenance.
@@ -64,7 +64,7 @@ official PRs are the review units.
 
 | Step | Evidence |
 | --- | --- |
-| 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`. |
+| 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`; `c24dc38dfe` only fixes clang-format. |
 | 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. The branch keeps the seven original incremental commits; its tree is identical to the commit the tests ran on. |
 | 3 | `generator_tests --filter=Metalines`, full `indexer_tests`, and clip-splines tests pass on a clean build. |
 | 4 | Clean debug build of `drape_frontend_tests`; clip-splines and reversed-metaline phase tests pass. Phone preview keeps solid/dashed/dotted styling. |
@@ -84,13 +84,34 @@ at `44f481bbf3` and all five drafts present.
 
 ## Known open questions for review
 
-- Side-specific facilities: one centerline summary today; is that enough before
-  separate left/right rendering and routing are added?
-- The eight-type limit: `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped on type-heavy roads. Should lane rendering outrank `hwtag`/`psurface` types instead?
+- Side-specific facilities: deferred for this stack; the centerline summary is
+  the agreed first step, with left/right rendering as a follow-up.
+- The eight-type limit: a retention experiment on the Vancouver extract showed
+  no change; other regions still need measuring before deciding whether to
+  reserve the type.
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
 - Metalines v3: version-1 readers reject the whole section, so merged-line labels and shields fall back to per-feature placement on all new maps. Is an append-only extension better than the version bump?
 - Whether the style preview should merge into `ab/cycling-style` or wait for that branch to reach `master`.
+
+## Review answers (vng)
+
+The response is posted in
+[#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
+- **Model:** keep the road's main type plus one `cyclewaytag`; classifier types
+  now, a richer binary feature section only if side-specific or pedestrian data
+  becomes a committed requirement.
+- **Visuals:** one conservative centerline category per road. Per-side rendering
+  and per-side directions are deferred, so the current solid/dashed/dotted look
+  is preserved.
+- **Eight-type cap:** a local retention variant produced the same set of
+  `cyclewaytag` combinations on the Vancouver extract (209 type-dump lines) and
+  no visual change. The current ranking stays; other regions are not measured.
+- **Routing:** PR 2/5 refines access/direction flags; the style consumes only
+  `yescar`/`onedir`; routing-only attributes stay out of the style. End-to-end
+  route-graph tests remain a gate.
+- **Pedestrians:** a separate follow-up, not part of this stack.
 
 ## Publishing
 

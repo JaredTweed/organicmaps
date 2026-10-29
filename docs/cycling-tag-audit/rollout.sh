@@ -47,12 +47,12 @@ readonly STYLE_BASE_BRANCH=prepare/cycling-style-base
 readonly STYLE_BRANCH=prepare/cycling-style
 
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
-readonly SELECTOR_HEAD=6f9330d5c002abd40fb7fb425ad6cbc33cf377db
-readonly TAG_DATA_HEAD=8e641f3e90591e296a9d03b8d732100b6929f83b
-readonly METALINES_HEAD=f9fe7f0d6976993320fe62ab77522c5af10c2058
-readonly DASH_HEAD=c70a80f87ddecb0a0a91fd06b0f38c243bfcace3
+readonly SELECTOR_HEAD=c24dc38dfe5e258837855cb84683c6ad0083adc7
+readonly TAG_DATA_HEAD=0a9b94bcefdb5dc9d4eee9c23e4628be058c5a1e
+readonly METALINES_HEAD=aff18a6bdabc1f361f30e3210a9152361d1dca42
+readonly DASH_HEAD=e9e62a1618b42c9769fdf6a2580127509fd3a282
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=a7c103e8f565b262c806f8d7b79d1f285e597297
+readonly STYLE_HEAD=22f7af8d9d07cd4c343fad66ed4a52f1937f9c58
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
 readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure (2/5)'
@@ -204,6 +204,10 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 
 Related: #12692 (read-only reference; this PR does not modify it).
 
+## Review questions
+
+Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
 ## Stack
 
 Part 1 of 5, in review order:
@@ -250,6 +254,15 @@ This upstream PR is cumulative: it also contains part 1 (the selector). Review t
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
 
+## Review questions
+
+Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067):
+
+- The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
+- Eight-type cap: a local retention experiment on the Vancouver extract produced the same set of `cyclewaytag` combinations (209 type-dump lines), so the cap did not change the look there. The current ranking stays; other regions still need measuring.
+- Routing: this PR refines access/direction flags; the style consumes only `yescar`/`onedir`. End-to-end route-graph tests are still needed.
+- Pedestrian reuse is a follow-up, not part of this stack.
+
 ## Stack
 
 Part 2 of 5, in review order:
@@ -288,6 +301,13 @@ This upstream PR is cumulative: it also contains parts 1-2.
 - `drape_frontend_tests --filter=ClipSplines` passes.
 - Phone preview with a map generated from this classifier keeps solid/dashed/dotted styling unchanged.
 
+## Scope
+
+- Stores offsets only; the renderer use is 4/5.
+- One centerline chain per road pattern; no side-specific data.
+- The version-3 format is the compatibility decision; an append-only extension is the alternative.
+- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
 ## Stack
 
 Part 3 of 5, in review order:
@@ -325,6 +345,12 @@ This upstream PR is cumulative: it also contains parts 1-3.
 - Clip-splines and reversed-metaline phase tests pass.
 - Phone preview: Cambie lane dashes, shared-lane dots, and solid tracks are unchanged.
 
+## Scope
+
+- Continuous phase on the centerline; no per-side rendering or per-side arrows.
+- Uses the stored offsets; no color, width, or style change.
+- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
 ## Stack
 
 Part 4 of 5, in review order:
@@ -357,11 +383,16 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review 
 
 ## Open questions
 
-- Whether the final style PR should target `ab/cycling-style` directly after the generator work lands.
-- Whether side-specific facilities need separate rendering before this is merged.
-- How the classifier-type limit should be handled when a road already carries many types.
+- When to add side-specific rendering as a follow-up.
+- Whether other regions lose `cyclewaytag` at the eight-type cap; Vancouver did not.
 
 Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
+
+## Scope
+
+- Centerline style only; side-specific facilities are deferred.
+- The type-cap experiment on the Vancouver extract showed no visual change; the current ranking stays.
+- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack
 

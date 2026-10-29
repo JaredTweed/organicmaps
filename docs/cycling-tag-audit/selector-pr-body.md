@@ -17,6 +17,10 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 
 Related: #12692 (read-only reference; this PR does not modify it).
 
+## Review questions
+
+Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
 ## Stack
 
 Part 1 of 5, in review order:

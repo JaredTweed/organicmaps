@@ -21,6 +21,12 @@ This upstream PR is cumulative: it also contains parts 1-3.
 - Clip-splines and reversed-metaline phase tests pass.
 - Phone preview: Cambie lane dashes, shared-lane dots, and solid tracks are unchanged.
 
+## Scope
+
+- Continuous phase on the centerline; no per-side rendering or per-side arrows.
+- Uses the stored offsets; no color, width, or style change.
+- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
 ## Stack
 
 Part 4 of 5, in review order:

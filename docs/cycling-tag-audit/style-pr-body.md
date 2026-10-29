@@ -16,11 +16,16 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review 
 
 ## Open questions
 
-- Whether the final style PR should target `ab/cycling-style` directly after the generator work lands.
-- Whether side-specific facilities need separate rendering before this is merged.
-- How the classifier-type limit should be handled when a road already carries many types.
+- When to add side-specific rendering as a follow-up.
+- Whether other regions lose `cyclewaytag` at the eight-type cap; Vancouver did not.
 
 Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
+
+## Scope
+
+- Centerline style only; side-specific facilities are deferred.
+- The type-cap experiment on the Vancouver extract showed no visual change; the current ranking stays.
+- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack
 

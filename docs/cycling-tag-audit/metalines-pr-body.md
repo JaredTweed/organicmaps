@@ -22,6 +22,13 @@ This upstream PR is cumulative: it also contains parts 1-2.
 - `drape_frontend_tests --filter=ClipSplines` passes.
 - Phone preview with a map generated from this classifier keeps solid/dashed/dotted styling unchanged.
 
+## Scope
+
+- Stores offsets only; the renderer use is 4/5.
+- One centerline chain per road pattern; no side-specific data.
+- The version-3 format is the compatibility decision; an append-only extension is the alternative.
+- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
 ## Stack
 
 Part 3 of 5, in review order:

@@ -30,6 +30,15 @@ This upstream PR is cumulative: it also contains part 1 (the selector). Review t
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
 
+## Review questions
+
+Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067):
+
+- The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
+- Eight-type cap: a local retention experiment on the Vancouver extract produced the same set of `cyclewaytag` combinations (209 type-dump lines), so the cap did not change the look there. The current ranking stays; other regions still need measuring.
+- Routing: this PR refines access/direction flags; the style consumes only `yescar`/`onedir`. End-to-end route-graph tests are still needed.
+- Pedestrian reuse is a follow-up, not part of this stack.
+
 ## Stack
 
 Part 2 of 5, in review order:
