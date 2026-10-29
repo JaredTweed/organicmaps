@@ -4,7 +4,7 @@ Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as a
 
 Draft: the access and direction changes in this PR affect bicycle routing and need review.
 
-This upstream PR is cumulative because the clean stack bases are fork-only: it also contains part 1 (the selector). Review the `[generator]` commits, or use the isolated fork draft for the clean 2/4 diff: https://github.com/JaredTweed/organicmaps/pull/1.
+This upstream PR is cumulative: it also contains part 1 (the selector). Review the `[generator]` commits.
 
 ## What changes
 
@@ -32,9 +32,10 @@ This upstream PR is cumulative because the clean stack bases are fork-only: it a
 
 ## Stack
 
-Part 2 of 4, in review order:
+Part 2 of 5, in review order:
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. **organicmaps#14041 — cycling types (this PR)**
-3. [organicmaps#14042 — dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
-4. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)

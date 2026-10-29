@@ -1,34 +1,32 @@
 ## Summary
 
-Keeps the dash phase continuous across adjacent road features instead of restarting it per feature. This removes the visible phase break where a dashed road is split into several OSM ways.
+Keeps the dash phase continuous across adjacent road features instead of restarting it per feature. This is the renderer half; part 3 stores the offsets.
 
-Stacked on the cycling-types PR because the phase is currently applied to patterned cycling infrastructure (`cyclewaytag=lane` and `cyclewaytag=shared_lane`).
-
-This upstream PR is cumulative: it also contains parts 1-2. Review the `[drape]` commit, or use the isolated fork draft for the clean 3/4 diff: https://github.com/JaredTweed/organicmaps/pull/2.
+This upstream PR is cumulative: it also contains parts 1-3.
 
 ## Changes
 
-- The MWM metalines section version goes from 1 to 3 and stores one double dash-phase offset per feature. The reader accepts versions 1-3; version 2 was only an intermediate development format and is never written.
-- The renderer combines the stored offset with the geometry direction.
-- Shader sources are updated and the Vulkan shader pack is regenerated.
+- Uses the stored metaline offset and geometry direction to advance the dash phase.
+- Updates line geometry, clipping, line helpers, and shaders; the Vulkan shader pack is regenerated.
+- Applies the phase only to patterned cycling infrastructure, using the shared lane checkers.
 
 ## Compatibility
 
-- Older maps (version 1, and the intermediate version 2) still load; without offsets the renderer falls back to a running chain offset.
-- New maps are readable by older clients, but a version-1 reader rejects the whole version-3 section, so merged-line labels and shields fall back to per-feature placement on every new map, not only cycling ways. This is graceful visual degradation, not a crash, but it is the main cost of the format change.
-- An append-only alternative (keep version 1 and add a trailing offset block that old readers ignore) would avoid that regression. It is the main design choice to settle before merging this PR.
+- Older maps without offsets still load and fall back to a running chain offset.
+- No color, width, or style change; only the phase across way boundaries.
 
 ## Testing
 
-- Clean debug build of `generator_tests` and `drape_frontend_tests`.
-- Metalines and clip-splines tests pass.
-- Device visual check is still required at all zoom levels and in both themes before this leaves draft.
+- Clean debug build of `drape_frontend_tests`.
+- Clip-splines and reversed-metaline phase tests pass.
+- Phone preview: Cambie lane dashes, shared-lane dots, and solid tracks are unchanged.
 
 ## Stack
 
-Part 3 of 4, in review order:
+Part 4 of 5, in review order:
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
-3. **organicmaps#14042 — dash phase (this PR)**
-4. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. **organicmaps#14042 — continuous dash phase (this PR)**
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)

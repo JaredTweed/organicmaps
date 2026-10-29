@@ -19,9 +19,10 @@ Related: #12692 (read-only reference; this PR does not modify it).
 
 ## Stack
 
-Part 1 of 4, in review order:
+Part 1 of 5, in review order:
 
 1. **organicmaps#14040 — selector (this PR)**
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
-3. [organicmaps#14042 — dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
-4. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)

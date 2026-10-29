@@ -18,14 +18,14 @@
 # Exit codes: 0 ok, 1 blocked/failed, 2 usage.
 #
 # The stack:
-#   1. selector  JaredTweed:prepare/cycling-selector -> organicmaps:master
-#   2. data      prepare/cycling-tag-data  -> prepare/cycling-selector
-#   3. dash      prepare/cycling-dash      -> prepare/cycling-tag-data
-#   4. style     prepare/cycling-style     -> prepare/cycling-style-base
+#   1. selector   JaredTweed:prepare/cycling-selector  -> organicmaps:master
+#   2. types      JaredTweed:prepare/cycling-tag-data  -> organicmaps:master
+#   3. metalines  JaredTweed:prepare/cycling-metalines -> organicmaps:master
+#   4. renderer   JaredTweed:prepare/cycling-dash      -> organicmaps:master
+#   5. style      JaredTweed:prepare/cycling-style     -> organicmaps:ab/cycling-style
 #
-# Steps 2-4 are fork-only review PRs, chosen by the author because GitHub
-# cannot stack PRs across forks and the author has read-only access upstream.
-# Step 1 is the only upstream PR and is the proposed first reviewable piece.
+# All five are official draft PRs. Parts 2-4 are cumulative because the clean
+# stack bases exist only on the fork; part 5 targets the maintainer style branch.
 
 set -Eeuo pipefail
 IFS=$'\n\t'
@@ -41,6 +41,7 @@ readonly FORBIDDEN_PR=12692
 # Pins verified by --check. Update only after the matching tests pass.
 readonly SELECTOR_BRANCH=prepare/cycling-selector
 readonly TAG_DATA_BRANCH=prepare/cycling-tag-data
+readonly METALINES_BRANCH=prepare/cycling-metalines
 readonly DASH_BRANCH=prepare/cycling-dash
 readonly STYLE_BASE_BRANCH=prepare/cycling-style-base
 readonly STYLE_BRANCH=prepare/cycling-style
@@ -48,23 +49,26 @@ readonly STYLE_BRANCH=prepare/cycling-style
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=6f9330d5c002abd40fb7fb425ad6cbc33cf377db
 readonly TAG_DATA_HEAD=8e641f3e90591e296a9d03b8d732100b6929f83b
-readonly DASH_HEAD=352e040b4cc06499261dbe4d516afb872e37c86f
+readonly METALINES_HEAD=f9fe7f0d6976993320fe62ab77522c5af10c2058
+readonly DASH_HEAD=c70a80f87ddecb0a0a91fd06b0f38c243bfcace3
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=ca0586974cc376ce048faf9c4b5449d3d4756f23
+readonly STYLE_HEAD=a7c103e8f565b262c806f8d7b79d1f285e597297
 
-readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/4)'
-readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure (2/4)'
-readonly DASH_TITLE='[drape] Keep a continuous dash phase across road features (3/4)'
-readonly STYLE_TITLE='[styles] Apply cycleway infrastructure to the cycling style (4/4, preview)'
+readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
+readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure (2/5)'
+readonly METALINES_TITLE='[drape] Store dash phase offsets in metalines (3/5)'
+readonly DASH_TITLE='[drape] Keep a continuous dash phase across road features (4/5)'
+readonly STYLE_TITLE='[styles] Apply cycleway infrastructure to the cycling style (5/5, preview)'
 
 readonly STACK_URL_1=https://github.com/organicmaps/organicmaps/pull/14040
 readonly STACK_URL_2=https://github.com/organicmaps/organicmaps/pull/14041
-readonly STACK_URL_3=https://github.com/organicmaps/organicmaps/pull/14042
-readonly STACK_URL_4=https://github.com/organicmaps/organicmaps/pull/14043
+readonly STACK_URL_3=https://github.com/organicmaps/organicmaps/pull/14048
+readonly STACK_URL_4=https://github.com/organicmaps/organicmaps/pull/14042
+readonly STACK_URL_5=https://github.com/organicmaps/organicmaps/pull/14043
 
 readonly GH=${GH:-gh}
 readonly GIT=${GIT:-git}
-readonly STEPS=(selector tag-data dash style)
+readonly STEPS=(selector tag-data metalines dash style)
 
 die() { printf 'rollout: %s\n' "$*" >&2; exit 1; }
 note() { printf '%s\n' "$*"; }
@@ -97,9 +101,9 @@ overlap_ignored() {
   esac
 }
 
-check_no_overlap() { # base head
-  local base=$1 head=$2 mb upstream_changed pr_changed f
-  mb=$(merge_base "$base" "$head") || die "no merge base for $head"
+check_no_overlap() { # base head (base kept for call-site readability)
+  local head=$2 mb upstream_changed pr_changed f
+  mb=$(merge_base "$head" "$UPSTREAM_REMOTE/master") || die "no merge base for $head"
   upstream_changed=$("$GIT" diff --name-only "$mb" "$UPSTREAM_REMOTE/master" | sort -u)
   pr_changed=$("$GIT" diff --name-only "$mb" "$head" | sort -u)
   local overlap
@@ -119,6 +123,7 @@ step_branch() {
   case "$1" in
     selector) printf '%s' "$SELECTOR_BRANCH" ;;
     tag-data) printf '%s' "$TAG_DATA_BRANCH" ;;
+    metalines) printf '%s' "$METALINES_BRANCH" ;;
     dash) printf '%s' "$DASH_BRANCH" ;;
     style) printf '%s' "$STYLE_BRANCH" ;;
     *) die "unknown step $1" ;;
@@ -128,6 +133,7 @@ step_head() {
   case "$1" in
     selector) printf '%s' "$SELECTOR_HEAD" ;;
     tag-data) printf '%s' "$TAG_DATA_HEAD" ;;
+    metalines) printf '%s' "$METALINES_HEAD" ;;
     dash) printf '%s' "$DASH_HEAD" ;;
     style) printf '%s' "$STYLE_HEAD" ;;
     *) die "unknown step $1" ;;
@@ -137,6 +143,7 @@ step_title() {
   case "$1" in
     selector) printf '%s' "$SELECTOR_TITLE" ;;
     tag-data) printf '%s' "$TAG_DATA_TITLE" ;;
+    metalines) printf '%s' "$METALINES_TITLE" ;;
     dash) printf '%s' "$DASH_TITLE" ;;
     style) printf '%s' "$STYLE_TITLE" ;;
     *) die "unknown step $1" ;;
@@ -149,6 +156,7 @@ step_base() {
   case "$1" in
     selector) printf '%s' master ;;
     tag-data) printf '%s' master ;;
+    metalines) printf '%s' master ;;
     dash) printf '%s' master ;;
     style) printf '%s' ab/cycling-style ;;
     *) die "unknown step $1" ;;
@@ -162,11 +170,11 @@ step_head_filter() {
 # Shared "Stack" section, identical in every PR except the bolded current part.
 stack_block() { # current part number
   local current=$1 i
-  local labels=(selector 'cycling types' 'dash phase' 'cycling style preview')
-  local refs=('organicmaps#14040' 'organicmaps#14041' 'organicmaps#14042' 'organicmaps#14043')
-  local urls=("$STACK_URL_1" "$STACK_URL_2" "$STACK_URL_3" "$STACK_URL_4")
-  printf '\n## Stack\n\nPart %s of 4, in review order:\n\n' "$current"
-  for i in 1 2 3 4; do
+  local labels=(selector 'cycling types' 'metalines offsets' 'continuous dash phase' 'cycling style preview')
+  local refs=('organicmaps#14040' 'organicmaps#14041' 'organicmaps#14048' 'organicmaps#14042' 'organicmaps#14043')
+  local urls=("$STACK_URL_1" "$STACK_URL_2" "$STACK_URL_3" "$STACK_URL_4" "$STACK_URL_5")
+  printf '\n## Stack\n\nPart %s of 5, in review order:\n\n' "$current"
+  for i in 1 2 3 4 5; do
     if [[ "$i" == "$current" ]]; then
       printf '%s. **%s — %s (this PR)**\n' "$i" "${refs[$((i - 1))]}" "${labels[$((i - 1))]}"
     else
@@ -195,8 +203,17 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 - New tests cover equality, inequality, nested types, multiple types, and invalid selectors.
 
 Related: #12692 (read-only reference; this PR does not modify it).
+
+## Stack
+
+Part 1 of 5, in review order:
+
+1. **organicmaps#14040 — selector (this PR)**
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
 EOF
-  stack_block 1
 }
 
 body_tag_data() {
@@ -207,7 +224,7 @@ Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as a
 
 Draft: the access and direction changes in this PR affect bicycle routing and need review.
 
-This upstream PR is cumulative because the clean stack bases are fork-only: it also contains part 1 (the selector). Review the `[generator]` commits, or use the isolated fork draft for the clean 2/4 diff: https://github.com/JaredTweed/organicmaps/pull/1.
+This upstream PR is cumulative: it also contains part 1 (the selector). Review the `[generator]` commits.
 
 ## What changes
 
@@ -232,39 +249,92 @@ This upstream PR is cumulative because the clean stack bases are fork-only: it a
 - The cycling style uses `hwtag=yescar` to render ways where motor vehicles are allowed as shared space. This PR now treats `motor_vehicle=permissive` like `yes`, so two additional `hwtag|yescar` combinations appeared on the test extract: one pedestrian way and one sidewalk. The intent is cycling-related, but the pedestrian/sidewalk side effect deserves review.
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
+
+## Stack
+
+Part 2 of 5, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. **organicmaps#14041 — cycling types (this PR)**
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
 EOF
-  stack_block 2
+}
+
+body_metalines() {
+  cat <<'EOF'
+## Summary
+
+Stores a dash-phase offset per metaline feature so the renderer can keep a dash pattern continuous across OSM way boundaries. This is the data-format half; the renderer use is part 4.
+
+This upstream PR is cumulative: it also contains parts 1-2.
+
+## Changes
+
+- The metalines section goes from version 1 to 3 and stores one double offset per feature.
+- Unnamed painted lane and shared-lane ways are added to metalines in separate chains.
+- Adds shared `ftypes` checkers for the two painted-lane types, uses stable 64-bit chain keys instead of `std::hash`, and removes the dead version-2 reader.
+
+## Compatibility
+
+- Older maps (version 1) still load; without offsets the renderer falls back to a running chain offset.
+- Old clients reject the version-3 section and lose merged labels/shields on new maps. An append-only extension is the main alternative to decide before merging.
+
+## Testing
+
+- `generator_tests --filter=Metalines` passes.
+- Full `indexer_tests` suite passes.
+- `drape_frontend_tests --filter=ClipSplines` passes.
+- Phone preview with a map generated from this classifier keeps solid/dashed/dotted styling unchanged.
+
+## Stack
+
+Part 3 of 5, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. **organicmaps#14048 — metalines offsets (this PR)**
+4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+EOF
 }
 
 body_dash() {
   cat <<'EOF'
 ## Summary
 
-Keeps the dash phase continuous across adjacent road features instead of restarting it per feature. This removes the visible phase break where a dashed road is split into several OSM ways.
+Keeps the dash phase continuous across adjacent road features instead of restarting it per feature. This is the renderer half; part 3 stores the offsets.
 
-Stacked on the cycling-types PR because the phase is currently applied to patterned cycling infrastructure (`cyclewaytag=lane` and `cyclewaytag=shared_lane`).
-
-This upstream PR is cumulative: it also contains parts 1-2. Review the `[drape]` commit, or use the isolated fork draft for the clean 3/4 diff: https://github.com/JaredTweed/organicmaps/pull/2.
+This upstream PR is cumulative: it also contains parts 1-3.
 
 ## Changes
 
-- The MWM metalines section version goes from 1 to 3 and stores one double dash-phase offset per feature. The reader accepts versions 1-3; version 2 was only an intermediate development format and is never written.
-- The renderer combines the stored offset with the geometry direction.
-- Shader sources are updated and the Vulkan shader pack is regenerated.
+- Uses the stored metaline offset and geometry direction to advance the dash phase.
+- Updates line geometry, clipping, line helpers, and shaders; the Vulkan shader pack is regenerated.
+- Applies the phase only to patterned cycling infrastructure, using the shared lane checkers.
 
 ## Compatibility
 
-- Older maps (version 1, and the intermediate version 2) still load; without offsets the renderer falls back to a running chain offset.
-- New maps are readable by older clients, but a version-1 reader rejects the whole version-3 section, so merged-line labels and shields fall back to per-feature placement on every new map, not only cycling ways. This is graceful visual degradation, not a crash, but it is the main cost of the format change.
-- An append-only alternative (keep version 1 and add a trailing offset block that old readers ignore) would avoid that regression. It is the main design choice to settle before merging this PR.
+- Older maps without offsets still load and fall back to a running chain offset.
+- No color, width, or style change; only the phase across way boundaries.
 
 ## Testing
 
-- Clean debug build of `generator_tests` and `drape_frontend_tests`.
-- Metalines and clip-splines tests pass.
-- Device visual check is still required at all zoom levels and in both themes before this leaves draft.
+- Clean debug build of `drape_frontend_tests`.
+- Clip-splines and reversed-metaline phase tests pass.
+- Phone preview: Cambie lane dashes, shared-lane dots, and solid tracks are unchanged.
+
+## Stack
+
+Part 4 of 5, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. **organicmaps#14042 — continuous dash phase (this PR)**
+5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
 EOF
-  stack_block 3
 }
 
 body_style() {
@@ -273,15 +343,15 @@ body_style() {
 
 Applies the cycling style to the new `cyclewaytag` types while preserving the current solid, dashed, and dotted presentation.
 
-This draft exists so the appearance can be reviewed against the intended data model. It is based on `ab/cycling-style` plus the selector, cycling-types, and dash-phase PRs, because the cycling style itself is not on `master` yet.
+This draft exists so the appearance can be reviewed against the intended data model. It is based on `ab/cycling-style` plus parts 1-4.
 
-This upstream PR targets `ab/cycling-style` and also contains parts 1-3. Review the `[styles]` commits, or use the isolated fork draft for the clean 4/4 diff: https://github.com/JaredTweed/organicmaps/pull/3.
+This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review the `[styles]` commits.
 
 ## What to review
 
 - Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
-- The diff against this base includes the selector, cycling-types, and dash-phase work because the preview depends on them. Those commits are identical to the separate PRs above; review the `[styles]` commits and the screenshots.
+- The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
 - The selector and generator changes pass the full `indexer_tests` suite on this branch.
 - Generate the preview map from this branch or its `ab/cycling-style` base, not from `master`. `cyclewaytag` is allocated as 1658-1660 here and 1660-1662 on current `master`; a master-generated map makes these rules match the wrong types, so lane/track/shared styling looks inconsistent.
 
@@ -292,14 +362,24 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-3. Review 
 - How the classifier-type limit should be handled when a road already carries many types.
 
 Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
+
+## Stack
+
+Part 5 of 5, in review order:
+
+1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. **organicmaps#14043 — cycling style preview (this PR)**
 EOF
-  stack_block 4
 }
 
 dump_body() {
   case "$1" in
     selector) body_selector ;;
     tag-data) body_tag_data ;;
+    metalines) body_metalines ;;
     dash) body_dash ;;
     style) body_style ;;
     *) die "unknown body $1" ;;
@@ -310,6 +390,7 @@ body_file_name() {
   case "$1" in
     selector) printf 'selector-pr-body.md' ;;
     tag-data) printf 'tag-data-pr-body.md' ;;
+    metalines) printf 'metalines-pr-body.md' ;;
     dash) printf 'dash-pr-body.md' ;;
     style) printf 'style-pr-body.md' ;;
   esac
@@ -349,7 +430,8 @@ check_local() {
 
   check_dco "$SELECTOR_BASE" "$SELECTOR_HEAD" selector
   check_dco "$SELECTOR_HEAD" "$TAG_DATA_HEAD" tag-data
-  check_dco "$TAG_DATA_HEAD" "$DASH_HEAD" dash
+  check_dco "$TAG_DATA_HEAD" "$METALINES_HEAD" metalines
+  check_dco "$METALINES_HEAD" "$DASH_HEAD" dash
   check_dco "$STYLE_BASE_HEAD" "$STYLE_HEAD" style
 
   [[ "$(merge_base "$SELECTOR_BRANCH" "$UPSTREAM_REMOTE/master")" == "$SELECTOR_BASE" ]] \
@@ -358,14 +440,17 @@ check_local() {
     || die "selector base $SELECTOR_BASE is no longer in upstream master (force-push?)"
   [[ "$(merge_base "$TAG_DATA_BRANCH" "$SELECTOR_BRANCH")" == "$SELECTOR_HEAD" ]] \
     || die "tag-data branch is not stacked on the selector head"
-  [[ "$(merge_base "$DASH_BRANCH" "$TAG_DATA_BRANCH")" == "$TAG_DATA_HEAD" ]] \
-    || die "dash branch is not stacked on the tag-data head"
+  [[ "$(merge_base "$METALINES_BRANCH" "$TAG_DATA_BRANCH")" == "$TAG_DATA_HEAD" ]] \
+    || die "metalines branch is not stacked on the tag-data head"
+  [[ "$(merge_base "$DASH_BRANCH" "$METALINES_BRANCH")" == "$METALINES_HEAD" ]] \
+    || die "dash branch is not stacked on the metalines head"
   [[ "$(merge_base "$STYLE_BRANCH" "$STYLE_BASE_BRANCH")" == "$STYLE_BASE_HEAD" ]] \
     || die "style branch is not based on the style-base head"
 
   local pair
   for pair in "$SELECTOR_BASE:$SELECTOR_HEAD" "$SELECTOR_HEAD:$TAG_DATA_HEAD" \
-              "$TAG_DATA_HEAD:$DASH_HEAD" "$STYLE_BASE_HEAD:$STYLE_HEAD"; do
+              "$TAG_DATA_HEAD:$METALINES_HEAD" "$METALINES_HEAD:$DASH_HEAD" \
+              "$STYLE_BASE_HEAD:$STYLE_HEAD"; do
     "$GIT" diff --check "${pair%%:*}" "${pair##*:}" >/dev/null || die "whitespace error in ${pair}"
   done
 
@@ -373,7 +458,8 @@ check_local() {
   # stackable branches must never overlap current master in source files.
   check_no_overlap "$SELECTOR_BASE" "$SELECTOR_HEAD"
   check_no_overlap "$SELECTOR_HEAD" "$TAG_DATA_HEAD"
-  check_no_overlap "$TAG_DATA_HEAD" "$DASH_HEAD"
+  check_no_overlap "$TAG_DATA_HEAD" "$METALINES_HEAD"
+  check_no_overlap "$METALINES_HEAD" "$DASH_HEAD"
 }
 
 # --------------------------------------------------------------- remote check
@@ -451,7 +537,7 @@ check() {
   check_remote
   note ""
   note "Preflight passed. Nothing was changed."
-  note "Run PUBLISH_CYCLING_STACK=YES $SCRIPT_NAME --publish to create the four drafts."
+  note "Run PUBLISH_CYCLING_STACK=YES $SCRIPT_NAME --publish to create the five drafts."
 }
 
 print_plan() {
@@ -532,7 +618,7 @@ publish() {
   done
 
   note ""
-  note "All four drafts are in place. Run $SCRIPT_NAME --verify to re-check them."
+  note "All five drafts are in place. Run $SCRIPT_NAME --verify to re-check them."
 }
 
 verify() {

@@ -1,16 +1,18 @@
 # Cycling PR stack readiness
 
-Status: **published as drafts on 2026-10-28**. PR #12692 was not modified.
+Status: **published as five official drafts** (selector opened 2026-10-28, split
+completed 2026-10-29). PR #12692 was not modified.
 
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `6f9330d5c0` |
 | 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `8e641f3e90` |
-| 3 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `352e040b4c` |
-| 4 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `ca0586974c` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `f9fe7f0d69` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `c70a80f87d` |
+| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `a7c103e8f5` |
 
-Titles are numbered `1/4` through `4/4`, and every body carries the same
-stack block with links to all four drafts.
+Titles are numbered `1/5` through `5/5`, and every body carries the same stack
+block with links to all five drafts.
 
 The single publication entry point is [`rollout.sh`](rollout.sh). It is
 self-contained: pins, PR titles, and PR bodies live inside it. The `*-pr-body.md`
@@ -23,20 +25,18 @@ checked against the script by the tests.
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `6f9330d5c0` | `master` | `organicmaps/organicmaps` | yes |
 | 2 | `prepare/cycling-tag-data` | `8e641f3e90` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 3 | `prepare/cycling-dash` | `352e040b4c` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 4 | `prepare/cycling-style` | `ca0586974c` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
+| 3 | `prepare/cycling-metalines` | `f9fe7f0d69` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-dash` | `c70a80f87d` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 5 | `prepare/cycling-style` | `a7c103e8f5` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
 `ab/cycling-style` at `7af82a316a` and is kept for provenance.
 
-All four PRs are on the official repository. Parts 2 and 3 target `master` and
-are **cumulative** because the fork cannot host stack base branches: the 2/4 PR
-also contains part 1, and the 3/4 PR also contains parts 1-2. Part 4 targets the
-existing `ab/cycling-style` branch. The isolated per-PR diffs remain in the fork
-drafts [#1](https://github.com/JaredTweed/organicmaps/pull/1),
-[#2](https://github.com/JaredTweed/organicmaps/pull/2), and
-[#3](https://github.com/JaredTweed/organicmaps/pull/3), linked from the official
-bodies.
+All five PRs are on the official repository. Parts 2-4 target `master` and are
+**cumulative** because the fork cannot host stack base branches: 2/5 contains
+part 1, 3/5 contains parts 1-2, and 4/5 contains parts 1-3. Part 5 targets the
+existing `ab/cycling-style` branch. The earlier fork drafts are obsolete; the
+official PRs are the review units.
 
 ## What each step contains
 
@@ -49,12 +49,16 @@ bodies.
    keeping the road's main `highway` type. Includes access/direction refinements
    and an order-invariance fix for `cycleway=no` plus a positive side value. The
    PR keeps the seven original incremental commits instead of squashing them.
-3. **Dash phase.** Metalines section version 1 -> 3, one double dash-phase offset
-   per feature (8 bytes per chained feature); readers accept 1-3. Continuous phase across adjacent ways, limited
-   to patterned cycling infrastructure. Vulkan shader pack regenerated.
-4. **Style preview.** The cycling style from #12692 replayed on the selector and
-   cycling-type work. This is a visual preview, not a merge candidate; its base
-   is a maintainer branch.
+3. **Metalines offsets.** Metalines section version 1 -> 3, one double offset per
+   feature; unnamed painted lanes/shared lanes are added to metalines in separate
+   chains. Shared `ftypes` checkers and stable chain keys replace duplicated type
+   paths and `std::hash`; the dead version-2 reader is removed. The renderer does
+   not use the offsets yet.
+4. **Continuous dash phase.** Uses the stored offsets and geometry direction in
+   line geometry, clipping, and shaders; the Vulkan pack is regenerated. Only
+   patterned cycling infrastructure is phased. No color, width, or style change.
+5. **Style preview.** The cycling style from #12692 replayed on parts 1-4. This is
+   a visual preview, not a merge candidate; its base is a maintainer branch.
 
 ## Verification performed
 
@@ -62,20 +66,21 @@ bodies.
 | --- | --- |
 | 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`. |
 | 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. The branch keeps the seven original incremental commits; its tree is identical to the commit the tests ran on. |
-| 3 | Clean debug build of `generator_tests` and `drape_frontend_tests`; metalines and clip-splines suites. Rebased onto the cycling-types head after the history change; tree identical to the tested commit. |
-| 4 | Full `indexer_tests` debug suite passes on the preview branch itself. Sources are identical to #12692 except the selector and generator commits, both also verified above. The appearance checklist below is still open. |
+| 3 | `generator_tests --filter=Metalines`, full `indexer_tests`, and clip-splines tests pass on a clean build. |
+| 4 | Clean debug build of `drape_frontend_tests`; clip-splines and reversed-metaline phase tests pass. Phone preview keeps solid/dashed/dotted styling. |
+| 5 | Full `indexer_tests` debug suite on the preview branch. Sources are identical to #12692 except the selector/generator fixes. The appearance checklist below is still open. |
 
 A real-generator comparison on the same road-only Vancouver extract retained
 82,785 features in both builds. The MWM grew from 2,383,926 to 2,387,686 bytes
 (+3,760, 0.16%). The candidate added 787 `lane`, 963 `shared_lane`, and 108
 `track` type occurrences. Aggregate `hwtag`/`psurface` counts were unchanged
-except two additional `hwtag|yescar` occurrences, explained by the new
+except two additional `hwtag|yescar` occurrences, explained by the
 `motor_vehicle=permissive` handling. Counts are aggregate, not matched features;
 they do not prove per-road routing correctness. Raw data is in
 [`actual-generator-results.json`](actual-generator-results.json).
 
-`rollout.sh --check` passed against the live repository on 2026-10-28, with
-upstream `master` at `1b9a011b` and no existing PR for any stack branch.
+`rollout.sh --check` passes against the live repository with upstream `master`
+at `44f481bbf3` and all five drafts present.
 
 ## Known open questions for review
 
@@ -120,7 +125,7 @@ still open drafts, and never deletes branches.
 
 ## Remaining gates before any PR leaves draft
 
-- Device screenshots for step 4 at several zoom levels in light and dark themes,
+- Device screenshots for step 5 at several zoom levels in light and dark themes,
   on the same roads used for #12692.
 - End-to-end bicycle route tests on generated graphs for step 2, not just unit
   suites.
@@ -129,28 +134,26 @@ still open drafts, and never deletes branches.
 
 ## Promotion path after review
 
-All four are already official drafts. Parts 2 and 3 are cumulative because their
+All five are already official drafts. Parts 2-4 are cumulative because their
 clean bases are fork-only. As each step is accepted:
 
 1. Merge part 1.
-2. Rebase `prepare/cycling-tag-data` onto the new `master`. Its 2/4 diff then
+2. Rebase `prepare/cycling-tag-data` onto the new `master`. Its 2/5 diff then
    contains only the cycling types; check that no new classifier IDs were
    appended and retest.
-3. Rebase `prepare/cycling-dash` onto the accepted cycling-types head. Its 3/4
-   diff then contains only the dash work. The metalines version change still
-   needs its own compatibility review.
-4. Rebase the style work onto `ab/cycling-style` (or `master` once that lands),
+3. Rebase `prepare/cycling-metalines` onto the accepted types head. Its 3/5 diff
+   then contains only the format change; review the metalines compatibility
+   decision separately.
+4. Rebase `prepare/cycling-dash` onto the accepted metalines head. Its 4/5 diff
+   then contains only the renderer phase.
+5. Rebase the style work onto `ab/cycling-style` (or `master` once that lands),
    regenerate the rules, and verify the visual checklist before merging. Do not
    merge the preview as-is.
 
-The isolated fork drafts [#1](https://github.com/JaredTweed/organicmaps/pull/1),
-[#2](https://github.com/JaredTweed/organicmaps/pull/2), and
-[#3](https://github.com/JaredTweed/organicmaps/pull/3) continue to show the
-per-PR diffs while the official ones are cumulative.
-
-`rollout.sh --check` fails if `master` changes a file a stack PR edits, so an
-upstream ID append or a renderer change blocks publication until the branch is
-rebased and retested.
+After each rebase the cumulative official diff shrinks to that part's own
+changes. `rollout.sh --check` fails if `master` changes a file a stack PR edits,
+so an upstream ID append or a renderer change blocks publication until the
+branch is rebased and retested.
 
 ## Notes
 

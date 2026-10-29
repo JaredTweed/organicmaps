@@ -111,6 +111,7 @@ def branch_map(overrides=None):
     data = {
         f"JaredTweed/organicmaps|{PINS['SELECTOR_BRANCH']}": PINS["SELECTOR_HEAD"],
         f"JaredTweed/organicmaps|{PINS['TAG_DATA_BRANCH']}": PINS["TAG_DATA_HEAD"],
+        f"JaredTweed/organicmaps|{PINS['METALINES_BRANCH']}": PINS["METALINES_HEAD"],
         f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}": PINS["DASH_HEAD"],
         f"JaredTweed/organicmaps|{PINS['STYLE_BASE_BRANCH']}": PINS["STYLE_BASE_HEAD"],
         f"JaredTweed/organicmaps|{PINS['STYLE_BRANCH']}": PINS["STYLE_HEAD"],
@@ -185,7 +186,7 @@ class RolloutTests(unittest.TestCase):
     def test_plan_lists_the_whole_stack_without_network(self):
         result = self.run_script(["--plan"])
         self.assertEqual(result.returncode, 0, result.stderr)
-        for step in ("selector", "tag-data", "dash", "style", "style-base"):
+        for step in ("selector", "tag-data", "metalines", "dash", "style", "style-base"):
             self.assertIn(step, result.stdout)
         self.assertEqual(self.gh_calls(), [])
 
@@ -194,7 +195,7 @@ class RolloutTests(unittest.TestCase):
         result = self.run_script(["--dump-bodies", str(out)])
         self.assertEqual(result.returncode, 0, result.stderr)
         for name in ("selector-pr-body.md", "tag-data-pr-body.md",
-                     "dash-pr-body.md", "style-pr-body.md"):
+                     "metalines-pr-body.md", "dash-pr-body.md", "style-pr-body.md"):
             self.assertEqual((out / name).read_text(), (DOCS / name).read_text(), name)
 
     # publish gates -------------------------------------------------------
@@ -246,14 +247,15 @@ class RolloutTests(unittest.TestCase):
 
     # publish happy path --------------------------------------------------
 
-    def test_publish_creates_four_drafts_in_stack_order(self):
+    def test_publish_creates_five_drafts_in_stack_order(self):
         result = self.run_script(["--publish"], {"PUBLISH_CYCLING_STACK": "YES"})
         self.assertEqual(result.returncode, 0, result.stderr)
         calls = self.gh_calls()
-        self.assertEqual(len(calls), 4, calls)
+        self.assertEqual(len(calls), 5, calls)
         expected = [
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['SELECTOR_BRANCH']}"),
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['TAG_DATA_BRANCH']}"),
+            ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['METALINES_BRANCH']}"),
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['DASH_BRANCH']}"),
             ("organicmaps/organicmaps", "ab/cycling-style", f"JaredTweed:{PINS['STYLE_BRANCH']}"),
         ]
@@ -263,7 +265,7 @@ class RolloutTests(unittest.TestCase):
             self.assertEqual(call["head"], head)
             self.assertTrue(call["draft"])
         state = self.state_path.read_text()
-        self.assertEqual(len(state.strip().splitlines()), 4)
+        self.assertEqual(len(state.strip().splitlines()), 5)
         self.assertNotIn("12692", state)
 
     def test_publish_pushes_only_missing_branches(self):
@@ -280,20 +282,22 @@ class RolloutTests(unittest.TestCase):
         prs = {
             f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
             f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 102,
-            f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103,
-            f"organicmaps/organicmaps|JaredTweed:{PINS['STYLE_BRANCH']}|ab/cycling-style": 104,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['METALINES_BRANCH']}|master": 103,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 104,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['STYLE_BRANCH']}|ab/cycling-style": 105,
         }
         pr_state = {
             "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
             "102": {"state": "open", "draft": True, "base": "master", "headSha": PINS["TAG_DATA_HEAD"]},
-            "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
-            "104": {"state": "open", "draft": True, "base": "ab/cycling-style", "headSha": PINS["STYLE_HEAD"]},
+            "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["METALINES_HEAD"]},
+            "104": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
+            "105": {"state": "open", "draft": True, "base": "ab/cycling-style", "headSha": PINS["STYLE_HEAD"]},
         }
         result = self.run_script(["--publish"], {"PUBLISH_CYCLING_STACK": "YES"},
                                  prs=prs, pr_state=pr_state)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.gh_calls(), [])
-        self.assertEqual(len(self.state_path.read_text().strip().splitlines()), 4)
+        self.assertEqual(len(self.state_path.read_text().strip().splitlines()), 5)
 
     def test_publish_updates_body_only_when_explicitly_allowed(self):
         prs = {f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103}
@@ -322,7 +326,7 @@ class RolloutTests(unittest.TestCase):
         edits = [call for call in self.gh_calls() if "edit" in call]
         self.assertEqual(len(edits), 1, edits)
         self.assertIn("--title", edits[0]["edit"])
-        self.assertTrue(any("(3/4)" in arg for arg in edits[0]["edit"]), edits[0])
+        self.assertTrue(any("(4/5)" in arg for arg in edits[0]["edit"]), edits[0])
 
     # verify / rollback ---------------------------------------------------
 
@@ -335,14 +339,16 @@ class RolloutTests(unittest.TestCase):
         prs = {
             f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
             f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 102,
-            f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103,
-            f"organicmaps/organicmaps|JaredTweed:{PINS['STYLE_BRANCH']}|ab/cycling-style": 104,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['METALINES_BRANCH']}|master": 103,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 104,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['STYLE_BRANCH']}|ab/cycling-style": 105,
         }
         pr_state = {
             "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
             "102": {"state": "open", "draft": True, "base": "master", "headSha": PINS["TAG_DATA_HEAD"]},
-            "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
-            "104": {"state": "open", "draft": True, "base": "ab/cycling-style", "headSha": PINS["STYLE_HEAD"]},
+            "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["METALINES_HEAD"]},
+            "104": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
+            "105": {"state": "open", "draft": True, "base": "ab/cycling-style", "headSha": PINS["STYLE_HEAD"]},
         }
         result = self.run_script(["--verify"], prs=prs, pr_state=pr_state)
         self.assertEqual(result.returncode, 0, result.stderr)
