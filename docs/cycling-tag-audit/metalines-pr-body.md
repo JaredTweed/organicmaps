@@ -8,25 +8,27 @@ This upstream PR is cumulative: it also contains parts 1-2.
 
 - The metalines section goes from version 1 to 3 and stores one double offset per feature.
 - Unnamed painted lane and shared-lane ways are added to metalines in separate chains.
-- Adds shared `ftypes` checkers for the two painted-lane types, uses stable 64-bit chain keys instead of `std::hash`, and removes the dead version-2 reader.
+- Adds shared `ftypes` checkers for the two painted-lane types. Grouping uses an ordered `(kind, name, ref)` key rather than collidable name hashes or numeric sentinels. This changes the generator's temporary collector format; regenerate intermediate files rather than mixing old and new collectors.
+- Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
 
 ## Compatibility
 
 - Older maps (version 1) still load; without offsets the renderer falls back to a running chain offset.
-- Old clients reject the version-3 section and lose merged labels/shields on new maps. An append-only extension is the main alternative to decide before merging.
+- Old v1-only clients reject the version-3 section and lose merged labels/shields on new maps. This remains a merge blocker pending maintainer acceptance or a separately tested additive section. An appended trailer is not assumed safe for old readers.
 
 ## Testing
 
 - `generator_tests --filter=Metalines` passes.
+- New regressions cover collector-key round trips and distinct grouping kinds; `drape_frontend_tests --filter=MetalineData` covers v1/v2/v3, reversal, unknown versions and truncated offsets.
 - Full `indexer_tests` suite passes.
 - `drape_frontend_tests --filter=ClipSplines` passes.
-- Phone preview with a map generated from this classifier keeps solid/dashed/dotted styling unchanged.
+- Earlier phone previews are limited evidence, not a complete visual-equivalence result. Fixed app/map classifier mappings and visual regressions across zoom, theme, reversal and clipping remain required.
 
 ## Scope
 
 - Stores offsets only; the renderer use is 4/5.
 - One centerline chain per road pattern; no side-specific data.
-- The version-3 format is the compatibility decision; an append-only extension is the alternative.
+- The version-3 format is an unresolved compatibility decision; an additive section needs actual old-reader tests before adoption.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack

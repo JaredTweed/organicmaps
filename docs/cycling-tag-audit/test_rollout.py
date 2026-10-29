@@ -140,7 +140,7 @@ class RolloutTests(unittest.TestCase):
         self.git_marker = self.tmp / "git-calls"
 
     def run_script(self, args=("--check",), env=None, branches=None, prs=None,
-                   pr_state=None, next_pr=900):
+                   pr_state=None, next_pr=900, script=SCRIPT):
         state = {
             "branches": branch_map(branches),
             "prs": prs or {},
@@ -162,7 +162,7 @@ class RolloutTests(unittest.TestCase):
         )
         full_env.update(env or {})
         result = subprocess.run(
-            [str(SCRIPT), *args], cwd=REPO, env=full_env,
+            [str(script), *args], cwd=REPO, env=full_env,
             text=True, capture_output=True,
         )
         return result
@@ -205,6 +205,21 @@ class RolloutTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.gh_calls(), [])
         self.assertEqual(self.git_calls(), [])
+
+    def test_publish_protects_original_pr_head_even_if_pin_is_misconfigured(self):
+        for branch in ("master", "refs/heads/master"):
+            with self.subTest(branch=branch):
+                script = self.tmp / "unsafe-rollout.sh"
+                script.write_text(SCRIPT.read_text().replace(
+                    "readonly DASH_BRANCH=prepare/cycling-dash",
+                    f"readonly DASH_BRANCH={branch}"))
+                script.chmod(0o755)
+                result = self.run_script(["--publish"],
+                                         {"PUBLISH_CYCLING_STACK": "YES"}, script=script)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("protected branch", result.stderr)
+                self.assertEqual(self.gh_calls(), [])
+                self.assertEqual(self.git_calls(), [])
 
     def test_publish_refuses_drifted_fork_branch(self):
         result = self.run_script(

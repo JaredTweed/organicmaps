@@ -19,7 +19,7 @@ This upstream PR is cumulative: it also contains parts 1-3.
 
 - Clean debug build of `drape_frontend_tests`.
 - Clip-splines and reversed-metaline phase tests pass.
-- Phone preview: Cambie lane dashes, shared-lane dots, and solid tracks are unchanged.
+- Earlier phone spot checks showed Cambie lane dashes, shared-lane dots, and solid tracks. This is not exhaustive visual-equivalence evidence; fixed-coordinate checks across zooms, themes, clipping, direction reversal and graphics backends remain required.
 
 ## Scope
 

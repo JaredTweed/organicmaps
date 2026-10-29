@@ -11,20 +11,20 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review 
 - Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
 - The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
-- The selector and generator changes pass the full `indexer_tests` suite on this branch.
-- Generate the preview map from this branch or its `ab/cycling-style` base, not from `master`. `cyclewaytag` is allocated as 1658-1660 here and 1660-1662 on current `master`; a master-generated map makes these rules match the wrong types, so lane/track/shared styling looks inconsistent.
+- Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
+- Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
 
 ## Open questions
 
 - When to add side-specific rendering as a follow-up.
-- Whether other regions lose `cyclewaytag` at the eight-type cap; Vancouver did not.
+- Whether individual roads lose `cyclewaytag` at the eight-type cap; aggregate Vancouver dumps do not resolve this.
 
-Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
+Do not merge as-is: the base is the maintainer's `ab/cycling-style` branch, dependencies remain cumulative, and the visual checklist above is not complete.
 
 ## Scope
 
 - Centerline style only; side-specific facilities are deferred.
-- The type-cap experiment on the Vancouver extract showed no visual change; the current ranking stays.
+- The type-cap experiment produced equal aggregate type-combination dumps on the Vancouver extract, not a per-road or pixel-equivalence proof. The current ranking stays pending matched-feature measurements.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack

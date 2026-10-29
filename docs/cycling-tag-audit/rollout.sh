@@ -49,10 +49,10 @@ readonly STYLE_BRANCH=prepare/cycling-style
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=c24dc38dfe5e258837855cb84683c6ad0083adc7
 readonly TAG_DATA_HEAD=0a9b94bcefdb5dc9d4eee9c23e4628be058c5a1e
-readonly METALINES_HEAD=aff18a6bdabc1f361f30e3210a9152361d1dca42
-readonly DASH_HEAD=e9e62a1618b42c9769fdf6a2580127509fd3a282
+readonly METALINES_HEAD=18e4dfaabe2e3981e4516f72b45a9e6355c0e711
+readonly DASH_HEAD=3d77a899256a8e61012f4a87d40ede3c78c52993
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=22f7af8d9d07cd4c343fad66ed4a52f1937f9c58
+readonly STYLE_HEAD=89de1b8f46160cb9b35ee99b8c91da423b752d80
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
 readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure (2/5)'
@@ -184,12 +184,12 @@ stack_block() { # current part number
 }
 
 body_selector() {
-  cat <<'EOF'
+  cat <<'BODY'
 ## Summary
 
 Lets a drawing rule test whether a feature also carries a given classifier type, using the existing runtime selector syntax `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`.
 
-The parser and the `extra_tag` syntax already exist; the runtime implementation was left disabled behind a commented-out block. This PR activates it, passes the rules' own `Classificator` in, and adds tests. No existing generated rule uses `extra_tag`, so current rendering cannot change. It adds no new map types and does not change the MWM format, so it can be reviewed and merged on its own.
+The parser and the `extra_tag` syntax already exist; the runtime implementation was left disabled behind a commented-out block. This PR activates it, passes the rules' own `Classificator` in, and adds tests. No generated rule on the pinned baseline uses `extra_tag`, so no existing rendering change is intended. It adds no new map types and does not change the MWM format, so it can be reviewed on its own, subject to CI and review.
 
 ## Details
 
@@ -217,11 +217,11 @@ Part 1 of 5, in review order:
 3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
 4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
 5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
-EOF
+BODY
 }
 
 body_tag_data() {
-  cat <<'EOF'
+  cat <<'BODY'
 ## Summary
 
 Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as additional types while keeping the road's main `highway` type. Styles can then distinguish cycling infrastructure without replacing the road classification.
@@ -232,14 +232,14 @@ This upstream PR is cumulative: it also contains part 1 (the selector). Review t
 
 ## What changes
 
-- The generator classifies `cycleway*` tags into one additional type, with `track` > `lane` > `shared_lane` precedence and side/forward/backward handling.
+- The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.
 - `cycleway=no` combined with a positive side-specific value now resolves independently of OSM tag order; a regression test reproduces the previous bug.
 - Bicycle direction and access flags are refined in the same classification pass.
 
 ## Compatibility
 
 - New types are appended after the existing classifier IDs; no MWM section format change.
-- Old maps remain readable, and old readers ignore unknown types.
+- No existing classifier entry is intentionally renumbered on this base. Old maps remain readable by this implementation. Historical-client handling of newly written type indices still needs a matched-map compatibility test; app and generator classifier mappings must match.
 
 ## Testing
 
@@ -259,8 +259,8 @@ This upstream PR is cumulative: it also contains part 1 (the selector). Review t
 Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067):
 
 - The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
-- Eight-type cap: a local retention experiment on the Vancouver extract produced the same set of `cyclewaytag` combinations (209 type-dump lines), so the cap did not change the look there. The current ranking stays; other regions still need measuring.
-- Routing: this PR refines access/direction flags; the style consumes only `yescar`/`onedir`. End-to-end route-graph tests are still needed.
+- Eight-type cap: the Vancouver retention experiment produced identical aggregate type-combination dumps (209 lines containing `cyclewaytag`). This does not prove per-road equality or pixel equivalence. Keep the current ranking pending matched per-feature measurements, including any access/direction/surface type displaced by prioritizing cycling.
+- Routing: this PR changes access/direction flags as well as display classification. `motor_vehicle=permissive` is an independently reviewable access change and should be extracted before merge if routing reviewers want it separate. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
 - Pedestrian reuse is a follow-up, not part of this stack.
 
 ## Stack
@@ -272,11 +272,11 @@ Part 2 of 5, in review order:
 3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
 4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
 5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
-EOF
+BODY
 }
 
 body_metalines() {
-  cat <<'EOF'
+  cat <<'BODY'
 ## Summary
 
 Stores a dash-phase offset per metaline feature so the renderer can keep a dash pattern continuous across OSM way boundaries. This is the data-format half; the renderer use is part 4.
@@ -287,25 +287,27 @@ This upstream PR is cumulative: it also contains parts 1-2.
 
 - The metalines section goes from version 1 to 3 and stores one double offset per feature.
 - Unnamed painted lane and shared-lane ways are added to metalines in separate chains.
-- Adds shared `ftypes` checkers for the two painted-lane types, uses stable 64-bit chain keys instead of `std::hash`, and removes the dead version-2 reader.
+- Adds shared `ftypes` checkers for the two painted-lane types. Grouping uses an ordered `(kind, name, ref)` key rather than collidable name hashes or numeric sentinels. This changes the generator's temporary collector format; regenerate intermediate files rather than mixing old and new collectors.
+- Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
 
 ## Compatibility
 
 - Older maps (version 1) still load; without offsets the renderer falls back to a running chain offset.
-- Old clients reject the version-3 section and lose merged labels/shields on new maps. An append-only extension is the main alternative to decide before merging.
+- Old v1-only clients reject the version-3 section and lose merged labels/shields on new maps. This remains a merge blocker pending maintainer acceptance or a separately tested additive section. An appended trailer is not assumed safe for old readers.
 
 ## Testing
 
 - `generator_tests --filter=Metalines` passes.
+- New regressions cover collector-key round trips and distinct grouping kinds; `drape_frontend_tests --filter=MetalineData` covers v1/v2/v3, reversal, unknown versions and truncated offsets.
 - Full `indexer_tests` suite passes.
 - `drape_frontend_tests --filter=ClipSplines` passes.
-- Phone preview with a map generated from this classifier keeps solid/dashed/dotted styling unchanged.
+- Earlier phone previews are limited evidence, not a complete visual-equivalence result. Fixed app/map classifier mappings and visual regressions across zoom, theme, reversal and clipping remain required.
 
 ## Scope
 
 - Stores offsets only; the renderer use is 4/5.
 - One centerline chain per road pattern; no side-specific data.
-- The version-3 format is the compatibility decision; an append-only extension is the alternative.
+- The version-3 format is an unresolved compatibility decision; an additive section needs actual old-reader tests before adoption.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack
@@ -317,11 +319,11 @@ Part 3 of 5, in review order:
 3. **organicmaps#14048 — metalines offsets (this PR)**
 4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
 5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
-EOF
+BODY
 }
 
 body_dash() {
-  cat <<'EOF'
+  cat <<'BODY'
 ## Summary
 
 Keeps the dash phase continuous across adjacent road features instead of restarting it per feature. This is the renderer half; part 3 stores the offsets.
@@ -343,7 +345,7 @@ This upstream PR is cumulative: it also contains parts 1-3.
 
 - Clean debug build of `drape_frontend_tests`.
 - Clip-splines and reversed-metaline phase tests pass.
-- Phone preview: Cambie lane dashes, shared-lane dots, and solid tracks are unchanged.
+- Earlier phone spot checks showed Cambie lane dashes, shared-lane dots, and solid tracks. This is not exhaustive visual-equivalence evidence; fixed-coordinate checks across zooms, themes, clipping, direction reversal and graphics backends remain required.
 
 ## Scope
 
@@ -360,11 +362,11 @@ Part 4 of 5, in review order:
 3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
 4. **organicmaps#14042 — continuous dash phase (this PR)**
 5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
-EOF
+BODY
 }
 
 body_style() {
-  cat <<'EOF'
+  cat <<'BODY'
 ## Preview only — not for merge as-is.
 
 Applies the cycling style to the new `cyclewaytag` types while preserving the current solid, dashed, and dotted presentation.
@@ -378,20 +380,20 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review 
 - Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
 - The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
-- The selector and generator changes pass the full `indexer_tests` suite on this branch.
-- Generate the preview map from this branch or its `ab/cycling-style` base, not from `master`. `cyclewaytag` is allocated as 1658-1660 here and 1660-1662 on current `master`; a master-generated map makes these rules match the wrong types, so lane/track/shared styling looks inconsistent.
+- Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
+- Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
 
 ## Open questions
 
 - When to add side-specific rendering as a follow-up.
-- Whether other regions lose `cyclewaytag` at the eight-type cap; Vancouver did not.
+- Whether individual roads lose `cyclewaytag` at the eight-type cap; aggregate Vancouver dumps do not resolve this.
 
-Do not merge: the base branch is a maintainer branch mirror and the visual checklist above is not complete.
+Do not merge as-is: the base is the maintainer's `ab/cycling-style` branch, dependencies remain cumulative, and the visual checklist above is not complete.
 
 ## Scope
 
 - Centerline style only; side-specific facilities are deferred.
-- The type-cap experiment on the Vancouver extract showed no visual change; the current ranking stays.
+- The type-cap experiment produced equal aggregate type-combination dumps on the Vancouver extract, not a per-road or pixel-equivalence proof. The current ranking stays pending matched-feature measurements.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack
@@ -403,7 +405,7 @@ Part 5 of 5, in review order:
 3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
 4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
 5. **organicmaps#14043 — cycling style preview (this PR)**
-EOF
+BODY
 }
 
 dump_body() {
@@ -439,7 +441,21 @@ dump_bodies() {
 
 # ---------------------------------------------------------------- local check
 
+check_publish_branch() {
+  [[ "$1" == prepare/* ]] || die "protected branch: refusing non-prepare ref $1"
+  "$GIT" check-ref-format "refs/heads/$1" >/dev/null || die "invalid branch $1"
+}
+
+check_publish_branches() {
+  local protected_ref
+  for protected_ref in "$SELECTOR_BRANCH" "$TAG_DATA_BRANCH" "$METALINES_BRANCH" \
+    "$DASH_BRANCH" "$STYLE_BRANCH" "$STYLE_BASE_BRANCH"; do
+    check_publish_branch "$protected_ref"
+  done
+}
+
 check_local() {
+  check_publish_branches
   "$GIT" rev-parse --git-dir >/dev/null 2>&1 || die "not a git repository"
 
   local url
@@ -563,6 +579,7 @@ check_remote() {
 # --------------------------------------------------------------------- modes
 
 check() {
+  check_publish_branches
   "$GIT" fetch --quiet "$UPSTREAM_REMOTE" master || die "cannot fetch upstream master"
   check_local
   check_remote
@@ -582,6 +599,7 @@ print_plan() {
 
 push_branch() { # branch head
   local branch=$1 head=$2 remote
+  check_publish_branch "$branch"
   remote=$(remote_branch_sha "$FORK" "$branch")
   if [[ -z "$remote" ]]; then
     note "Pushing $branch"

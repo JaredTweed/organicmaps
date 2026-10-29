@@ -1,15 +1,16 @@
 # Cycling PR stack readiness
 
 Status: **published as five official drafts** (selector opened 2026-10-28, split
-completed 2026-10-29). PR #12692 was not modified.
+completed 2026-10-29). PR #12692's code is protected; only review comments have
+been added. Do not push its head branch (`JaredTweed:master`).
 
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `c24dc38dfe` |
 | 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `0a9b94bcef` |
-| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `aff18a6bda` |
-| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `e9e62a1618` |
-| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `22f7af8d9d` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `18e4dfaabe` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `3d77a89925` |
+| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `89de1b8f46` |
 
 Titles are numbered `1/5` through `5/5`, and every body carries the same stack
 block with links to all five drafts.
@@ -25,9 +26,9 @@ checked against the script by the tests.
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `c24dc38dfe` | `master` | `organicmaps/organicmaps` | yes |
 | 2 | `prepare/cycling-tag-data` | `0a9b94bcef` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 3 | `prepare/cycling-metalines` | `aff18a6bda` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 4 | `prepare/cycling-dash` | `e9e62a1618` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 5 | `prepare/cycling-style` | `22f7af8d9d` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
+| 3 | `prepare/cycling-metalines` | `18e4dfaabe` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-dash` | `3d77a89925` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 5 | `prepare/cycling-style` | `89de1b8f46` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
 `ab/cycling-style` at `7af82a316a` and is kept for provenance.
@@ -43,17 +44,18 @@ official PRs are the review units.
 1. **Selector.** `ParseSelector` receives the `Classificator`; drawing rules can
    use `extra_tag=<type>=<path>` and `extra_tag!=<type>=<path>`. Nested types
    match by truncation. Invalid selectors are rejected. No generated rule on
-   `master` currently uses `extra_tag`, so activating it cannot change existing
-   rendering.
+   the pinned baseline uses `extra_tag`, so no existing rule is intended to
+   change rendering. This is not a general zero-risk guarantee.
 2. **Cycling types.** Adds `cyclewaytag|track`, `lane`, and `shared_lane` while
    keeping the road's main `highway` type. Includes access/direction refinements
    and an order-invariance fix for `cycleway=no` plus a positive side value. The
    PR keeps the seven original incremental commits instead of squashing them.
 3. **Metalines offsets.** Metalines section version 1 -> 3, one double offset per
    feature; unnamed painted lanes/shared lanes are added to metalines in separate
-   chains. Shared `ftypes` checkers and stable chain keys replace duplicated type
-   paths and `std::hash`; the dead version-2 reader is removed. The renderer does
-   not use the offsets yet.
+   chains. Shared `ftypes` checkers avoid duplicated type paths. Ordered tagged
+   `(kind, name, ref)` keys remove hash/sentinel collisions. The reader explicitly
+   consumes v2 float offsets and v3 doubles; v1 has no offsets. The renderer does
+   not use the offsets yet. Temporary collector files must be regenerated.
 4. **Continuous dash phase.** Uses the stored offsets and geometry direction in
    line geometry, clipping, and shaders; the Vulkan pack is regenerated. Only
    patterned cycling infrastructure is phased. No color, width, or style change.
@@ -66,9 +68,9 @@ official PRs are the review units.
 | --- | --- |
 | 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`; `c24dc38dfe` only fixes clang-format. |
 | 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. The branch keeps the seven original incremental commits; its tree is identical to the commit the tests ran on. |
-| 3 | `generator_tests --filter=Metalines`, full `indexer_tests`, and clip-splines tests pass on a clean build. |
-| 4 | Clean debug build of `drape_frontend_tests`; clip-splines and reversed-metaline phase tests pass. Phone preview keeps solid/dashed/dotted styling. |
-| 5 | Full `indexer_tests` debug suite on the preview branch. Sources are identical to #12692 except the selector/generator fixes. The appearance checklist below is still open. |
+| 3 | Current Debug-assertion build of generator and renderer tests; all 10 `Metalines` tests, all 3 `MetalineData` tests and the complete `OsmType` group pass. New fixtures exercise actual collector round trips and v1/v2/v3 decoding. Earlier full `indexer_tests` evidence is from the prior revision. |
+| 4 | Rebuilt `drape_frontend_tests` at `3d77a89925` with Debug assertions under the memory cap. All 16 clipping tests, both dash-phase tests and all 3 reader tests pass. Prior phone spot checks are not a visual-equivalence proof for this revision. |
+| 5 | Earlier full `indexer_tests` debug suite on the preview branch. Style assets were kept unchanged; code also includes the split stack's selector, generator and metalines fixes. The appearance checklist below is still open. |
 
 A real-generator comparison on the same road-only Vancouver extract retained
 82,785 features in both builds. The MWM grew from 2,383,926 to 2,387,686 bytes
@@ -79,19 +81,21 @@ except two additional `hwtag|yescar` occurrences, explained by the
 they do not prove per-road routing correctness. Raw data is in
 [`actual-generator-results.json`](actual-generator-results.json).
 
-`rollout.sh --check` passes against the live repository with upstream `master`
-at `44f481bbf3` and all five drafts present.
+`rollout.sh --verify` passes against the live repository with upstream `master`
+at `00c6a0a322` and all five drafts present at the pinned heads.
 
 ## Known open questions for review
 
-- Side-specific facilities: deferred for this stack; the centerline summary is
-  the agreed first step, with left/right rendering as a follow-up.
-- The eight-type limit: a retention experiment on the Vancouver extract showed
-  no change; other regions still need measuring before deciding whether to
-  reserve the type.
+The revision rationale and explicit merge gates are in [design-review.md](design-review.md).
+
+- Side-specific facilities: proposed deferral for this stack, not an approval
+  from vng. The centerline summary still needs maintainer acceptance.
+- The eight-type limit: aggregate dumps matched on the Vancouver extract. This
+  does not establish per-feature or pixel equality. Measure displaced access,
+  direction and surface types before changing cycling retention priority.
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
-- Metalines v3: version-1 readers reject the whole section, so merged-line labels and shields fall back to per-feature placement on all new maps. Is an append-only extension better than the version bump?
+- Metalines v3: version-1 readers reject the whole section, losing merged label/shield placement. Keep this as a merge blocker until maintainers accept it or an additive section is tested against actual historical readers. Do not assume a trailing extension is safe.
 - Whether the style preview should merge into `ab/cycling-style` or wait for that branch to reach `master`.
 
 ## Review answers (vng)
@@ -103,14 +107,17 @@ The response is posted in
   now, a richer binary feature section only if side-specific or pedestrian data
   becomes a committed requirement.
 - **Visuals:** one conservative centerline category per road. Per-side rendering
-  and per-side directions are deferred, so the current solid/dashed/dotted look
-  is preserved.
+  and per-side directions are deferred. Preserving solid/dashed/dotted styling
+  is the objective, not a verified pixel-equivalence result.
 - **Eight-type cap:** a local retention variant produced the same set of
-  `cyclewaytag` combinations on the Vancouver extract (209 type-dump lines) and
-  no visual change. The current ranking stays; other regions are not measured.
-- **Routing:** PR 2/5 refines access/direction flags; the style consumes only
-  `yescar`/`onedir`; routing-only attributes stay out of the style. End-to-end
-  route-graph tests remain a gate.
+  `cyclewaytag` combinations on the Vancouver extract (209 type-dump lines).
+  Aggregate equality cannot rule out changes on individual roads. The current
+  ranking stays pending per-feature measurements; other regions are not measured.
+- **Routing:** PR 2/5 refines access/direction flags as well as display types.
+  Style consumers, classifier retention and routing can interact. End-to-end
+  route-graph tests remain a gate. The independent `motor_vehicle=permissive`
+  change should be extracted if requested by routing reviewers; do not silently
+  remove it and change the final preview's shared-space appearance.
 - **Pedestrians:** a separate follow-up, not part of this stack.
 
 ## Publishing
