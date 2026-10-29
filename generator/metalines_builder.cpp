@@ -25,12 +25,6 @@ namespace feature
 {
 namespace
 {
-// Stable chain separators for patterned cycling infrastructure. These are
-// written to the intermediate metalines file and must not depend on the
-// platform's std::hash implementation.
-uint64_t constexpr kCyclewayLaneChainKey = 0x9E3779B97F4A7C15ULL;
-uint64_t constexpr kCyclewaySharedLaneChainKey = 0x9E3779B97F4A7C16ULL;
-
 std::vector<double> ReadFeatureLengths(std::string const & mwmPath)
 {
   std::vector<double> lengths;
@@ -126,10 +120,8 @@ LineStringMerger::OutputData LineStringMerger::Merge(InputData const & data)
     }
     BlockedNodes blockedNodes;
     for (auto const & [node, count] : endpointCounts)
-    {
       if (count > 2)
         blockedNodes.insert(node);
-    }
 
     Buffer buffer;
     for (auto & lineString : p.second)
@@ -140,7 +132,7 @@ LineStringMerger::OutputData LineStringMerger::Merge(InputData const & data)
     {
       auto const & ways = pb.second->GetWays();
       if (uniqLineStrings.emplace(pb.second).second && ways.size() > 1)
-        mergedLines.emplace(p.first, pb.second);
+        mergedLines[p.first].push_back(pb.second);
     }
   }
 
@@ -197,13 +189,11 @@ bool LineStringMerger::TryMergeOne(LinePtr const & lineString, Buffer & buffer, 
 // static
 LineStringMerger::OutputData LineStringMerger::OrderData(InputData const & data)
 {
-  OutputData intermediateData;
-  for (auto const & p : data)
-    intermediateData[p.first].emplace_back(p.second);
+  OutputData intermediateData = data;
 
   for (auto & p : intermediateData)
   {
-    auto & lineStrings = intermediateData[p.first];
+    auto & lineStrings = p.second;
     std::sort(std::begin(lineStrings), std::end(lineStrings), [](auto const & l, auto const & r)
     {
       auto const & lways = l->GetWays();
@@ -237,23 +227,23 @@ void MetalinesBuilder::CollectFeature(FeatureBuilder const & feature, OsmElement
 
   auto const & params = feature.GetParams();
   auto const name = feature.GetName();
+  auto kind = MetalineKind::Named;
   if (name.empty() && params.ref.empty())
   {
     // Unnamed painted cycle lanes are common and still need a stable dash
     // phase across OSM way boundaries. Keep the two patterns in separate
     // chains so an intersection cannot join incompatible stipples.
     if (ftypes::IsCyclewayLaneChecker::Instance()(feature.GetTypes()))
-      WriteVarUint(*m_writer, kCyclewayLaneChainKey);
+      kind = MetalineKind::Lane;
     else if (ftypes::IsCyclewaySharedLaneChecker::Instance()(feature.GetTypes()))
-      WriteVarUint(*m_writer, kCyclewaySharedLaneChainKey);
+      kind = MetalineKind::SharedLane;
     else
       return;
-
-    LineString(element).Serialize(*m_writer);
-    return;
   }
 
-  WriteVarUint(*m_writer, static_cast<uint64_t>(std::hash<std::string>{}(std::string(name) + '\0' + params.ref)));
+  WriteToSink(*m_writer, static_cast<uint8_t>(kind));
+  rw::Write(*m_writer, std::string(name));
+  rw::Write(*m_writer, params.ref);
   LineString(element).Serialize(*m_writer);
 }
 
@@ -264,13 +254,17 @@ void MetalinesBuilder::Finish()
 
 void MetalinesBuilder::Save()
 {
-  std::unordered_multimap<size_t, std::shared_ptr<LineString>> keyToLineString;
+  LineStringMerger::InputData keyToLineString;
   FileReader reader(GetTmpFilename());
   ReaderSource<FileReader> src(reader);
   while (src.Size() > 0)
   {
-    uint64_t const key = ReadVarUint<uint64_t>(src);
-    keyToLineString.emplace(key, std::make_shared<LineString>(LineString::Deserialize(src)));
+    auto const kind = static_cast<MetalineKind>(ReadPrimitiveFromSource<uint8_t>(src));
+    std::string name, ref;
+    rw::Read(src, name);
+    rw::Read(src, ref);
+    MetalineKey const key{kind, std::move(name), std::move(ref)};
+    keyToLineString[key].push_back(std::make_shared<LineString>(LineString::Deserialize(src)));
   }
 
   FileWriter writer(GetFilename());

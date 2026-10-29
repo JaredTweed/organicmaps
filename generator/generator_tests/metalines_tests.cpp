@@ -47,18 +47,18 @@ feature::FeatureBuilder MakeFbForTest(OsmElement element)
   return result;
 }
 
-size_t MakeKey(OsmElement const & element)
+MetalineKey MakeKey(OsmElement const & element)
 {
   auto const name = element.GetTag("name");
   auto const ref = element.GetTag("ref");
-  return std::hash<std::string>{}(name + '\0' + ref);
+  return {MetalineKind::Named, name, ref};
 }
 
 LineStringMerger::InputData MakeInputData(std::vector<OsmElement> const & elements)
 {
   LineStringMerger::InputData inputData;
   for (auto const & element : elements)
-    inputData.emplace(MakeKey(element), std::make_shared<LineString>(element));
+    inputData[MakeKey(element)].push_back(std::make_shared<LineString>(element));
 
   return inputData;
 }
@@ -91,6 +91,21 @@ UNIT_TEST(MetalinesTest_Case0)
 
   outputData = LineStringMerger::Merge({});
   TEST_EQUAL(outputData.size(), 0 /* unique names roads count */, ());
+}
+
+UNIT_TEST(MetalinesTest_KeyNamespaces)
+{
+  // Connected geometry must not join different key kinds or name/ref pairs.
+  LineStringMerger::InputData input;
+  input[{MetalineKind::Lane, "", ""}].push_back(std::make_shared<LineString>(w1));
+  input[{MetalineKind::SharedLane, "", ""}].push_back(std::make_shared<LineString>(w2));
+  input[{MetalineKind::Named, "", ""}].push_back(std::make_shared<LineString>(w3));
+  TEST(LineStringMerger::Merge(input).empty(), ());
+
+  input.clear();
+  input[{MetalineKind::Named, "ab", "c"}].push_back(std::make_shared<LineString>(w1));
+  input[{MetalineKind::Named, "a", "bc"}].push_back(std::make_shared<LineString>(w2));
+  TEST(LineStringMerger::Merge(input).empty(), ());
 }
 
 UNIT_TEST(MetalinesTest_Case1)
@@ -211,5 +226,36 @@ UNIT_TEST(MetalinesTest_MetalinesBuilderMerge)
   TEST_EQUAL(s.size(), 2, ());
   TEST_EQUAL(s.count({1, 2}), 1, ());
   TEST_EQUAL(s.count({4, 5}), 1, ());
+}
+
+UNIT_TEST(MetalinesTest_CollectorKeyRoundTrip)
+{
+  classificator::Load();
+  auto const filename = generator_tests::GetFileName();
+  SCOPE_GUARD(_, std::bind(Platform::RemoveFileIfExists, std::cref(filename)));
+  MetalinesBuilder collector(filename);
+  for (uint64_t id = 1; id <= 6; ++id)
+  {
+    auto way =
+        MakeHighway(id, id > 4 ? "named" : "", id % 2 ? std::vector<uint64_t>{1, 2} : std::vector<uint64_t>{2, 3});
+    if (id <= 4)
+      way.AddTag("cycleway", id <= 2 ? "lane" : "shared_lane");
+    collector.CollectFeature(MakeFbForTest(way), way);
+  }
+  collector.Finish();
+  collector.Finalize();
+  FileReader reader(filename);
+  ReaderSource src(reader);
+  std::set<std::vector<int32_t>> chains;
+  while (src.Size() > 0)
+  {
+    std::vector<int32_t> ways;
+    rw::ReadVectorOfPOD(src, ways);
+    chains.insert(std::move(ways));
+  }
+  TEST_EQUAL(chains.size(), 3, ());
+  TEST_EQUAL(chains.count({1, 2}), 1, ());
+  TEST_EQUAL(chains.count({3, 4}), 1, ());
+  TEST_EQUAL(chains.count({5, 6}), 1, ());
 }
 }  // namespace metalines_tests
