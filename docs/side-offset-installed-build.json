@@ -1,0 +1,11 @@
+{
+  "package": "app.organicmaps.cyclingsides.debug",
+  "app_label": "OM Side Offsets",
+  "renderer_source_commit": "097e93b11fe95350dd09c95f95f990da69e50efd",
+  "map_source_commit": "79e5353666ed68dbc314689986983a6a0229748f",
+  "apk_sha256": "61508d40bede125156a17e5472356c35b3357a572a13d3529618a466a45cbd8f",
+  "native_sha256": "4c04ebe5d29832c6c74f2bb1e43c4b7f3642e56c63160cf3a29bf91c923017e1",
+  "map_sha256": "250c8def5d5828bcfa504e51fc44689677dc9096175d66e6efb7da3cee0841ec",
+  "full_width_revision_visual_verification_performed": false,
+  "scope": "Experimental phone prototype; not part of the split PR stack; not a production routing map"
+}
