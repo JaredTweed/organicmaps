@@ -6,6 +6,13 @@ Do not push `JaredTweed:master`, the head of upstream PR #12692. Its recorded
 head before this work is `955cd49403ed025c24beec09f5551e8d274a38ff`.
 Changes belong only on the split preparation branches and research branch.
 
+The 2026-10-30 [primary-road constraint discussion](vng-model-constraints.md)
+now gates public code-head rewrites. The user chose to preserve #12692's
+appearance and keep offsets in a separate proposal/prototype. The following
+candidate changes are prepared and tested locally, not yet published to the
+five draft heads. Only the selector's scope/description and discussion have
+been updated publicly.
+
 ## Decisions for this revision
 
 - Keep selector, generator, stored phase data and renderer as distinct review
@@ -18,10 +25,16 @@ Changes belong only on the split preparation branches and research branch.
   all participate in rendering.
 - Preserve centerline categories, colors, widths, casings, arrows and phase
   behavior. No side-aware rendering or type-retention reprioritization here.
-- Keep access changes visible in the generator review. The independent
-  `motor_vehicle=permissive` change is a candidate for extraction, not something
-  to drop silently from the final preview. Routing reviewers must accept its
-  boundary and semantics before merge.
+- Extract `motor_vehicle=permissive` into an independent prerequisite, with
+  specific access/override tests and no cycling classifier dependency. Merge
+  that exact commit into the types branch; do not duplicate or silently drop
+  its behavior. Routing reviewers must accept its semantics before merge.
+- Put lane/shared-lane classifier checkers in the types PR. Include generated
+  classifier assets in the first commit that consumes the new types, not in a
+  delayed regeneration commit after several runtime changes.
+- Preserve version-1 `metalines`; place phase offsets in a separate optional
+  section. Validate complete feature/direction correspondence before applying
+  any offsets. Stale or damaged optional data must not discard legacy labels.
 
 ## Concrete defects addressed
 
@@ -48,10 +61,11 @@ Changes belong only on the split preparation branches and research branch.
 - Exercise generated bicycle routes for forward/reverse access, contraflow,
   positive-side versus whole-road-negative tags, permissive motor access and
   pedestrian/sidewalk cases. Classification unit tests alone are insufficient.
-- Version-1-only clients reject v3 metalines. Maintainers must explicitly accept
-  merged-label/shield degradation or choose a tested additive section. A
-  trailing extension is not automatically backward-compatible. Run historical
-  readers on the chosen format before claiming forward compatibility.
+- The chosen additive format emits a version-1 main section and separate phase
+  data, avoiding the previous whole-section v3 rejection. The exact legacy
+  signed-feature layout is retained; this is not a blanket historical-app or
+  classifier compatibility claim. The duplicate section costs about 1.1% on
+  this extract. Historical-client smoke coverage remains separate.
 
 These are merge gates, not claims that the stack is perfect or approved.
 
@@ -63,18 +77,21 @@ These are merge gates, not claims that the stack is perfect or approved.
   disabled locally to reduce compiler memory; no tracked build flags changed.
 - All 10 `Metalines` generator tests pass, including grouping namespaces and
   the actual collector serialization/merge round trip.
-- All 3 `MetalineData` tests pass, including multi-chain v1/v2/v3 fixtures,
-  reverse flags, unknown versions and truncated offset payloads.
+- All 5 `MetalineData` tests pass on the exact style candidate, including
+  multi-chain v1/v2/v3 fixtures, reverse flags, unknown versions, truncated or
+  trailing optional payloads and atomic rejection of stale feature/direction/count data.
 - The complete `OsmType` group passes. This is classification evidence, not
   generated-route correctness evidence.
-- Rebuilt the renderer branch `3d77a89925` against the updated format branch;
-  all 16 clipping tests, both dash-phase tests and all 3 reader tests pass.
+- Built the exact style candidate `f8f603fc7e`; all 16 clipping tests, both
+  dash-phase tests and all 5 reader tests pass. Its complete `OsmType` group
+  includes the new independent motor-access regression.
 - Research/launcher tests cover a misconfigured `master` publication ref and
   reject it before any fetch, push or PR mutation.
-- Style-preview copies of the new parser, reader and grouping source match
-  the master-based versions. This is not an exact-branch style build or visual
-  regression result; its older test CMake list required a source-list-only
-  cherry-pick resolution.
+- Exact baseline/candidate Android native builds succeed. Every one of 82,785
+  generated features and 2,010 directed chains/offsets matches in a detailed
+  audit, with no ambiguous identities. The entire tracked style/data tree
+  matches. [visual-validation.md](visual-validation.md) separates this evidence
+  from the still-required fixed-camera screenshot comparison.
 
 ## Resource limits
 

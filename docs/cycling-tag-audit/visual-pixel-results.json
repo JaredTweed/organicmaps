@@ -1,0 +1,2844 @@
+{
+  "baseline_capture": {
+    "actual_backends": {
+      "feature-zero-z14-dark-dpi1.0": "OpenGLES3",
+      "feature-zero-z14-dark-dpi2.0": "OpenGLES3",
+      "feature-zero-z14-light-dpi1.0": "OpenGLES3",
+      "feature-zero-z14-light-dpi2.0": "OpenGLES3",
+      "feature-zero-z16-dark-dpi1.0": "OpenGLES3",
+      "feature-zero-z16-dark-dpi2.0": "OpenGLES3",
+      "feature-zero-z16-light-dpi1.0": "OpenGLES3",
+      "feature-zero-z16-light-dpi2.0": "OpenGLES3",
+      "feature-zero-z18-dark-dpi1.0": "OpenGLES3",
+      "feature-zero-z18-dark-dpi2.0": "OpenGLES3",
+      "feature-zero-z18-light-dpi1.0": "OpenGLES3",
+      "feature-zero-z18-light-dpi2.0": "OpenGLES3",
+      "lane-z14-dark-dpi1.0": "OpenGLES3",
+      "lane-z14-dark-dpi2.0": "OpenGLES3",
+      "lane-z14-light-dpi1.0": "OpenGLES3",
+      "lane-z14-light-dpi2.0": "OpenGLES3",
+      "lane-z16-dark-dpi1.0": "OpenGLES3",
+      "lane-z16-dark-dpi2.0": "OpenGLES3",
+      "lane-z16-light-dpi1.0": "OpenGLES3",
+      "lane-z16-light-dpi2.0": "OpenGLES3",
+      "lane-z18-dark-dpi1.0": "OpenGLES3",
+      "lane-z18-dark-dpi2.0": "OpenGLES3",
+      "lane-z18-light-dpi1.0": "OpenGLES3",
+      "lane-z18-light-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z14-dark-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z14-dark-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z14-light-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z14-light-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z16-dark-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z16-dark-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z16-light-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z16-light-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z18-dark-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z18-dark-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z18-light-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z18-light-dpi2.0": "OpenGLES3",
+      "shared-z14-dark-dpi1.0": "OpenGLES3",
+      "shared-z14-dark-dpi2.0": "OpenGLES3",
+      "shared-z14-light-dpi1.0": "OpenGLES3",
+      "shared-z14-light-dpi2.0": "OpenGLES3",
+      "shared-z16-dark-dpi1.0": "OpenGLES3",
+      "shared-z16-dark-dpi2.0": "OpenGLES3",
+      "shared-z16-light-dpi1.0": "OpenGLES3",
+      "shared-z16-light-dpi2.0": "OpenGLES3",
+      "shared-z18-dark-dpi1.0": "OpenGLES3",
+      "shared-z18-dark-dpi2.0": "OpenGLES3",
+      "shared-z18-light-dpi1.0": "OpenGLES3",
+      "shared-z18-light-dpi2.0": "OpenGLES3",
+      "track-z14-dark-dpi1.0": "OpenGLES3",
+      "track-z14-dark-dpi2.0": "OpenGLES3",
+      "track-z14-light-dpi1.0": "OpenGLES3",
+      "track-z14-light-dpi2.0": "OpenGLES3",
+      "track-z16-dark-dpi1.0": "OpenGLES3",
+      "track-z16-dark-dpi2.0": "OpenGLES3",
+      "track-z16-light-dpi1.0": "OpenGLES3",
+      "track-z16-light-dpi2.0": "OpenGLES3",
+      "track-z18-dark-dpi1.0": "OpenGLES3",
+      "track-z18-dark-dpi2.0": "OpenGLES3",
+      "track-z18-light-dpi1.0": "OpenGLES3",
+      "track-z18-light-dpi2.0": "OpenGLES3"
+    },
+    "assets_sha256": {
+      "classificator.txt": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d",
+      "colors.txt": "5a48d81077f418427f94df3ae5b58dc0c28c39343ffe76536162a8dcf47a59d9",
+      "drules_cycling.bin": "fcc2e5ac026c5ee3221086372434db6b470d896160ce7b76ff9753eb56f21fa0",
+      "drules_cycling.txt": "be8112aa730a893631e8a3834eea18d32154fe773ca8a6d848ab60c54e67a400",
+      "patterns.txt": "c29e992302bbfea254374df2df27f6e29614b2aa96c0311c5567066426574d21",
+      "types.txt": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95"
+    },
+    "binary_sha256": "54b1b99f1f30a1011e281053af7fc414e5edc5d8fef992fa4237d1d62c4d9946",
+    "device": "ideapad:Qt-desktop",
+    "fixtures": [
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      }
+    ],
+    "image_sha256": {
+      "feature-zero-z14-dark-dpi1.0.png": "5ca66be8ccd949979595c5a9ea050024c502c94ad9575243b7ba6a2a3bbb0007",
+      "feature-zero-z14-dark-dpi1.0.repeat.png": "8540ef4aa130acc1f81b2e62538f428b2949577bb84605d897f1e33f841a327e",
+      "feature-zero-z14-dark-dpi2.0.png": "67eecb3d257df7f06c007a1cd7c7a016ec6e59a56682a5b7b94751e47874602a",
+      "feature-zero-z14-dark-dpi2.0.repeat.png": "67eecb3d257df7f06c007a1cd7c7a016ec6e59a56682a5b7b94751e47874602a",
+      "feature-zero-z14-light-dpi1.0.png": "8f3a7f39d1dd94ec541bd5c72f50a39c40926dff87a0b01db1e03e606a62be48",
+      "feature-zero-z14-light-dpi1.0.repeat.png": "a140ca18efc7109425e3a15f4e81da85b109b2e82cf84a13e710e3a5f00711f1",
+      "feature-zero-z14-light-dpi2.0.png": "766539368b4deb61c796707a0f926a7dedc3cced886c487dac8aa78e85ce1b45",
+      "feature-zero-z14-light-dpi2.0.repeat.png": "766539368b4deb61c796707a0f926a7dedc3cced886c487dac8aa78e85ce1b45",
+      "feature-zero-z16-dark-dpi1.0.png": "8e4316c6c8ae8667cd2b88cc2e3f7059b0e6364b4c971c288a2f7eeff535c001",
+      "feature-zero-z16-dark-dpi1.0.repeat.png": "8e4316c6c8ae8667cd2b88cc2e3f7059b0e6364b4c971c288a2f7eeff535c001",
+      "feature-zero-z16-dark-dpi2.0.png": "f227a9e9cdbe707700eb235d86088a745444d2f10f3dec05235ead916e94fae1",
+      "feature-zero-z16-dark-dpi2.0.repeat.png": "f227a9e9cdbe707700eb235d86088a745444d2f10f3dec05235ead916e94fae1",
+      "feature-zero-z16-light-dpi1.0.png": "30e9acb72dc05d7c16c3efe3e8f59293df4199172750178e182591757b579d8b",
+      "feature-zero-z16-light-dpi1.0.repeat.png": "30e9acb72dc05d7c16c3efe3e8f59293df4199172750178e182591757b579d8b",
+      "feature-zero-z16-light-dpi2.0.png": "ab9bc0c5a29c930e837f19f48b27ec5ab990c26510e8cc33fb15e32c8b065c07",
+      "feature-zero-z16-light-dpi2.0.repeat.png": "ab9bc0c5a29c930e837f19f48b27ec5ab990c26510e8cc33fb15e32c8b065c07",
+      "feature-zero-z18-dark-dpi1.0.png": "ad4353d0f8e801ddba00492456ef05a81b4511333eae13417e49b00130fafdb7",
+      "feature-zero-z18-dark-dpi1.0.repeat.png": "ad4353d0f8e801ddba00492456ef05a81b4511333eae13417e49b00130fafdb7",
+      "feature-zero-z18-dark-dpi2.0.png": "2ff4d7aba742c801e58a817d157ce60865f973545e30ae18244853b1503294ee",
+      "feature-zero-z18-dark-dpi2.0.repeat.png": "2ff4d7aba742c801e58a817d157ce60865f973545e30ae18244853b1503294ee",
+      "feature-zero-z18-light-dpi1.0.png": "b0fc503375f7d8e497a7eed74acea76e29d021a7a7a6422d91e8ee8b7cb63373",
+      "feature-zero-z18-light-dpi1.0.repeat.png": "b0fc503375f7d8e497a7eed74acea76e29d021a7a7a6422d91e8ee8b7cb63373",
+      "feature-zero-z18-light-dpi2.0.png": "9fda1f4d90039a06f3838309497bbc95052ab7b93b96d3e17c3711fa87b66a6c",
+      "feature-zero-z18-light-dpi2.0.repeat.png": "9fda1f4d90039a06f3838309497bbc95052ab7b93b96d3e17c3711fa87b66a6c",
+      "lane-z14-dark-dpi1.0.png": "093cfd76034ecec1ea0040e59f670cbbbe714e4bea2806ba318651ca5a7f2ac4",
+      "lane-z14-dark-dpi1.0.repeat.png": "221eac386ff9334bddacf1a140b113e564254496bec4bb7460b607c590f9ef3a",
+      "lane-z14-dark-dpi2.0.png": "a65ad6ac30e7fcccb4626fdbf7c58138fe9e5244be4d6569796c22028a88101d",
+      "lane-z14-dark-dpi2.0.repeat.png": "785246e997cbfd9ffbb5d3d4ef03c379ac17c2209bc53967ebe92d22ab4975ab",
+      "lane-z14-light-dpi1.0.png": "833c23af90fea18f9ceffd96905d5f8b36e5b5d090d7782f0edc6c48e028deb7",
+      "lane-z14-light-dpi1.0.repeat.png": "545245f357e3d751962670bd55ea5ca9abca03f890c607606d9060f2af64474a",
+      "lane-z14-light-dpi2.0.png": "df55a2f48c56dabcfe11336b24d48831e45b4efe940e55eb166d41bd150280d2",
+      "lane-z14-light-dpi2.0.repeat.png": "df55a2f48c56dabcfe11336b24d48831e45b4efe940e55eb166d41bd150280d2",
+      "lane-z16-dark-dpi1.0.png": "9a3a303136b4a3124cc9786ba102cf9d25d8910e302e4c99fa1562052263e7fb",
+      "lane-z16-dark-dpi1.0.repeat.png": "5ae2beb15ed2becff33c18ee3cf5d13fb635928917892a791a173040e7fbb474",
+      "lane-z16-dark-dpi2.0.png": "51d157d536dc324afb257b1dec5baed2d2a91acb83c134174f8b33887a8971ae",
+      "lane-z16-dark-dpi2.0.repeat.png": "8072df3d4aa89c136024589d21b53325adff8633da27909cd3a79e3d3ae20a3a",
+      "lane-z16-light-dpi1.0.png": "76ddbb2d543b97c3b9949491448166327a398aee2bc53547847c9a07e07ba5d2",
+      "lane-z16-light-dpi1.0.repeat.png": "0e2ef156fb0f2ef474dd917239cc843551fa46ba517cf67f7f8dad29cbffc1fc",
+      "lane-z16-light-dpi2.0.png": "4702972965b967cad00fe5eea676102757accec7eec015c6ea50f256f793e1dd",
+      "lane-z16-light-dpi2.0.repeat.png": "4702972965b967cad00fe5eea676102757accec7eec015c6ea50f256f793e1dd",
+      "lane-z18-dark-dpi1.0.png": "2f4db6cd49bccb6e3caccf2b0cfbcfd0e255146fe5128fe733450c36ca7a8258",
+      "lane-z18-dark-dpi1.0.repeat.png": "cfff255db51596621a6386de395652a9499ac18de1d11eb2a108be397c06ab2f",
+      "lane-z18-dark-dpi2.0.png": "6ba107be1ee1658915675a6c97386e9756e68e8fa699bd11147648b9244ce66e",
+      "lane-z18-dark-dpi2.0.repeat.png": "5345197ac40836a97e77a7a940d4914422606922b00e01d2821ade04c59908c1",
+      "lane-z18-light-dpi1.0.png": "0ccc65dec0e3e841e0f8b0b5198e7824b24c89c3243aa80432e9cd10e29d3e27",
+      "lane-z18-light-dpi1.0.repeat.png": "1cbd70a170ae9a8509cbc038d1d6a1af7a40785352d0453fca7350ef6b3470e7",
+      "lane-z18-light-dpi2.0.png": "1d81db65f7d31c57bdae3d6617b06fc436cd6f634ab9070d645a4741bc1876ea",
+      "lane-z18-light-dpi2.0.repeat.png": "1d81db65f7d31c57bdae3d6617b06fc436cd6f634ab9070d645a4741bc1876ea",
+      "mixed-contraflow-z14-dark-dpi1.0.png": "df46c2330435cad5ebfa2d16f46470eafa7f2d15983f1b6b0e5183247efda6de",
+      "mixed-contraflow-z14-dark-dpi1.0.repeat.png": "f09e281c16a98f3641848976ba8f951870100e359138415bb33649404c7ced99",
+      "mixed-contraflow-z14-dark-dpi2.0.png": "9d7d61b06a57b4a2bfeb61e2bfc54707f593622407cae11ab960c7fba55cf9bb",
+      "mixed-contraflow-z14-dark-dpi2.0.repeat.png": "288a8d71913551343fc73f25719d2539ba065713515d3c264f269b77e85f6a0d",
+      "mixed-contraflow-z14-light-dpi1.0.png": "d2edfe567a500270bd914fdcae32b3b3ba8c5c9c58031e8c98d0ab4a60ca94e2",
+      "mixed-contraflow-z14-light-dpi1.0.repeat.png": "ee4172b1d842f8f8629eba91e6c9e2d636f587c831caf97085519252de8f663b",
+      "mixed-contraflow-z14-light-dpi2.0.png": "3a0897d38fb0e18420085203ab7daf4cb29a4e3a7a6d1aec3c11f7f391004d2e",
+      "mixed-contraflow-z14-light-dpi2.0.repeat.png": "3a0897d38fb0e18420085203ab7daf4cb29a4e3a7a6d1aec3c11f7f391004d2e",
+      "mixed-contraflow-z16-dark-dpi1.0.png": "41e986aa5397f81bebe8d75bf762ec8aa3a253858923e1d04cb1dc7735611de3",
+      "mixed-contraflow-z16-dark-dpi1.0.repeat.png": "41e986aa5397f81bebe8d75bf762ec8aa3a253858923e1d04cb1dc7735611de3",
+      "mixed-contraflow-z16-dark-dpi2.0.png": "246f6e7dfdfd3c678725fc8f123a623d7f260d8c899833fb442a7a5c90a0abe7",
+      "mixed-contraflow-z16-dark-dpi2.0.repeat.png": "cb3b648a55a90d8521497197592a34a97f3d63e5f1222394404ba092f382bd34",
+      "mixed-contraflow-z16-light-dpi1.0.png": "e66a3f05bcdb1ea41d20a78181980b23930244dcd333e91147e58ed25e3eb998",
+      "mixed-contraflow-z16-light-dpi1.0.repeat.png": "e66a3f05bcdb1ea41d20a78181980b23930244dcd333e91147e58ed25e3eb998",
+      "mixed-contraflow-z16-light-dpi2.0.png": "ae1e44c972a8674fbab28001443a30c003e5509134a5a8ef6249efc34b45c217",
+      "mixed-contraflow-z16-light-dpi2.0.repeat.png": "ae1e44c972a8674fbab28001443a30c003e5509134a5a8ef6249efc34b45c217",
+      "mixed-contraflow-z18-dark-dpi1.0.png": "daaf3598f81d7b973ce9e2f6253b4eced00aef9cb796869ac9dd2e7b88f44ebb",
+      "mixed-contraflow-z18-dark-dpi1.0.repeat.png": "daaf3598f81d7b973ce9e2f6253b4eced00aef9cb796869ac9dd2e7b88f44ebb",
+      "mixed-contraflow-z18-dark-dpi2.0.png": "62e6ffade77e8681605bfdecd57368ac80298c54f8d92e670a89275385d832fc",
+      "mixed-contraflow-z18-dark-dpi2.0.repeat.png": "62e6ffade77e8681605bfdecd57368ac80298c54f8d92e670a89275385d832fc",
+      "mixed-contraflow-z18-light-dpi1.0.png": "2ad90a3833016ebce002e93e8e25a63b076ab781afa30588fa0a7f3b524429a4",
+      "mixed-contraflow-z18-light-dpi1.0.repeat.png": "2ad90a3833016ebce002e93e8e25a63b076ab781afa30588fa0a7f3b524429a4",
+      "mixed-contraflow-z18-light-dpi2.0.png": "1265e07d1e15b38b800548121a8d2484d6b0045fb24aff1840c4f3480b3e42ac",
+      "mixed-contraflow-z18-light-dpi2.0.repeat.png": "1265e07d1e15b38b800548121a8d2484d6b0045fb24aff1840c4f3480b3e42ac",
+      "shared-z14-dark-dpi1.0.png": "f0c2aeaf4abfef277c45108877f8df4dedca376c777b7823abb18a6e83ae7ac6",
+      "shared-z14-dark-dpi1.0.repeat.png": "93323021526ff3bbd2eee4206c1a4592fe738abfbe65747df366149b90c978bf",
+      "shared-z14-dark-dpi2.0.png": "8283e7d24e262a2eca26bf8906a5af927ca22d13b9d053c11889ffd03dc59a01",
+      "shared-z14-dark-dpi2.0.repeat.png": "0b9addc019b2a5640671804d78df04c99ee3702982833d497f3e0184fddf09e5",
+      "shared-z14-light-dpi1.0.png": "263ca4289b40ccff7efd2faeb02c69081842c38917d4a594180b30b7104c96ec",
+      "shared-z14-light-dpi1.0.repeat.png": "01029f4aae3df962a26f5e2f5961a02156c5e5fd393dff3b8ca2ae15573cc989",
+      "shared-z14-light-dpi2.0.png": "d19c39e696494fb9d8d979e03e014452bd1aa348aadfce97f2326b089cb16368",
+      "shared-z14-light-dpi2.0.repeat.png": "d19c39e696494fb9d8d979e03e014452bd1aa348aadfce97f2326b089cb16368",
+      "shared-z16-dark-dpi1.0.png": "3798efe34883315b383d7fe3aebd1927166e208486f71abc56286da83fc73b6b",
+      "shared-z16-dark-dpi1.0.repeat.png": "3798efe34883315b383d7fe3aebd1927166e208486f71abc56286da83fc73b6b",
+      "shared-z16-dark-dpi2.0.png": "d150e3030178c73918e6dd29877b2c6f22998fcae5913d1a039fdf58b63f17f8",
+      "shared-z16-dark-dpi2.0.repeat.png": "4c5d248d9d33867359f5fe84c9d5d5f55fe2a6c68116306820518ac65295f971",
+      "shared-z16-light-dpi1.0.png": "8c5a559a6f2f35d9ea470524874d0cd2df670c70710346eae38848f41c7f3e2d",
+      "shared-z16-light-dpi1.0.repeat.png": "08143618ec67587184a8e03bd42d37de054d50db976ffb0dc19028d238adc3cc",
+      "shared-z16-light-dpi2.0.png": "382866be18f34410e3e6c59dd869a81331aa4092ea99141f084b50b890a46b8c",
+      "shared-z16-light-dpi2.0.repeat.png": "382866be18f34410e3e6c59dd869a81331aa4092ea99141f084b50b890a46b8c",
+      "shared-z18-dark-dpi1.0.png": "ce286cd4a424a09eb32b7d156e525d42711376610e7487e31ac926637ffba9c9",
+      "shared-z18-dark-dpi1.0.repeat.png": "ce286cd4a424a09eb32b7d156e525d42711376610e7487e31ac926637ffba9c9",
+      "shared-z18-dark-dpi2.0.png": "3d9ac75704a727a405747fc87e987bff958b83f18a164c4e96bf0cd93e154ad0",
+      "shared-z18-dark-dpi2.0.repeat.png": "3d9ac75704a727a405747fc87e987bff958b83f18a164c4e96bf0cd93e154ad0",
+      "shared-z18-light-dpi1.0.png": "43058e9271898af1f29cb89af35603712b4bc5ebdcdb27ab287307cc1cf44386",
+      "shared-z18-light-dpi1.0.repeat.png": "43058e9271898af1f29cb89af35603712b4bc5ebdcdb27ab287307cc1cf44386",
+      "shared-z18-light-dpi2.0.png": "a3904868aaa307ec4721d5bf479377d6ef51d1e9b67d1542957d30ad258fd42a",
+      "shared-z18-light-dpi2.0.repeat.png": "a3904868aaa307ec4721d5bf479377d6ef51d1e9b67d1542957d30ad258fd42a",
+      "track-z14-dark-dpi1.0.png": "35b1b62bfa1d1c63a99b8c8d853f4da72efd63edc7d14ed8bb606b1f05148e0e",
+      "track-z14-dark-dpi1.0.repeat.png": "35b1b62bfa1d1c63a99b8c8d853f4da72efd63edc7d14ed8bb606b1f05148e0e",
+      "track-z14-dark-dpi2.0.png": "c987d3d7354248bc572975d029c1ab321c66b76eab49e12b180f75b0a58234bb",
+      "track-z14-dark-dpi2.0.repeat.png": "55c015986f6b63d45a1167befdd052cd69eb5f401ff6c0b914721bd1275de6d0",
+      "track-z14-light-dpi1.0.png": "b15a4d54667de18492e6db8094c886addd0270975fe32c24b3bd9b73edcfbfae",
+      "track-z14-light-dpi1.0.repeat.png": "b15a4d54667de18492e6db8094c886addd0270975fe32c24b3bd9b73edcfbfae",
+      "track-z14-light-dpi2.0.png": "79fac8043ea2618e35a7a0d49b317245603311a0bb7e5613828bbce7de5d646a",
+      "track-z14-light-dpi2.0.repeat.png": "cec71bca3a05834a2cdc16dfbd8f73a1b1a6e9813311e7b5e55d9009988b2484",
+      "track-z16-dark-dpi1.0.png": "f0ca87ab48299ae258ad0003da4a69ccabbe2f3fe608bd288097a390119276b1",
+      "track-z16-dark-dpi1.0.repeat.png": "b9b78583699233d597a2c4014a962d7b46a83a08048a6b1f93fa415bff3a078a",
+      "track-z16-dark-dpi2.0.png": "685fabbeb67978004e29691c6bb63c480c9736e0f9ec505d6b2a1f22a7aa5dbb",
+      "track-z16-dark-dpi2.0.repeat.png": "facdfb5763c02f52defb6be2a49813029df3f376e6bbadb223058433a2b46594",
+      "track-z16-light-dpi1.0.png": "0bf5ae7e7fbd5c83fe037ad46342145e30577486e75665f153361d6e3d8be178",
+      "track-z16-light-dpi1.0.repeat.png": "a57f51f3deddc7aee663c64d9b57047c85a1550a4be69858cc54acc035223d92",
+      "track-z16-light-dpi2.0.png": "8d1046ad2586ad595b770d34b6dd72f7887738f17e220a677867139a6f173a35",
+      "track-z16-light-dpi2.0.repeat.png": "8d1046ad2586ad595b770d34b6dd72f7887738f17e220a677867139a6f173a35",
+      "track-z18-dark-dpi1.0.png": "5b45d62e83b09738f1a21b658a7cee5768632b0f332e6df746d23f6b8eb68a39",
+      "track-z18-dark-dpi1.0.repeat.png": "5b45d62e83b09738f1a21b658a7cee5768632b0f332e6df746d23f6b8eb68a39",
+      "track-z18-dark-dpi2.0.png": "3484ba4fcae8726ab37635fe14db867aa41245dbb8c8e4f31743ebb3b0760741",
+      "track-z18-dark-dpi2.0.repeat.png": "40ee02d3f85d30bbcd87f0dbc662cad5acc72ef7703355a2df591d13ebaf19cb",
+      "track-z18-light-dpi1.0.png": "581fc252297d137aaede92f8c9c8942c271ee7f54fd8bab85ef43246ba4dfe6e",
+      "track-z18-light-dpi1.0.repeat.png": "581fc252297d137aaede92f8c9c8942c271ee7f54fd8bab85ef43246ba4dfe6e",
+      "track-z18-light-dpi2.0.png": "4d691d1ac695c92442db978b386e3c0dc52207f87bd91e9947f36bc33e28f0a2",
+      "track-z18-light-dpi2.0.repeat.png": "4d691d1ac695c92442db978b386e3c0dc52207f87bd91e9947f36bc33e28f0a2"
+    },
+    "map_sha256": "0bfe6826938cb1531e0cb927b965630f56da0527ccab98ce5acffd50f94e7c82",
+    "roi": [
+      0,
+      0,
+      1008,
+      720
+    ],
+    "shutdown_cleanup": {
+      "dark-dpi1.0": true,
+      "dark-dpi1.0.repeat": true,
+      "dark-dpi2.0": true,
+      "dark-dpi2.0.repeat": true,
+      "light-dpi1.0": true,
+      "light-dpi1.0.repeat": true,
+      "light-dpi2.0": true,
+      "light-dpi2.0.repeat": true
+    },
+    "source_commit": "955cd49403ed025c24beec09f5551e8d274a38ff"
+  },
+  "candidate_capture": {
+    "actual_backends": {
+      "feature-zero-z14-dark-dpi1.0": "OpenGLES3",
+      "feature-zero-z14-dark-dpi2.0": "OpenGLES3",
+      "feature-zero-z14-light-dpi1.0": "OpenGLES3",
+      "feature-zero-z14-light-dpi2.0": "OpenGLES3",
+      "feature-zero-z16-dark-dpi1.0": "OpenGLES3",
+      "feature-zero-z16-dark-dpi2.0": "OpenGLES3",
+      "feature-zero-z16-light-dpi1.0": "OpenGLES3",
+      "feature-zero-z16-light-dpi2.0": "OpenGLES3",
+      "feature-zero-z18-dark-dpi1.0": "OpenGLES3",
+      "feature-zero-z18-dark-dpi2.0": "OpenGLES3",
+      "feature-zero-z18-light-dpi1.0": "OpenGLES3",
+      "feature-zero-z18-light-dpi2.0": "OpenGLES3",
+      "lane-z14-dark-dpi1.0": "OpenGLES3",
+      "lane-z14-dark-dpi2.0": "OpenGLES3",
+      "lane-z14-light-dpi1.0": "OpenGLES3",
+      "lane-z14-light-dpi2.0": "OpenGLES3",
+      "lane-z16-dark-dpi1.0": "OpenGLES3",
+      "lane-z16-dark-dpi2.0": "OpenGLES3",
+      "lane-z16-light-dpi1.0": "OpenGLES3",
+      "lane-z16-light-dpi2.0": "OpenGLES3",
+      "lane-z18-dark-dpi1.0": "OpenGLES3",
+      "lane-z18-dark-dpi2.0": "OpenGLES3",
+      "lane-z18-light-dpi1.0": "OpenGLES3",
+      "lane-z18-light-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z14-dark-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z14-dark-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z14-light-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z14-light-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z16-dark-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z16-dark-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z16-light-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z16-light-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z18-dark-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z18-dark-dpi2.0": "OpenGLES3",
+      "mixed-contraflow-z18-light-dpi1.0": "OpenGLES3",
+      "mixed-contraflow-z18-light-dpi2.0": "OpenGLES3",
+      "shared-z14-dark-dpi1.0": "OpenGLES3",
+      "shared-z14-dark-dpi2.0": "OpenGLES3",
+      "shared-z14-light-dpi1.0": "OpenGLES3",
+      "shared-z14-light-dpi2.0": "OpenGLES3",
+      "shared-z16-dark-dpi1.0": "OpenGLES3",
+      "shared-z16-dark-dpi2.0": "OpenGLES3",
+      "shared-z16-light-dpi1.0": "OpenGLES3",
+      "shared-z16-light-dpi2.0": "OpenGLES3",
+      "shared-z18-dark-dpi1.0": "OpenGLES3",
+      "shared-z18-dark-dpi2.0": "OpenGLES3",
+      "shared-z18-light-dpi1.0": "OpenGLES3",
+      "shared-z18-light-dpi2.0": "OpenGLES3",
+      "track-z14-dark-dpi1.0": "OpenGLES3",
+      "track-z14-dark-dpi2.0": "OpenGLES3",
+      "track-z14-light-dpi1.0": "OpenGLES3",
+      "track-z14-light-dpi2.0": "OpenGLES3",
+      "track-z16-dark-dpi1.0": "OpenGLES3",
+      "track-z16-dark-dpi2.0": "OpenGLES3",
+      "track-z16-light-dpi1.0": "OpenGLES3",
+      "track-z16-light-dpi2.0": "OpenGLES3",
+      "track-z18-dark-dpi1.0": "OpenGLES3",
+      "track-z18-dark-dpi2.0": "OpenGLES3",
+      "track-z18-light-dpi1.0": "OpenGLES3",
+      "track-z18-light-dpi2.0": "OpenGLES3"
+    },
+    "assets_sha256": {
+      "classificator.txt": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d",
+      "colors.txt": "5a48d81077f418427f94df3ae5b58dc0c28c39343ffe76536162a8dcf47a59d9",
+      "drules_cycling.bin": "fcc2e5ac026c5ee3221086372434db6b470d896160ce7b76ff9753eb56f21fa0",
+      "drules_cycling.txt": "be8112aa730a893631e8a3834eea18d32154fe773ca8a6d848ab60c54e67a400",
+      "patterns.txt": "c29e992302bbfea254374df2df27f6e29614b2aa96c0311c5567066426574d21",
+      "types.txt": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95"
+    },
+    "binary_sha256": "914cd49739eaaf8916b94feb7d9ee550e324e2df060e131a66960670f7323d8a",
+    "device": "ideapad:Qt-desktop",
+    "fixtures": [
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-light-dpi1.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-light-dpi1.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-light-dpi1.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-light-dpi2.0",
+        "theme": "light",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-light-dpi2.0",
+        "theme": "light",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-light-dpi2.0",
+        "theme": "light",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 1.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-dark-dpi1.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.27519802039955,
+        "lon": -123.11460840042389,
+        "name": "lane-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.273148793047234,
+        "lon": -123.03891109704159,
+        "name": "shared-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.30929963904232,
+        "lon": -123.04044800281858,
+        "name": "track-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.19674521535637,
+        "lon": -123.13702630353738,
+        "name": "feature-zero-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z14-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 14
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z16-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 16
+      },
+      {
+        "backend": "OpenGLES3",
+        "density": 2.0,
+        "lat": 49.28340457641886,
+        "lon": -123.10416924286014,
+        "name": "mixed-contraflow-z18-dark-dpi2.0",
+        "theme": "dark",
+        "zoom": 18
+      }
+    ],
+    "image_sha256": {
+      "feature-zero-z14-dark-dpi1.0.png": "5ca66be8ccd949979595c5a9ea050024c502c94ad9575243b7ba6a2a3bbb0007",
+      "feature-zero-z14-dark-dpi1.0.repeat.png": "8540ef4aa130acc1f81b2e62538f428b2949577bb84605d897f1e33f841a327e",
+      "feature-zero-z14-dark-dpi2.0.png": "67eecb3d257df7f06c007a1cd7c7a016ec6e59a56682a5b7b94751e47874602a",
+      "feature-zero-z14-dark-dpi2.0.repeat.png": "67eecb3d257df7f06c007a1cd7c7a016ec6e59a56682a5b7b94751e47874602a",
+      "feature-zero-z14-light-dpi1.0.png": "ff8a5fe9fda5df7456d3652e7da6dc4c78a6026e898a1984fa836d8d65d1ccf6",
+      "feature-zero-z14-light-dpi1.0.repeat.png": "a140ca18efc7109425e3a15f4e81da85b109b2e82cf84a13e710e3a5f00711f1",
+      "feature-zero-z14-light-dpi2.0.png": "766539368b4deb61c796707a0f926a7dedc3cced886c487dac8aa78e85ce1b45",
+      "feature-zero-z14-light-dpi2.0.repeat.png": "74ed00e1792270c18076af5886772e3087bf29cc5f14fdad315cdfb3d96307cc",
+      "feature-zero-z16-dark-dpi1.0.png": "8e4316c6c8ae8667cd2b88cc2e3f7059b0e6364b4c971c288a2f7eeff535c001",
+      "feature-zero-z16-dark-dpi1.0.repeat.png": "8e4316c6c8ae8667cd2b88cc2e3f7059b0e6364b4c971c288a2f7eeff535c001",
+      "feature-zero-z16-dark-dpi2.0.png": "f227a9e9cdbe707700eb235d86088a745444d2f10f3dec05235ead916e94fae1",
+      "feature-zero-z16-dark-dpi2.0.repeat.png": "f227a9e9cdbe707700eb235d86088a745444d2f10f3dec05235ead916e94fae1",
+      "feature-zero-z16-light-dpi1.0.png": "462c92df5f4b80e36006b6a79d9818fafbcef7597a7abae08ab36a46cf3ecca0",
+      "feature-zero-z16-light-dpi1.0.repeat.png": "30e9acb72dc05d7c16c3efe3e8f59293df4199172750178e182591757b579d8b",
+      "feature-zero-z16-light-dpi2.0.png": "ab9bc0c5a29c930e837f19f48b27ec5ab990c26510e8cc33fb15e32c8b065c07",
+      "feature-zero-z16-light-dpi2.0.repeat.png": "ab9bc0c5a29c930e837f19f48b27ec5ab990c26510e8cc33fb15e32c8b065c07",
+      "feature-zero-z18-dark-dpi1.0.png": "ad4353d0f8e801ddba00492456ef05a81b4511333eae13417e49b00130fafdb7",
+      "feature-zero-z18-dark-dpi1.0.repeat.png": "ad4353d0f8e801ddba00492456ef05a81b4511333eae13417e49b00130fafdb7",
+      "feature-zero-z18-dark-dpi2.0.png": "2ff4d7aba742c801e58a817d157ce60865f973545e30ae18244853b1503294ee",
+      "feature-zero-z18-dark-dpi2.0.repeat.png": "2ff4d7aba742c801e58a817d157ce60865f973545e30ae18244853b1503294ee",
+      "feature-zero-z18-light-dpi1.0.png": "b0fc503375f7d8e497a7eed74acea76e29d021a7a7a6422d91e8ee8b7cb63373",
+      "feature-zero-z18-light-dpi1.0.repeat.png": "b0fc503375f7d8e497a7eed74acea76e29d021a7a7a6422d91e8ee8b7cb63373",
+      "feature-zero-z18-light-dpi2.0.png": "9fda1f4d90039a06f3838309497bbc95052ab7b93b96d3e17c3711fa87b66a6c",
+      "feature-zero-z18-light-dpi2.0.repeat.png": "9fda1f4d90039a06f3838309497bbc95052ab7b93b96d3e17c3711fa87b66a6c",
+      "lane-z14-dark-dpi1.0.png": "490a365cd85bb2fb600bd9b48219235e80180e8d355006f70d88fb63325608fd",
+      "lane-z14-dark-dpi1.0.repeat.png": "9b6fb1d7c5df9a62171777f6952d1343b9fdfe9816776d00c719acc6a1ea6be4",
+      "lane-z14-dark-dpi2.0.png": "35a1b7548eebe9dd044678e4d5a496deba832b1501b3a9824b45c8a13d733169",
+      "lane-z14-dark-dpi2.0.repeat.png": "217335f038480805e6b159fd8e636d145d456b0d93c5daf31b845a79c3c38d92",
+      "lane-z14-light-dpi1.0.png": "66f25631e9e693f38529586c36ecad554b812dc08ae13677c02c721865bf811c",
+      "lane-z14-light-dpi1.0.repeat.png": "2dcf5421536b222d2cb1ccb8d02d6e1ecd035b021f063cee97145e9cb2547a2e",
+      "lane-z14-light-dpi2.0.png": "d586a0f908793190d0a4cc71cd9cda395e98f567e1f2c0290d3616acec9a0364",
+      "lane-z14-light-dpi2.0.repeat.png": "9fb3b8519a97d04dbfa35b86027ea8127b165eea8b4a234e3ff5a0a1df86b9b9",
+      "lane-z16-dark-dpi1.0.png": "5ae2beb15ed2becff33c18ee3cf5d13fb635928917892a791a173040e7fbb474",
+      "lane-z16-dark-dpi1.0.repeat.png": "9a3a303136b4a3124cc9786ba102cf9d25d8910e302e4c99fa1562052263e7fb",
+      "lane-z16-dark-dpi2.0.png": "9ca0ee8a42d5db4072c7708719bb6e056fb3ce020126fd493d0695e63ebfc749",
+      "lane-z16-dark-dpi2.0.repeat.png": "8072df3d4aa89c136024589d21b53325adff8633da27909cd3a79e3d3ae20a3a",
+      "lane-z16-light-dpi1.0.png": "6fafc2fb11038d252c8c23769281ba3f64c04df8d157da70854b077fb934c62d",
+      "lane-z16-light-dpi1.0.repeat.png": "76ddbb2d543b97c3b9949491448166327a398aee2bc53547847c9a07e07ba5d2",
+      "lane-z16-light-dpi2.0.png": "2d5f1fb0b825dcfb407a8f94a9aa95cbbac6203fca119be522219d0789336379",
+      "lane-z16-light-dpi2.0.repeat.png": "4702972965b967cad00fe5eea676102757accec7eec015c6ea50f256f793e1dd",
+      "lane-z18-dark-dpi1.0.png": "2f4db6cd49bccb6e3caccf2b0cfbcfd0e255146fe5128fe733450c36ca7a8258",
+      "lane-z18-dark-dpi1.0.repeat.png": "cfff255db51596621a6386de395652a9499ac18de1d11eb2a108be397c06ab2f",
+      "lane-z18-dark-dpi2.0.png": "6ba107be1ee1658915675a6c97386e9756e68e8fa699bd11147648b9244ce66e",
+      "lane-z18-dark-dpi2.0.repeat.png": "5345197ac40836a97e77a7a940d4914422606922b00e01d2821ade04c59908c1",
+      "lane-z18-light-dpi1.0.png": "0ccc65dec0e3e841e0f8b0b5198e7824b24c89c3243aa80432e9cd10e29d3e27",
+      "lane-z18-light-dpi1.0.repeat.png": "1cbd70a170ae9a8509cbc038d1d6a1af7a40785352d0453fca7350ef6b3470e7",
+      "lane-z18-light-dpi2.0.png": "1d81db65f7d31c57bdae3d6617b06fc436cd6f634ab9070d645a4741bc1876ea",
+      "lane-z18-light-dpi2.0.repeat.png": "1d81db65f7d31c57bdae3d6617b06fc436cd6f634ab9070d645a4741bc1876ea",
+      "mixed-contraflow-z14-dark-dpi1.0.png": "9a86e912196d2fe68c39cf56f4ceb613e534bc67b77819a9b26aab1f0cc7554a",
+      "mixed-contraflow-z14-dark-dpi1.0.repeat.png": "2d0d037b2bde873767aeeb3843608e0ae34b2045d9b1efba766b046427a088bd",
+      "mixed-contraflow-z14-dark-dpi2.0.png": "9d7d61b06a57b4a2bfeb61e2bfc54707f593622407cae11ab960c7fba55cf9bb",
+      "mixed-contraflow-z14-dark-dpi2.0.repeat.png": "288a8d71913551343fc73f25719d2539ba065713515d3c264f269b77e85f6a0d",
+      "mixed-contraflow-z14-light-dpi1.0.png": "8a86c5cec9ebc824141f0b493570cdb1efd01006e786d60826225d108967a8fc",
+      "mixed-contraflow-z14-light-dpi1.0.repeat.png": "84d5eeca8ceaaa1b45a1f4bfe2ea5e9d92043716fae3e937085c9131096a5d3a",
+      "mixed-contraflow-z14-light-dpi2.0.png": "dfe6b8491e118327bc3c7d795c4d2fe14d661f68f16f3c3906a28d04d7114710",
+      "mixed-contraflow-z14-light-dpi2.0.repeat.png": "6dba3ac20dbafb6eed14a34b8a8828c3feb48f8b2cc8fb4e4c158ef1dad1f690",
+      "mixed-contraflow-z16-dark-dpi1.0.png": "569515e1915955008ce1abbd7e27e3f763768eb5e35df4f12b2c4c8130f43a47",
+      "mixed-contraflow-z16-dark-dpi1.0.repeat.png": "41e986aa5397f81bebe8d75bf762ec8aa3a253858923e1d04cb1dc7735611de3",
+      "mixed-contraflow-z16-dark-dpi2.0.png": "246f6e7dfdfd3c678725fc8f123a623d7f260d8c899833fb442a7a5c90a0abe7",
+      "mixed-contraflow-z16-dark-dpi2.0.repeat.png": "ff7e869701d0ba404583fb1b6b2b2056d92a747cbcc6584ed9047f6069eec352",
+      "mixed-contraflow-z16-light-dpi1.0.png": "f01ab34a10f90c016a9d4f1a8866999cb22b988b9a4edafa874b5fb10f2d0ee3",
+      "mixed-contraflow-z16-light-dpi1.0.repeat.png": "e66a3f05bcdb1ea41d20a78181980b23930244dcd333e91147e58ed25e3eb998",
+      "mixed-contraflow-z16-light-dpi2.0.png": "ae1e44c972a8674fbab28001443a30c003e5509134a5a8ef6249efc34b45c217",
+      "mixed-contraflow-z16-light-dpi2.0.repeat.png": "ae1e44c972a8674fbab28001443a30c003e5509134a5a8ef6249efc34b45c217",
+      "mixed-contraflow-z18-dark-dpi1.0.png": "daaf3598f81d7b973ce9e2f6253b4eced00aef9cb796869ac9dd2e7b88f44ebb",
+      "mixed-contraflow-z18-dark-dpi1.0.repeat.png": "daaf3598f81d7b973ce9e2f6253b4eced00aef9cb796869ac9dd2e7b88f44ebb",
+      "mixed-contraflow-z18-dark-dpi2.0.png": "62e6ffade77e8681605bfdecd57368ac80298c54f8d92e670a89275385d832fc",
+      "mixed-contraflow-z18-dark-dpi2.0.repeat.png": "62e6ffade77e8681605bfdecd57368ac80298c54f8d92e670a89275385d832fc",
+      "mixed-contraflow-z18-light-dpi1.0.png": "2ad90a3833016ebce002e93e8e25a63b076ab781afa30588fa0a7f3b524429a4",
+      "mixed-contraflow-z18-light-dpi1.0.repeat.png": "2ad90a3833016ebce002e93e8e25a63b076ab781afa30588fa0a7f3b524429a4",
+      "mixed-contraflow-z18-light-dpi2.0.png": "1265e07d1e15b38b800548121a8d2484d6b0045fb24aff1840c4f3480b3e42ac",
+      "mixed-contraflow-z18-light-dpi2.0.repeat.png": "1265e07d1e15b38b800548121a8d2484d6b0045fb24aff1840c4f3480b3e42ac",
+      "shared-z14-dark-dpi1.0.png": "f31831ccc78cc21a29e8757e3bcfdf15f9f74b6a27ad57122453dc6f38280652",
+      "shared-z14-dark-dpi1.0.repeat.png": "93323021526ff3bbd2eee4206c1a4592fe738abfbe65747df366149b90c978bf",
+      "shared-z14-dark-dpi2.0.png": "143e800ed2d16a99a085ad2abaf80de4ab65e95c72c482c4a2019f236a45ff7a",
+      "shared-z14-dark-dpi2.0.repeat.png": "0b9addc019b2a5640671804d78df04c99ee3702982833d497f3e0184fddf09e5",
+      "shared-z14-light-dpi1.0.png": "3653cdfc3e950f35f3e2826737f1328b7ec79fae1820fe48640bc470470af805",
+      "shared-z14-light-dpi1.0.repeat.png": "01029f4aae3df962a26f5e2f5961a02156c5e5fd393dff3b8ca2ae15573cc989",
+      "shared-z14-light-dpi2.0.png": "1478112a656153ea96ced15e2b16febb00d67e89f84e4b32541798ef19846054",
+      "shared-z14-light-dpi2.0.repeat.png": "332f4417aaadb1dadc4277212d12e86e11b9b67ea441c263a6a8483413d5e632",
+      "shared-z16-dark-dpi1.0.png": "9a79a913bc9ea62b2559505e1cc6d467c37a2659eead2892fc6862686a454c29",
+      "shared-z16-dark-dpi1.0.repeat.png": "9a79a913bc9ea62b2559505e1cc6d467c37a2659eead2892fc6862686a454c29",
+      "shared-z16-dark-dpi2.0.png": "d150e3030178c73918e6dd29877b2c6f22998fcae5913d1a039fdf58b63f17f8",
+      "shared-z16-dark-dpi2.0.repeat.png": "4c5d248d9d33867359f5fe84c9d5d5f55fe2a6c68116306820518ac65295f971",
+      "shared-z16-light-dpi1.0.png": "8c5a559a6f2f35d9ea470524874d0cd2df670c70710346eae38848f41c7f3e2d",
+      "shared-z16-light-dpi1.0.repeat.png": "08143618ec67587184a8e03bd42d37de054d50db976ffb0dc19028d238adc3cc",
+      "shared-z16-light-dpi2.0.png": "382866be18f34410e3e6c59dd869a81331aa4092ea99141f084b50b890a46b8c",
+      "shared-z16-light-dpi2.0.repeat.png": "c0f47dd88f45801dbdf710c8cf821d29f371c74742d1dffe64a14565f1544a7e",
+      "shared-z18-dark-dpi1.0.png": "ce286cd4a424a09eb32b7d156e525d42711376610e7487e31ac926637ffba9c9",
+      "shared-z18-dark-dpi1.0.repeat.png": "ce286cd4a424a09eb32b7d156e525d42711376610e7487e31ac926637ffba9c9",
+      "shared-z18-dark-dpi2.0.png": "3d9ac75704a727a405747fc87e987bff958b83f18a164c4e96bf0cd93e154ad0",
+      "shared-z18-dark-dpi2.0.repeat.png": "3d9ac75704a727a405747fc87e987bff958b83f18a164c4e96bf0cd93e154ad0",
+      "shared-z18-light-dpi1.0.png": "bfa4bf9fad232c19c9f55d9bfdaad1b36ccac18ca032d2c1f1df34874d0443c3",
+      "shared-z18-light-dpi1.0.repeat.png": "43058e9271898af1f29cb89af35603712b4bc5ebdcdb27ab287307cc1cf44386",
+      "shared-z18-light-dpi2.0.png": "a3904868aaa307ec4721d5bf479377d6ef51d1e9b67d1542957d30ad258fd42a",
+      "shared-z18-light-dpi2.0.repeat.png": "a3904868aaa307ec4721d5bf479377d6ef51d1e9b67d1542957d30ad258fd42a",
+      "track-z14-dark-dpi1.0.png": "35b1b62bfa1d1c63a99b8c8d853f4da72efd63edc7d14ed8bb606b1f05148e0e",
+      "track-z14-dark-dpi1.0.repeat.png": "35b1b62bfa1d1c63a99b8c8d853f4da72efd63edc7d14ed8bb606b1f05148e0e",
+      "track-z14-dark-dpi2.0.png": "c987d3d7354248bc572975d029c1ab321c66b76eab49e12b180f75b0a58234bb",
+      "track-z14-dark-dpi2.0.repeat.png": "cd5e8d8e43f550e0296ab3c7402c0ad20fa50aec6fbb077f40ce5b62f27caa7e",
+      "track-z14-light-dpi1.0.png": "b15a4d54667de18492e6db8094c886addd0270975fe32c24b3bd9b73edcfbfae",
+      "track-z14-light-dpi1.0.repeat.png": "b15a4d54667de18492e6db8094c886addd0270975fe32c24b3bd9b73edcfbfae",
+      "track-z14-light-dpi2.0.png": "cec71bca3a05834a2cdc16dfbd8f73a1b1a6e9813311e7b5e55d9009988b2484",
+      "track-z14-light-dpi2.0.repeat.png": "42947130a146424d704928a8039a992b46c195b96d7abc79b1011c7d3a68af7c",
+      "track-z16-dark-dpi1.0.png": "b9b78583699233d597a2c4014a962d7b46a83a08048a6b1f93fa415bff3a078a",
+      "track-z16-dark-dpi1.0.repeat.png": "f0ca87ab48299ae258ad0003da4a69ccabbe2f3fe608bd288097a390119276b1",
+      "track-z16-dark-dpi2.0.png": "685fabbeb67978004e29691c6bb63c480c9736e0f9ec505d6b2a1f22a7aa5dbb",
+      "track-z16-dark-dpi2.0.repeat.png": "facdfb5763c02f52defb6be2a49813029df3f376e6bbadb223058433a2b46594",
+      "track-z16-light-dpi1.0.png": "b2728d2f32541d6a7754d7f6f0a0737d7a9baf0ae81ea63b1bf3033965247475",
+      "track-z16-light-dpi1.0.repeat.png": "0bf5ae7e7fbd5c83fe037ad46342145e30577486e75665f153361d6e3d8be178",
+      "track-z16-light-dpi2.0.png": "8d1046ad2586ad595b770d34b6dd72f7887738f17e220a677867139a6f173a35",
+      "track-z16-light-dpi2.0.repeat.png": "8d1046ad2586ad595b770d34b6dd72f7887738f17e220a677867139a6f173a35",
+      "track-z18-dark-dpi1.0.png": "5b45d62e83b09738f1a21b658a7cee5768632b0f332e6df746d23f6b8eb68a39",
+      "track-z18-dark-dpi1.0.repeat.png": "5b45d62e83b09738f1a21b658a7cee5768632b0f332e6df746d23f6b8eb68a39",
+      "track-z18-dark-dpi2.0.png": "3484ba4fcae8726ab37635fe14db867aa41245dbb8c8e4f31743ebb3b0760741",
+      "track-z18-dark-dpi2.0.repeat.png": "40ee02d3f85d30bbcd87f0dbc662cad5acc72ef7703355a2df591d13ebaf19cb",
+      "track-z18-light-dpi1.0.png": "581fc252297d137aaede92f8c9c8942c271ee7f54fd8bab85ef43246ba4dfe6e",
+      "track-z18-light-dpi1.0.repeat.png": "581fc252297d137aaede92f8c9c8942c271ee7f54fd8bab85ef43246ba4dfe6e",
+      "track-z18-light-dpi2.0.png": "4d691d1ac695c92442db978b386e3c0dc52207f87bd91e9947f36bc33e28f0a2",
+      "track-z18-light-dpi2.0.repeat.png": "4d691d1ac695c92442db978b386e3c0dc52207f87bd91e9947f36bc33e28f0a2"
+    },
+    "map_sha256": "4895da142ba6198066fd9fa386e6dbfd0658f23247d40f6c9ee3b2854f1c1e0e",
+    "roi": [
+      0,
+      0,
+      1008,
+      720
+    ],
+    "shutdown_cleanup": {
+      "dark-dpi1.0": true,
+      "dark-dpi1.0.repeat": true,
+      "dark-dpi2.0": true,
+      "dark-dpi2.0.repeat": true,
+      "light-dpi1.0": true,
+      "light-dpi1.0.repeat": true,
+      "light-dpi2.0": true,
+      "light-dpi2.0.repeat": true
+    },
+    "source_commit": "f8f603fc7e24e1cad765423fc75c392d3aa0ae56"
+  },
+  "hardware_comparison": {
+    "case_count": 60,
+    "cases": {
+      "feature-zero-z14-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z14-dark-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z14-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.8371546149323928e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z14-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z16-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z16-dark-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z16-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.3778659611992946e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z16-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z18-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z18-dark-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z18-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z18-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z14-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 56,
+        "exact_equal": false,
+        "max_channel_difference": 61,
+        "mean_absolute_difference": 0.0007582855673133451,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z14-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 105,
+        "exact_equal": false,
+        "max_channel_difference": 18,
+        "mean_absolute_difference": 0.0003871803350970018,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z14-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 35,
+        "exact_equal": false,
+        "max_channel_difference": 80,
+        "mean_absolute_difference": 0.0007927322163433275,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z14-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 2.296443268665491e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z16-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 6,
+        "mean_absolute_difference": 7.80790711346267e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z16-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 14,
+        "exact_equal": false,
+        "max_channel_difference": 8,
+        "mean_absolute_difference": 8.864271017048795e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z16-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 8,
+        "mean_absolute_difference": 7.348618459729571e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z16-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 14,
+        "exact_equal": false,
+        "max_channel_difference": 11,
+        "mean_absolute_difference": 8.818342151675486e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z18-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z18-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z18-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z18-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z14-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 74,
+        "exact_equal": false,
+        "max_channel_difference": 62,
+        "mean_absolute_difference": 0.0007592041446208113,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z14-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z14-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 75,
+        "exact_equal": false,
+        "max_channel_difference": 77,
+        "mean_absolute_difference": 0.0007849243092298648,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z14-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.3778659611992946e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z16-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 5,
+        "exact_equal": false,
+        "max_channel_difference": 111,
+        "mean_absolute_difference": 0.00028705540858318636,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z16-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z16-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 15,
+        "exact_equal": false,
+        "max_channel_difference": 25,
+        "mean_absolute_difference": 6.430041152263375e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z16-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z18-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z18-dark-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z18-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z18-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z14-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 24,
+        "mean_absolute_difference": 1.6993680188124633e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z14-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 3,
+        "exact_equal": false,
+        "max_channel_difference": 24,
+        "mean_absolute_difference": 5.09810405643739e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z14-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 21,
+        "mean_absolute_difference": 1.745296884185773e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z14-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 4,
+        "exact_equal": false,
+        "max_channel_difference": 21,
+        "mean_absolute_difference": 5.0062463256907704e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z16-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 17,
+        "exact_equal": false,
+        "max_channel_difference": 28,
+        "mean_absolute_difference": 0.0002287257495590829,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z16-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z16-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z16-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z18-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z18-dark-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z18-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.3778659611992946e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z18-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z14-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z14-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z14-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z14-light-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 8,
+        "exact_equal": false,
+        "max_channel_difference": 40,
+        "mean_absolute_difference": 0.00012492651381540272,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z16-dark-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 10,
+        "mean_absolute_difference": 1.3319370958259847e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z16-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z16-light-dpi1.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 28,
+        "mean_absolute_difference": 3.123162845385068e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z16-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z18-dark-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z18-dark-dpi2.0": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z18-light-dpi1.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z18-light-dpi2.0": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      }
+    },
+    "exact_tested_viewports_equal": false,
+    "scope": "Only the recorded device/backends/viewports; not universal visual equivalence"
+  },
+  "note": "Strict certification remains false. A 17-pixel grayscale road-edge difference repeats twice in one view; repeat variability elsewhere does not prove that difference harmless. Raw PNGs and logs remain in the local build-visual-artifacts directories. Shutdown cleanup is recorded and only occurs after screenshot-mode completion.",
+  "original_software_control": {
+    "capture": {
+      "actual_backends": {
+        "feature-zero-z14-light-dpi1.0": "OpenGLES3",
+        "feature-zero-z16-light-dpi1.0": "OpenGLES3",
+        "feature-zero-z18-light-dpi1.0": "OpenGLES3",
+        "lane-z14-light-dpi1.0": "OpenGLES3",
+        "lane-z16-light-dpi1.0": "OpenGLES3",
+        "lane-z18-light-dpi1.0": "OpenGLES3",
+        "mixed-contraflow-z14-light-dpi1.0": "OpenGLES3",
+        "mixed-contraflow-z16-light-dpi1.0": "OpenGLES3",
+        "mixed-contraflow-z18-light-dpi1.0": "OpenGLES3",
+        "shared-z14-light-dpi1.0": "OpenGLES3",
+        "shared-z16-light-dpi1.0": "OpenGLES3",
+        "shared-z18-light-dpi1.0": "OpenGLES3",
+        "track-z14-light-dpi1.0": "OpenGLES3",
+        "track-z16-light-dpi1.0": "OpenGLES3",
+        "track-z18-light-dpi1.0": "OpenGLES3"
+      },
+      "assets_sha256": {
+        "classificator.txt": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d",
+        "colors.txt": "5a48d81077f418427f94df3ae5b58dc0c28c39343ffe76536162a8dcf47a59d9",
+        "drules_cycling.bin": "fcc2e5ac026c5ee3221086372434db6b470d896160ce7b76ff9753eb56f21fa0",
+        "drules_cycling.txt": "be8112aa730a893631e8a3834eea18d32154fe773ca8a6d848ab60c54e67a400",
+        "patterns.txt": "c29e992302bbfea254374df2df27f6e29614b2aa96c0311c5567066426574d21",
+        "types.txt": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95"
+      },
+      "binary_sha256": "54b1b99f1f30a1011e281053af7fc414e5edc5d8fef992fa4237d1d62c4d9946",
+      "device": "ideapad:Qt-software",
+      "fixtures": [
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.27519802039955,
+          "lon": -123.11460840042389,
+          "name": "lane-z14-light-dpi1.0",
+          "theme": "light",
+          "zoom": 14
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.27519802039955,
+          "lon": -123.11460840042389,
+          "name": "lane-z16-light-dpi1.0",
+          "theme": "light",
+          "zoom": 16
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.27519802039955,
+          "lon": -123.11460840042389,
+          "name": "lane-z18-light-dpi1.0",
+          "theme": "light",
+          "zoom": 18
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.273148793047234,
+          "lon": -123.03891109704159,
+          "name": "shared-z14-light-dpi1.0",
+          "theme": "light",
+          "zoom": 14
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.273148793047234,
+          "lon": -123.03891109704159,
+          "name": "shared-z16-light-dpi1.0",
+          "theme": "light",
+          "zoom": 16
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.273148793047234,
+          "lon": -123.03891109704159,
+          "name": "shared-z18-light-dpi1.0",
+          "theme": "light",
+          "zoom": 18
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.30929963904232,
+          "lon": -123.04044800281858,
+          "name": "track-z14-light-dpi1.0",
+          "theme": "light",
+          "zoom": 14
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.30929963904232,
+          "lon": -123.04044800281858,
+          "name": "track-z16-light-dpi1.0",
+          "theme": "light",
+          "zoom": 16
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.30929963904232,
+          "lon": -123.04044800281858,
+          "name": "track-z18-light-dpi1.0",
+          "theme": "light",
+          "zoom": 18
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.19674521535637,
+          "lon": -123.13702630353738,
+          "name": "feature-zero-z14-light-dpi1.0",
+          "theme": "light",
+          "zoom": 14
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.19674521535637,
+          "lon": -123.13702630353738,
+          "name": "feature-zero-z16-light-dpi1.0",
+          "theme": "light",
+          "zoom": 16
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.19674521535637,
+          "lon": -123.13702630353738,
+          "name": "feature-zero-z18-light-dpi1.0",
+          "theme": "light",
+          "zoom": 18
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.28340457641886,
+          "lon": -123.10416924286014,
+          "name": "mixed-contraflow-z14-light-dpi1.0",
+          "theme": "light",
+          "zoom": 14
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.28340457641886,
+          "lon": -123.10416924286014,
+          "name": "mixed-contraflow-z16-light-dpi1.0",
+          "theme": "light",
+          "zoom": 16
+        },
+        {
+          "backend": "OpenGLES3",
+          "density": 1.0,
+          "lat": 49.28340457641886,
+          "lon": -123.10416924286014,
+          "name": "mixed-contraflow-z18-light-dpi1.0",
+          "theme": "light",
+          "zoom": 18
+        }
+      ],
+      "image_sha256": {
+        "feature-zero-z14-light-dpi1.0.png": "d0f918452d5dd6933c7629c7f27a47665b6a1f461dddd90b5836cff665ce1f4f",
+        "feature-zero-z14-light-dpi1.0.repeat.png": "2fcfd91497c05ee335234362a9e833089549bc8f2d7bea40f27e7039f214f3dd",
+        "feature-zero-z16-light-dpi1.0.png": "cf98b8ecef099160094db1db69d23e7114a321477f0343294be7d1d6ca5853cf",
+        "feature-zero-z16-light-dpi1.0.repeat.png": "cf98b8ecef099160094db1db69d23e7114a321477f0343294be7d1d6ca5853cf",
+        "feature-zero-z18-light-dpi1.0.png": "c8af12ffe5626a236d597e85e96c902fc335672e8b531fdc0621f6b923d42416",
+        "feature-zero-z18-light-dpi1.0.repeat.png": "c8af12ffe5626a236d597e85e96c902fc335672e8b531fdc0621f6b923d42416",
+        "lane-z14-light-dpi1.0.png": "0bd2b88fb8ad8436e7c20d0becfada019b981e274056c3a16f950d27f20f2160",
+        "lane-z14-light-dpi1.0.repeat.png": "1f44c1c0e7b2dc5a166d80ca3f9153653e28be4a5a10df3e6a59706e66625199",
+        "lane-z16-light-dpi1.0.png": "19ef673ea80f8af38bfa5adba97eb7c9d70d9606dd2d160c852479e61eda7bc0",
+        "lane-z16-light-dpi1.0.repeat.png": "0fd6cbae3e26d9f401117e1d5ecb52084774dcbd6e9334de1f04e4c97e381a61",
+        "lane-z18-light-dpi1.0.png": "d1b7ec39db0957d625c7440f1ca9063446f9bc2bc6ead25aabf019fa599c0b29",
+        "lane-z18-light-dpi1.0.repeat.png": "70409f281002174c055194497326d229695eba3eab104ca0360d6e40658c0ec7",
+        "mixed-contraflow-z14-light-dpi1.0.png": "339f5d58227e5a7421cc41ac8ea0e59347ece0d7ab8645fda609ffd253a42950",
+        "mixed-contraflow-z14-light-dpi1.0.repeat.png": "0b3537365b2d4ee327738dca0ee22988e5e0fe395c16c2122f53914354b79db7",
+        "mixed-contraflow-z16-light-dpi1.0.png": "d9861c761660624ef91847afa8cf9ff8d0aedccf7fe6c43297408262b31a506e",
+        "mixed-contraflow-z16-light-dpi1.0.repeat.png": "843136d299fca0e7066874a3b79745bfd1f6c28a5bd326440add5f61a2e51c0e",
+        "mixed-contraflow-z18-light-dpi1.0.png": "a9e09b53091504584b2f3db49570e5af44d10a9724dd93f3a608976c785cc8dd",
+        "mixed-contraflow-z18-light-dpi1.0.repeat.png": "a9e09b53091504584b2f3db49570e5af44d10a9724dd93f3a608976c785cc8dd",
+        "shared-z14-light-dpi1.0.png": "679eceba3044275a3d1b56d1f2b4e53b85a19251c78a9db0727667c7c73613c9",
+        "shared-z14-light-dpi1.0.repeat.png": "f3d70c2643bda003965f617b56f3bd141b8abb7dc7372fcc6998ec4606afa462",
+        "shared-z16-light-dpi1.0.png": "6f7089d7cf68548201c13684859500a7a885919cfdce251aeb1bcfc9fbe4f051",
+        "shared-z16-light-dpi1.0.repeat.png": "c4fa2b797e630f133c08601c6be2933e3b37ca069cd5e29c617092c6477f1042",
+        "shared-z18-light-dpi1.0.png": "7b5b37d33c9f16ee51a27fecc1a62501178d9e085a1f54897c2feecceedf6c89",
+        "shared-z18-light-dpi1.0.repeat.png": "7b5b37d33c9f16ee51a27fecc1a62501178d9e085a1f54897c2feecceedf6c89",
+        "track-z14-light-dpi1.0.png": "13caeb361f3306331c6d77199faaaa1a861089da28c3ee0ad0711187124efb8c",
+        "track-z14-light-dpi1.0.repeat.png": "55475aa5f1df41bd1ff8dd3505c1826484f754c00b20b5427764a01caf1799d6",
+        "track-z16-light-dpi1.0.png": "f76a5ce27406a4b9c3d77045854561378f74aa6cd4dcf197640b6f3e675a4c5f",
+        "track-z16-light-dpi1.0.repeat.png": "41c72a9e8b9a0c1ede5208904fd2ad57419dfd314a1812a24a48ce2ce5018819",
+        "track-z18-light-dpi1.0.png": "9778bc35e0cc593dcaac930b7344812c04d084deb0538312c82032c2f89c789b",
+        "track-z18-light-dpi1.0.repeat.png": "9778bc35e0cc593dcaac930b7344812c04d084deb0538312c82032c2f89c789b"
+      },
+      "map_sha256": "0bfe6826938cb1531e0cb927b965630f56da0527ccab98ce5acffd50f94e7c82",
+      "roi": [
+        0,
+        0,
+        1008,
+        720
+      ],
+      "shutdown_cleanup": {
+        "light-dpi1.0": true,
+        "light-dpi1.0.repeat": true
+      },
+      "source_commit": "955cd49403ed025c24beec09f5551e8d274a38ff"
+    },
+    "repeat_metrics": {
+      "feature-zero-z14-light-dpi1.0": {
+        "changed_pixels": 3,
+        "exact_equal": false,
+        "max_channel_difference": 4,
+        "mean_absolute_difference": 1.1482216343327455e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z16-light-dpi1.0": {
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "feature-zero-z18-light-dpi1.0": {
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z14-light-dpi1.0": {
+        "changed_pixels": 115,
+        "exact_equal": false,
+        "max_channel_difference": 110,
+        "mean_absolute_difference": 0.0017296810699588478,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z16-light-dpi1.0": {
+        "changed_pixels": 16,
+        "exact_equal": false,
+        "max_channel_difference": 158,
+        "mean_absolute_difference": 0.0005773258377425044,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "lane-z18-light-dpi1.0": {
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 8,
+        "mean_absolute_difference": 1.1022927689594357e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z14-light-dpi1.0": {
+        "changed_pixels": 47,
+        "exact_equal": false,
+        "max_channel_difference": 77,
+        "mean_absolute_difference": 0.0004997060552616109,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z16-light-dpi1.0": {
+        "changed_pixels": 16,
+        "exact_equal": false,
+        "max_channel_difference": 25,
+        "mean_absolute_difference": 6.889329805996472e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "mixed-contraflow-z18-light-dpi1.0": {
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z14-light-dpi1.0": {
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 8,
+        "mean_absolute_difference": 1.8830834803057025e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z16-light-dpi1.0": {
+        "changed_pixels": 17,
+        "exact_equal": false,
+        "max_channel_difference": 24,
+        "mean_absolute_difference": 0.00013227513227513228,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "shared-z18-light-dpi1.0": {
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z14-light-dpi1.0": {
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 5,
+        "mean_absolute_difference": 5.9707524985302764e-06,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z16-light-dpi1.0": {
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 8,
+        "mean_absolute_difference": 1.1022927689594357e-05,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      },
+      "track-z18-light-dpi1.0": {
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 725760,
+        "roi": [
+          0,
+          0,
+          1008,
+          720
+        ]
+      }
+    }
+  },
+  "scope": "Vancouver road-only fixture; Qt OpenGL desktop, not Pixel/Vulkan or routing",
+  "summary": {
+    "cases": 60,
+    "exact_cross_matches": 36,
+    "maximum_cross_changed_pixels": 105,
+    "maximum_cross_mean_absolute_difference": 0.0007927322163433275,
+    "maximum_original_software_repeat_changed_pixels": 115,
+    "stable_differences": [
+      "shared-z16-dark-dpi1.0"
+    ],
+    "stable_exact_matches": 23
+  },
+  "verified_tested_visual_equivalence": false
+}

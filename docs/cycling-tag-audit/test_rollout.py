@@ -61,15 +61,27 @@ if args[:2] == ["pr", "view"]:
 if args and args[0] == "api":
     url = args[1]
     jq = args[args.index("--jq") + 1] if "--jq" in args else ""
+    if url == "graphql":
+        if state.get("api_error") == "branches":
+            sys.exit("simulated branch API failure")
+        fields = dict(args[i+1].split("=", 1) for i, arg in enumerate(args) if arg == "-f")
+        print(branch(fields["owner"] + "/" + fields["name"], fields["ref"].removeprefix("refs/heads/")))
+        sys.exit(0)
     if "/branches/" in url:
         repo, ref = url.split("repos/", 1)[1].split("/branches/", 1)
         print(branch(repo, ref.split("?")[0]))
         sys.exit(0)
     if "/pulls?" in url:
+        if state.get("api_error") in ("pulls", "duplicate_prs"):
+            sys.exit("simulated PR API failure or ambiguous PR list")
         repo = url.split("repos/", 1)[1].split("/pulls?", 1)[0]
         query = dict(part.split("=", 1) for part in url.split("?", 1)[1].split("&"))
         key = f'{repo}|{unquote(query["head"])}|{unquote(query["base"])}'
         number = state.get("prs", {}).get(key)
+        if isinstance(number, list):
+            if "multiple matching PRs" in jq:
+                sys.exit("multiple matching PRs")
+            number = number[0]
         print(number if number else "")
         sys.exit(0)
     if "/pulls/" in url:
@@ -110,6 +122,7 @@ PINS = read_pins()
 def branch_map(overrides=None):
     data = {
         f"JaredTweed/organicmaps|{PINS['SELECTOR_BRANCH']}": PINS["SELECTOR_HEAD"],
+        f"JaredTweed/organicmaps|{PINS['ACCESS_BRANCH']}": PINS["ACCESS_HEAD"],
         f"JaredTweed/organicmaps|{PINS['TAG_DATA_BRANCH']}": PINS["TAG_DATA_HEAD"],
         f"JaredTweed/organicmaps|{PINS['METALINES_BRANCH']}": PINS["METALINES_HEAD"],
         f"JaredTweed/organicmaps|{PINS['DASH_BRANCH']}": PINS["DASH_HEAD"],
@@ -140,12 +153,13 @@ class RolloutTests(unittest.TestCase):
         self.git_marker = self.tmp / "git-calls"
 
     def run_script(self, args=("--check",), env=None, branches=None, prs=None,
-                   pr_state=None, next_pr=900, script=SCRIPT):
+                   pr_state=None, next_pr=900, script=SCRIPT, api_error=None):
         state = {
             "branches": branch_map(branches),
             "prs": prs or {},
             "pr": pr_state or {},
             "next_pr": next_pr,
+            "api_error": api_error,
         }
         self.gh_state.write_text(json.dumps(state))
         full_env = dict(
@@ -183,10 +197,26 @@ class RolloutTests(unittest.TestCase):
         self.assertEqual(self.gh_calls(), [])
         self.assertEqual(self.git_calls(), ["fetch --quiet upstream master"])
 
+    def test_api_errors_and_ambiguous_prs_cannot_publish(self):
+        for error in ("branches", "pulls", "duplicate_prs"):
+            with self.subTest(error=error):
+                result = self.run_script(["--publish"], env={"PUBLISH_CYCLING_STACK": "YES"}, api_error=error)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(self.gh_calls(), [])
+                self.assertFalse(any(line.startswith("push ") for line in self.git_calls()))
+
+    def test_multiple_matching_prs_are_rejected(self):
+        result = self.run_script(["--publish"], env={"PUBLISH_CYCLING_STACK": "YES"},
+                                 prs={f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": [101, 102]})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("cannot uniquely resolve PR", result.stderr)
+        self.assertEqual(self.gh_calls(), [])
+        self.assertFalse(any(line.startswith("push ") for line in self.git_calls()))
+
     def test_plan_lists_the_whole_stack_without_network(self):
         result = self.run_script(["--plan"])
         self.assertEqual(result.returncode, 0, result.stderr)
-        for step in ("selector", "tag-data", "metalines", "dash", "style", "style-base"):
+        for step in ("selector", "access", "tag-data", "metalines", "dash", "style", "style-base"):
             self.assertIn(step, result.stdout)
         self.assertEqual(self.gh_calls(), [])
 
@@ -194,7 +224,7 @@ class RolloutTests(unittest.TestCase):
         out = self.tmp / "bodies"
         result = self.run_script(["--dump-bodies", str(out)])
         self.assertEqual(result.returncode, 0, result.stderr)
-        for name in ("selector-pr-body.md", "tag-data-pr-body.md",
+        for name in ("selector-pr-body.md", "access-pr-body.md", "tag-data-pr-body.md",
                      "metalines-pr-body.md", "dash-pr-body.md", "style-pr-body.md"):
             self.assertEqual((out / name).read_text(), (DOCS / name).read_text(), name)
 
@@ -262,13 +292,14 @@ class RolloutTests(unittest.TestCase):
 
     # publish happy path --------------------------------------------------
 
-    def test_publish_creates_five_drafts_in_stack_order(self):
+    def test_publish_creates_stack_and_independent_access_draft(self):
         result = self.run_script(["--publish"], {"PUBLISH_CYCLING_STACK": "YES"})
         self.assertEqual(result.returncode, 0, result.stderr)
         calls = self.gh_calls()
-        self.assertEqual(len(calls), 5, calls)
+        self.assertEqual(len(calls), 6, calls)
         expected = [
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['SELECTOR_BRANCH']}"),
+            ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['ACCESS_BRANCH']}"),
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['TAG_DATA_BRANCH']}"),
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['METALINES_BRANCH']}"),
             ("organicmaps/organicmaps", "master", f"JaredTweed:{PINS['DASH_BRANCH']}"),
@@ -280,7 +311,7 @@ class RolloutTests(unittest.TestCase):
             self.assertEqual(call["head"], head)
             self.assertTrue(call["draft"])
         state = self.state_path.read_text()
-        self.assertEqual(len(state.strip().splitlines()), 5)
+        self.assertEqual(len(state.strip().splitlines()), 6)
         self.assertNotIn("12692", state)
 
     def test_publish_pushes_only_missing_branches(self):
@@ -296,6 +327,7 @@ class RolloutTests(unittest.TestCase):
     def test_publish_is_idempotent_and_never_edits_by_default(self):
         prs = {
             f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['ACCESS_BRANCH']}|master": 106,
             f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 102,
             f"organicmaps/organicmaps|JaredTweed:{PINS['METALINES_BRANCH']}|master": 103,
             f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 104,
@@ -303,6 +335,7 @@ class RolloutTests(unittest.TestCase):
         }
         pr_state = {
             "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
+            "106": {"state": "open", "draft": True, "base": "master", "headSha": PINS["ACCESS_HEAD"]},
             "102": {"state": "open", "draft": True, "base": "master", "headSha": PINS["TAG_DATA_HEAD"]},
             "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["METALINES_HEAD"]},
             "104": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},
@@ -312,7 +345,7 @@ class RolloutTests(unittest.TestCase):
                                  prs=prs, pr_state=pr_state)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.gh_calls(), [])
-        self.assertEqual(len(self.state_path.read_text().strip().splitlines()), 5)
+        self.assertEqual(len(self.state_path.read_text().strip().splitlines()), 6)
 
     def test_publish_updates_body_only_when_explicitly_allowed(self):
         prs = {f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 103}
@@ -353,6 +386,7 @@ class RolloutTests(unittest.TestCase):
     def test_verify_accepts_the_full_draft_stack(self):
         prs = {
             f"organicmaps/organicmaps|JaredTweed:{PINS['SELECTOR_BRANCH']}|master": 101,
+            f"organicmaps/organicmaps|JaredTweed:{PINS['ACCESS_BRANCH']}|master": 106,
             f"organicmaps/organicmaps|JaredTweed:{PINS['TAG_DATA_BRANCH']}|master": 102,
             f"organicmaps/organicmaps|JaredTweed:{PINS['METALINES_BRANCH']}|master": 103,
             f"organicmaps/organicmaps|JaredTweed:{PINS['DASH_BRANCH']}|master": 104,
@@ -360,6 +394,7 @@ class RolloutTests(unittest.TestCase):
         }
         pr_state = {
             "101": {"state": "open", "draft": True, "base": "master", "headSha": PINS["SELECTOR_HEAD"]},
+            "106": {"state": "open", "draft": True, "base": "master", "headSha": PINS["ACCESS_HEAD"]},
             "102": {"state": "open", "draft": True, "base": "master", "headSha": PINS["TAG_DATA_HEAD"]},
             "103": {"state": "open", "draft": True, "base": "master", "headSha": PINS["METALINES_HEAD"]},
             "104": {"state": "open", "draft": True, "base": "master", "headSha": PINS["DASH_HEAD"]},

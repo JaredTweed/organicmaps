@@ -4,6 +4,20 @@ Status: **published as five official drafts** (selector opened 2026-10-28, split
 completed 2026-10-29). PR #12692's code is protected; only review comments have
 been added. Do not push its head branch (`JaredTweed:master`).
 
+The next revision is prepared locally: the five cycling parts retain their
+numbers, with an independent motor-access prerequisite added outside the
+numbered stack. Candidate pins live in `rollout.sh`; the table below records
+the last published heads until that revision is pushed.
+
+**2026-10-30 discussion gate:** vng asked to agree the primary-road model on
+[#14040](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420).
+The user chose to preserve #12692's appearance and keep offsets separate.
+The [response](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599)
+and [constraint notes](vng-model-constraints.md) separate those decisions.
+No public code-head rewrites or independent access PR are being published
+while this boundary is discussed. Only the selector description/discussion is
+updated; its code remains at `c24dc38dfe`.
+
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `c24dc38dfe` |
@@ -49,26 +63,32 @@ official PRs are the review units.
 2. **Cycling types.** Adds `cyclewaytag|track`, `lane`, and `shared_lane` while
    keeping the road's main `highway` type. Includes access/direction refinements
    and an order-invariance fix for `cycleway=no` plus a positive side value. The
-   PR keeps the seven original incremental commits instead of squashing them.
-3. **Metalines offsets.** Metalines section version 1 -> 3, one double offset per
-   feature; unnamed painted lanes/shared lanes are added to metalines in separate
-   chains. Shared `ftypes` checkers avoid duplicated type paths. Ordered tagged
+   PR keeps the incremental classification history. Generated classifier assets
+   now accompany the first commit that consumes the types. Shared lane checkers
+   belong here. The unrelated permissive motor-access fix is an independent,
+   exact prerequisite commit rather than a hidden line in a cycling commit.
+3. **Metalines offsets.** Retains version-1 `metalines`, adding optional
+   version-3-layout `metalines_offsets`, one double offset per feature;
+   unnamed painted lanes/shared lanes are added to metalines in separate
+   chains. Ordered tagged
    `(kind, name, ref)` keys remove hash/sentinel collisions. The reader explicitly
-   consumes v2 float offsets and v3 doubles; v1 has no offsets. The renderer does
-   not use the offsets yet. Temporary collector files must be regenerated.
+   consumes v2 float offsets and v3 doubles; v1 has no offsets. Optional data is
+   validated against every authoritative feature/direction list before any
+   offsets are applied. The renderer does not use offsets yet. Temporary
+   collector files must be regenerated.
 4. **Continuous dash phase.** Uses the stored offsets and geometry direction in
    line geometry, clipping, and shaders; the Vulkan pack is regenerated. Only
    patterned cycling infrastructure is phased. No color, width, or style change.
 5. **Style preview.** The cycling style from #12692 replayed on parts 1-4. This is
    a visual preview, not a merge candidate; its base is a maintainer branch.
 
-## Verification performed
+## Earlier published-revision evidence
 
 | Step | Evidence |
 | --- | --- |
 | 1 | Full `indexer_tests` debug suite on a clean build of the exact branch. The debug run caught two fixture bugs, fixed in `6f9330d5c0`; `c24dc38dfe` only fixes clang-format. |
 | 2 | `generator_tests --filter=OsmType` and the full `routing_common_tests` debug suite. The new order-invariance test failed before the fix and passes after it. The branch keeps the seven original incremental commits; its tree is identical to the commit the tests ran on. |
-| 3 | Current Debug-assertion build of generator and renderer tests; all 10 `Metalines` tests, all 3 `MetalineData` tests and the complete `OsmType` group pass. New fixtures exercise actual collector round trips and v1/v2/v3 decoding. Earlier full `indexer_tests` evidence is from the prior revision. |
+| 3 | Published-revision Debug-assertion build of generator and renderer tests; all 10 `Metalines` tests, all 3 `MetalineData` tests and the complete `OsmType` group pass. New fixtures exercise actual collector round trips and v1/v2/v3 decoding. Earlier full `indexer_tests` evidence is from the prior revision. |
 | 4 | Rebuilt `drape_frontend_tests` at `3d77a89925` with Debug assertions under the memory cap. All 16 clipping tests, both dash-phase tests and all 3 reader tests pass. Prior phone spot checks are not a visual-equivalence proof for this revision. |
 | 5 | Earlier full `indexer_tests` debug suite on the preview branch. Style assets were kept unchanged; code also includes the split stack's selector, generator and metalines fixes. The appearance checklist below is still open. |
 
@@ -81,8 +101,47 @@ except two additional `hwtag|yescar` occurrences, explained by the
 they do not prove per-road routing correctness. Raw data is in
 [`actual-generator-results.json`](actual-generator-results.json).
 
-`rollout.sh --verify` passes against the live repository with upstream `master`
-at `00c6a0a322` and all five drafts present at the pinned heads.
+The prior five-draft kit passed live verification. The current six-draft
+candidate kit intentionally refuses the old remote heads: its pins are local
+proposed revisions, not a claim that those revisions are published. Its local
+ancestry, DCO, whitespace and source-overlap checks passed against upstream
+`1ae5fab44b`; do not describe that as a full live publication preflight pass.
+
+## Candidate evidence
+
+- Independent motor-access branch `6daf0d8755` builds and passes the full
+  `OsmType` group. The first usable cycling commit `532f644147` also builds
+  and passes that group with its classifier assets present.
+- The exact master-based renderer head `29834257a1` passes 299 native tests:
+  68 selected generator tests, 23 selected reader/clipping/phase tests, the
+  full 181-test indexer suite and the full 27-test routing-common suite.
+  Binary/log hashes are in [native-check-results.json](native-check-results.json).
+- The exact style candidate `f8f603fc7e` independently builds and passes its
+  classification, metalines and reader/clipping/phase groups. Exact original
+  and candidate Android and Qt native builds also succeed.
+- All 66 research/launcher tests pass, including API-error/ambiguous-PR
+  publication refusal, protected-ref guards, semantic feature matching,
+  complete source identities, stored type order, camera/map binding and strict
+  pixel comparison. A small pixel difference is detected, not tolerated away.
+- [visual-validation.md](visual-validation.md) records the detailed matched-map
+  and rendered-image results. All 82,785 features have source identities and
+  match, with the same 2,010 directed chains/offsets. Full tracked data/style
+  trees match. This does not erase the remaining pixel discrepancies.
+- Of 60 fixed-camera Qt views, 36 match cross-build exactly; 23 are also stable
+  within both builds. One stable pair differs by 17 grayscale road-edge pixels.
+  The strict visual-equivalence result remains false. Pixel/Vulkan coverage is
+  absent because the phone is disconnected; generated-route tests remain open.
+
+Local review ranges (not claims of isolated public GitHub diffs):
+
+| Unit | Range |
+| --- | --- |
+| Selector | `303ef27fbc..c24dc38dfe` |
+| Independent access | `303ef27fbc..6daf0d8755` |
+| Cycling types, after both prerequisites | `407057c693..29c724492b` |
+| Optional metaline data | `29c724492b..af080bbfb1` |
+| Renderer | `af080bbfb1..29834257a1` |
+| Complete style preview, including dependencies | `7af82a316a..f8f603fc7e` |
 
 ## Known open questions for review
 
@@ -95,7 +154,10 @@ The revision rationale and explicit merge gates are in [design-review.md](design
   direction and surface types before changing cycling retention priority.
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
-- Metalines v3: version-1 readers reject the whole section, losing merged label/shield placement. Keep this as a merge blocker until maintainers accept it or an additive section is tested against actual historical readers. Do not assume a trailing extension is safe.
+- The candidate fixes whole-section v3 rejection by retaining a v1 main
+  section and separate optional offsets. The emitted legacy layout and resolved
+  offsets are audited. This is not a blanket historical-client compatibility
+  result; the duplicate data costs about 1.1% on this test map.
 - Whether the style preview should merge into `ab/cycling-style` or wait for that branch to reach `master`.
 
 ## Review answers (vng)
@@ -116,11 +178,15 @@ The response is posted in
 - **Routing:** PR 2/5 refines access/direction flags as well as display types.
   Style consumers, classifier retention and routing can interact. End-to-end
   route-graph tests remain a gate. The independent `motor_vehicle=permissive`
-  change should be extracted if requested by routing reviewers; do not silently
-  remove it and change the final preview's shared-space appearance.
+  change is now extracted locally; the final preview retains it, so extraction
+  does not silently change shared-space appearance.
 - **Pedestrians:** a separate follow-up, not part of this stack.
 
 ## Publishing
+
+Do not publish while the primary-road discussion gate is open. These commands
+document the eventual workflow; the candidate kit currently rejects the old
+remote heads and cannot overwrite them automatically.
 
 ```bash
 cd docs/cycling-tag-audit
@@ -158,7 +224,8 @@ still open drafts, and never deletes branches.
 - End-to-end bicycle route tests on generated graphs for step 2, not just unit
   suites.
 - A decision on the `motor_vehicle=permissive` side effect.
-- Upstream CI on step 1 once the draft exists.
+- Maintainer-approved upstream CI on the reviewed heads; local tests do not
+  substitute for GitHub workflow approval or maintainer review.
 
 ## Promotion path after review
 

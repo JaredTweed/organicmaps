@@ -5,7 +5,8 @@
 # This script is the only publication entry point for the prepared cycling
 # stack. It never touches PR #12692 and never force-pushes or rewrites a
 # branch. It creates new DRAFT pull requests only; existing PRs are verified,
-# not edited, unless UPDATE_PR_BODIES=YES is set for a PR it created itself.
+# not edited, unless UPDATE_PR_BODIES=YES or UPDATE_PR_TITLES=YES is set for
+# the matching pinned draft.
 #
 # Usage:
 #   ./rollout.sh --check              read-only preflight (default)
@@ -24,8 +25,11 @@
 #   4. renderer   JaredTweed:prepare/cycling-dash      -> organicmaps:master
 #   5. style      JaredTweed:prepare/cycling-style     -> organicmaps:ab/cycling-style
 #
-# All five are official draft PRs. Parts 2-4 are cumulative because the clean
-# stack bases exist only on the fork; part 5 targets the maintainer style branch.
+# The five-part cycling stack also has an independent motor-access prerequisite.
+# The plan is six drafts; only five are currently published. Candidate code
+# heads and the new access PR are held pending the model discussion; see
+# stack-readiness.md. Parts 2-4 are cumulative; part 5 targets the maintainer
+# style branch. The independent access PR targets master without the selector.
 
 set -Eeuo pipefail
 IFS=$'\n\t'
@@ -40,6 +44,7 @@ readonly FORBIDDEN_PR=12692
 
 # Pins verified by --check. Update only after the matching tests pass.
 readonly SELECTOR_BRANCH=prepare/cycling-selector
+readonly ACCESS_BRANCH=prepare/motor-vehicle-permissive
 readonly TAG_DATA_BRANCH=prepare/cycling-tag-data
 readonly METALINES_BRANCH=prepare/cycling-metalines
 readonly DASH_BRANCH=prepare/cycling-dash
@@ -48,15 +53,17 @@ readonly STYLE_BRANCH=prepare/cycling-style
 
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=c24dc38dfe5e258837855cb84683c6ad0083adc7
-readonly TAG_DATA_HEAD=0a9b94bcefdb5dc9d4eee9c23e4628be058c5a1e
-readonly METALINES_HEAD=18e4dfaabe2e3981e4516f72b45a9e6355c0e711
-readonly DASH_HEAD=3d77a899256a8e61012f4a87d40ede3c78c52993
+readonly ACCESS_HEAD=6daf0d87550ccfcf8ee199b3b8173a53245990cb
+readonly TAG_DATA_HEAD=29c724492b77d430e21546d8cb46d2aff1083e3e
+readonly METALINES_HEAD=af080bbfb1ebb5b89ea627a45479104e35ed10fa
+readonly DASH_HEAD=29834257a1dc009bf8628f956aefcc726e513aae
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=89de1b8f46160cb9b35ee99b8c91da423b752d80
+readonly STYLE_HEAD=f8f603fc7e24e1cad765423fc75c392d3aa0ae56
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
+readonly ACCESS_TITLE='[generator] Recognize permissive motor vehicle access'
 readonly TAG_DATA_TITLE='[generator] Classify cycling infrastructure (2/5)'
-readonly METALINES_TITLE='[drape] Store dash phase offsets in metalines (3/5)'
+readonly METALINES_TITLE='[drape] Store optional metaline phase offsets (3/5)'
 readonly DASH_TITLE='[drape] Keep a continuous dash phase across road features (4/5)'
 readonly STYLE_TITLE='[styles] Apply cycleway infrastructure to the cycling style (5/5, preview)'
 
@@ -68,7 +75,7 @@ readonly STACK_URL_5=https://github.com/organicmaps/organicmaps/pull/14043
 
 readonly GH=${GH:-gh}
 readonly GIT=${GIT:-git}
-readonly STEPS=(selector tag-data metalines dash style)
+readonly STEPS=(selector access tag-data metalines dash style)
 
 die() { printf 'rollout: %s\n' "$*" >&2; exit 1; }
 note() { printf '%s\n' "$*"; }
@@ -122,6 +129,7 @@ state_file() {
 step_branch() {
   case "$1" in
     selector) printf '%s' "$SELECTOR_BRANCH" ;;
+    access) printf '%s' "$ACCESS_BRANCH" ;;
     tag-data) printf '%s' "$TAG_DATA_BRANCH" ;;
     metalines) printf '%s' "$METALINES_BRANCH" ;;
     dash) printf '%s' "$DASH_BRANCH" ;;
@@ -132,6 +140,7 @@ step_branch() {
 step_head() {
   case "$1" in
     selector) printf '%s' "$SELECTOR_HEAD" ;;
+    access) printf '%s' "$ACCESS_HEAD" ;;
     tag-data) printf '%s' "$TAG_DATA_HEAD" ;;
     metalines) printf '%s' "$METALINES_HEAD" ;;
     dash) printf '%s' "$DASH_HEAD" ;;
@@ -142,6 +151,7 @@ step_head() {
 step_title() {
   case "$1" in
     selector) printf '%s' "$SELECTOR_TITLE" ;;
+    access) printf '%s' "$ACCESS_TITLE" ;;
     tag-data) printf '%s' "$TAG_DATA_TITLE" ;;
     metalines) printf '%s' "$METALINES_TITLE" ;;
     dash) printf '%s' "$DASH_TITLE" ;;
@@ -155,6 +165,7 @@ step_repo() {
 step_base() {
   case "$1" in
     selector) printf '%s' master ;;
+    access) printf '%s' master ;;
     tag-data) printf '%s' master ;;
     metalines) printf '%s' master ;;
     dash) printf '%s' master ;;
@@ -197,6 +208,15 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 - A feature type matches when it equals the selector type after truncation to that type's depth, so a parent type matches its nested children.
 - Invalid operators, empty values, and malformed paths return no selector instead of being accepted.
 
+## Road-model boundary under discussion
+
+- A road keeps its primary `highway=*` type. Attached infrastructure belongs in additional types such as `cyclewaytag=*` or a future `footwaytag=*`, not a second primary road category. Shared footway/cycleway features are the proposed exception.
+- `extra_tag` only tests classifier membership with `=` or `!=`; it neither creates types nor decides the primary highway. For example, a secondary road can test `extra_tag=cyclewaytag=lane` without also becoming a `highway=cycleway`.
+- This PR does not add side-aware data or offset rendering. The #12692 comparison preview remains the existing appearance; left/right offset rendering is a separate proposal/prototype, pending agreement on side/direction semantics.
+- Existing legacy modifiers, notably `highway|ford`, need explicit clarification before a global one-highway assertion or migration. They are not silently removed by this selector change.
+
+See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). Further split-head rewrites are held while this boundary is discussed.
+
 ## Testing
 
 - Full `indexer_tests` suite passes on a clean debug build of this branch.
@@ -220,6 +240,38 @@ Part 1 of 5, in review order:
 BODY
 }
 
+body_access() {
+  cat <<'BODY'
+## Summary
+
+Treats explicit `motor_vehicle=permissive` as positive motor access, alongside `yes` and `designated`, using the existing `hwtag|yescar` classification. This is an independent prerequisite, not another cycling display type.
+
+It targets `master` directly and contains no selector, cycling classifier, renderer, shader or map-style changes. The five-part cycling stack retains its existing numbering; its types branch includes this exact commit as an independent prerequisite.
+
+## Scope
+
+- Adds one existing access-flag input; no new classifier entry or MWM section.
+- Keeps the existing more-specific `motorcar=no` override.
+- Affects pedestrian/sidewalk/cycleway classifications as well as roads. This is not a cycling-only or visual-only change: generated-map routing behavior and styles consuming `hwtag|yescar` may change.
+- The cycling preview uses the result for shared-space styling. Extracting the fix does not silently remove that behavior from the complete preview.
+
+## Testing And Review
+
+- Adds a dedicated regression covering path, footway, pedestrian and cycleway features; `yes`, `designated`, `permissive`, `no`, `private`, and more-specific `motorcar=no` in both tag orders.
+- The exact standalone branch `6daf0d8755` builds and passes the complete `OsmType` group with Debug assertions, one compiler worker and a 1800 MiB hard memory limit.
+- Generated-route behavior and the intended access interpretation still require routing review. Classification tests are not end-to-end routing proof.
+- Kept as a draft; do not infer approval from extraction or local tests.
+
+## Related Cycling Stack
+
+1. [#14040: selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [#14041: cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [#14048: optional metaline phases](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [#14042: renderer](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [#14043: style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+BODY
+}
+
 body_tag_data() {
   cat <<'BODY'
 ## Summary
@@ -228,13 +280,15 @@ Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as a
 
 Draft: the access and direction changes in this PR affect bicycle routing and need review.
 
-This upstream PR is cumulative: it also contains part 1 (the selector). Review the `[generator]` commits.
+This upstream PR is cumulative: it contains part 1 (the selector) and an independent motor-access prerequisite. The prerequisite is merged as its own exact commit before the incremental cycling-classification commits; it is not hidden inside the display-type diff.
 
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.
 - `cycleway=no` combined with a positive side-specific value now resolves independently of OSM tag order; a regression test reproduces the previous bug.
 - Bicycle direction and access flags are refined in the same classification pass.
+- Owns the shared lane/shared-lane `ftypes` checkers used by the generator and renderer, so the format PR no longer introduces classifier APIs.
+- Includes the generated classifier assets in the first commit consuming the new types, so intermediate commits do not depend on a later regeneration commit to load them.
 
 ## Compatibility
 
@@ -250,7 +304,7 @@ This upstream PR is cumulative: it also contains part 1 (the selector). Review t
 
 ## Review notes
 
-- The cycling style uses `hwtag=yescar` to render ways where motor vehicles are allowed as shared space. This PR now treats `motor_vehicle=permissive` like `yes`, so two additional `hwtag|yescar` combinations appeared on the test extract: one pedestrian way and one sidewalk. The intent is cycling-related, but the pedestrian/sidewalk side effect deserves review.
+- The cycling style uses `hwtag=yescar` for shared-space treatment. The independent `prepare/motor-vehicle-permissive` prerequisite owns that access change and its dedicated tests, including pedestrian/sidewalk implications. The complete preview retains the behavior rather than silently removing it during extraction.
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
 
@@ -260,7 +314,7 @@ Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicma
 
 - The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
 - Eight-type cap: the Vancouver retention experiment produced identical aggregate type-combination dumps (209 lines containing `cyclewaytag`). This does not prove per-road equality or pixel equivalence. Keep the current ranking pending matched per-feature measurements, including any access/direction/surface type displaced by prioritizing cycling.
-- Routing: this PR changes access/direction flags as well as display classification. `motor_vehicle=permissive` is an independently reviewable access change and should be extracted before merge if routing reviewers want it separate. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
+- Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is now an independent prerequisite. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
 - Pedestrian reuse is a follow-up, not part of this stack.
 
 ## Stack
@@ -279,35 +333,38 @@ body_metalines() {
   cat <<'BODY'
 ## Summary
 
-Stores a dash-phase offset per metaline feature so the renderer can keep a dash pattern continuous across OSM way boundaries. This is the data-format half; the renderer use is part 4.
+Stores optional dash-phase offsets while retaining the legacy version-1 metalines section. This is the data-format half; the renderer use is part 4.
 
-This upstream PR is cumulative: it also contains parts 1-2.
+This upstream PR is cumulative: it also contains parts 1-2 and the independent motor-access prerequisite. The lane checkers now belong to the classifier/types PR, not this format PR.
 
 ## Changes
 
-- The metalines section goes from version 1 to 3 and stores one double offset per feature.
+- Keeps `metalines` at version 1. A separate `metalines_offsets` section uses the already-supported version-3 layout, including feature IDs/directions and double offsets.
 - Unnamed painted lane and shared-lane ways are added to metalines in separate chains.
-- Adds shared `ftypes` checkers for the two painted-lane types. Grouping uses an ordered `(kind, name, ref)` key rather than collidable name hashes or numeric sentinels. This changes the generator's temporary collector format; regenerate intermediate files rather than mixing old and new collectors.
+- Grouping uses an ordered `(kind, name, ref)` key rather than collidable name hashes or numeric sentinels. This changes the generator's temporary collector format; regenerate intermediate files rather than mixing old and new collectors.
 - Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
+- Applies optional offsets only when every chain's feature list, reversal flags and offset count match the authoritative section. Damaged, stale or trailing optional data leaves the legacy model untouched; validation is all-or-nothing.
 
 ## Compatibility
 
 - Older maps (version 1) still load; without offsets the renderer falls back to a running chain offset.
-- Old v1-only clients reject the version-3 section and lose merged labels/shields on new maps. This remains a merge blocker pending maintainer acceptance or a separately tested additive section. An appended trailer is not assumed safe for old readers.
+- Version-1 readers still receive a version-1 section with the same signed-feature layout; they can ignore the additional tag rather than losing all metalines. No backwards-safe trailer is assumed.
+- This is a metalines-format compatibility argument, not a claim that every historical app/map-classifier combination has been tested.
 
 ## Testing
 
 - `generator_tests --filter=Metalines` passes.
-- New regressions cover collector-key round trips and distinct grouping kinds; `drape_frontend_tests --filter=MetalineData` covers v1/v2/v3, reversal, unknown versions and truncated offsets.
-- Full `indexer_tests` suite passes.
+- Regression fixtures cover collector-key round trips and distinct grouping kinds; versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches.
+- Earlier full `indexer_tests` evidence predates this additive-section revision; do not treat it as an exact-head run.
 - `drape_frontend_tests --filter=ClipSplines` passes.
-- Earlier phone previews are limited evidence, not a complete visual-equivalence result. Fixed app/map classifier mappings and visual regressions across zoom, theme, reversal and clipping remain required.
+- Exact original/candidate generators match all 82,785 Vancouver features and 2,010 directed chains/offsets. The optional section validates completely; preserving the legacy section costs 27,209 bytes (about 1.1%) on this map.
+- Earlier phone previews are limited evidence, not a complete visual-equivalence result. Fixed-camera pixel comparisons across zoom, theme, reversal and clipping remain required; the current Pixel is disconnected.
 
 ## Scope
 
 - Stores offsets only; the renderer use is 4/5.
 - One centerline chain per road pattern; no side-specific data.
-- The version-3 format is an unresolved compatibility decision; an additive section needs actual old-reader tests before adoption.
+- Additive phase metadata preserves the authoritative legacy section. Emitted legacy records and resolved offsets are included in the matched-map audit; historical-client coverage is reported separately.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack
@@ -369,11 +426,11 @@ body_style() {
   cat <<'BODY'
 ## Preview only — not for merge as-is.
 
-Applies the cycling style to the new `cyclewaytag` types while preserving the current solid, dashed, and dotted presentation.
+Applies the cycling style to the new `cyclewaytag` types, with preservation of #12692's solid, dashed, and dotted presentation as the validation objective.
 
 This draft exists so the appearance can be reviewed against the intended data model. It is based on `ab/cycling-style` plus parts 1-4.
 
-This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review the `[styles]` commits.
+This upstream PR targets `ab/cycling-style` and also contains parts 1-4 plus the independent permissive-motor-access prerequisite. Review the `[styles]` commits; this is not an isolated style-only GitHub diff.
 
 ## What to review
 
@@ -381,6 +438,9 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4. Review 
 - Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
 - The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
 - Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
+- Exact baseline/candidate Android native builds succeed. The complete tracked `data/` trees match. Separately generated Vancouver maps match all 82,785 features (including stored type order and metadata) and all 2,010 directed chains/offsets using isolated, explicitly verified classifiers. Aggregate type counts are not used as the proof.
+- On the exact candidate, the complete `OsmType` group, 10 metalines tests, 5 reader tests, 16 clipping tests and both phase tests pass with Debug assertions. This is not generated-route or pixel-equivalence evidence.
+- A 60-view Qt/OpenGL audit has 36 exact cross-build matches, but strict certification remains false: repeats vary, and one two-repeat-stable view differs by 17 grayscale road-edge pixels. The Pixel is disconnected; no Pixel/Vulkan equivalence is claimed. These are explicit validation gates, not a tolerance-based pass.
 - Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
 
 ## Open questions
@@ -411,6 +471,7 @@ BODY
 dump_body() {
   case "$1" in
     selector) body_selector ;;
+    access) body_access ;;
     tag-data) body_tag_data ;;
     metalines) body_metalines ;;
     dash) body_dash ;;
@@ -422,6 +483,7 @@ dump_body() {
 body_file_name() {
   case "$1" in
     selector) printf 'selector-pr-body.md' ;;
+    access) printf 'access-pr-body.md' ;;
     tag-data) printf 'tag-data-pr-body.md' ;;
     metalines) printf 'metalines-pr-body.md' ;;
     dash) printf 'dash-pr-body.md' ;;
@@ -448,7 +510,7 @@ check_publish_branch() {
 
 check_publish_branches() {
   local protected_ref
-  for protected_ref in "$SELECTOR_BRANCH" "$TAG_DATA_BRANCH" "$METALINES_BRANCH" \
+  for protected_ref in "$SELECTOR_BRANCH" "$ACCESS_BRANCH" "$TAG_DATA_BRANCH" "$METALINES_BRANCH" \
     "$DASH_BRANCH" "$STYLE_BRANCH" "$STYLE_BASE_BRANCH"; do
     check_publish_branch "$protected_ref"
   done
@@ -476,6 +538,7 @@ check_local() {
   done
 
   check_dco "$SELECTOR_BASE" "$SELECTOR_HEAD" selector
+  check_dco "$SELECTOR_BASE" "$ACCESS_HEAD" access
   check_dco "$SELECTOR_HEAD" "$TAG_DATA_HEAD" tag-data
   check_dco "$TAG_DATA_HEAD" "$METALINES_HEAD" metalines
   check_dco "$METALINES_HEAD" "$DASH_HEAD" dash
@@ -487,6 +550,10 @@ check_local() {
     || die "selector base $SELECTOR_BASE is no longer in upstream master (force-push?)"
   [[ "$(merge_base "$TAG_DATA_BRANCH" "$SELECTOR_BRANCH")" == "$SELECTOR_HEAD" ]] \
     || die "tag-data branch is not stacked on the selector head"
+  [[ "$(merge_base "$ACCESS_BRANCH" "$UPSTREAM_REMOTE/master")" == "$SELECTOR_BASE" ]] \
+    || die "independent access branch is not based on the reviewed upstream commit"
+  [[ "$(merge_base "$TAG_DATA_BRANCH" "$ACCESS_BRANCH")" == "$ACCESS_HEAD" ]] \
+    || die "tag-data branch does not contain the independently reviewed access fix"
   [[ "$(merge_base "$METALINES_BRANCH" "$TAG_DATA_BRANCH")" == "$TAG_DATA_HEAD" ]] \
     || die "metalines branch is not stacked on the tag-data head"
   [[ "$(merge_base "$DASH_BRANCH" "$METALINES_BRANCH")" == "$METALINES_HEAD" ]] \
@@ -495,7 +562,7 @@ check_local() {
     || die "style branch is not based on the style-base head"
 
   local pair
-  for pair in "$SELECTOR_BASE:$SELECTOR_HEAD" "$SELECTOR_HEAD:$TAG_DATA_HEAD" \
+  for pair in "$SELECTOR_BASE:$SELECTOR_HEAD" "$SELECTOR_BASE:$ACCESS_HEAD" "$SELECTOR_HEAD:$TAG_DATA_HEAD" \
               "$TAG_DATA_HEAD:$METALINES_HEAD" "$METALINES_HEAD:$DASH_HEAD" \
               "$STYLE_BASE_HEAD:$STYLE_HEAD"; do
     "$GIT" diff --check "${pair%%:*}" "${pair##*:}" >/dev/null || die "whitespace error in ${pair}"
@@ -504,6 +571,7 @@ check_local() {
   # The style preview may include unrelated upstream churn, but the three
   # stackable branches must never overlap current master in source files.
   check_no_overlap "$SELECTOR_BASE" "$SELECTOR_HEAD"
+  check_no_overlap "$SELECTOR_BASE" "$ACCESS_HEAD"
   check_no_overlap "$SELECTOR_HEAD" "$TAG_DATA_HEAD"
   check_no_overlap "$TAG_DATA_HEAD" "$METALINES_HEAD"
   check_no_overlap "$METALINES_HEAD" "$DASH_HEAD"
@@ -513,22 +581,28 @@ check_local() {
 
 remote_branch_sha() { # repo branch
   local out
-  out=$("$GH" api "repos/$1/branches/$(urlenc "$2")" --jq .commit.sha 2>/dev/null) || return 0
-  [[ "$out" =~ ^[0-9a-f]{40}$ ]] && printf '%s' "$out"
-  return 0
+  # GraphQL represents a missing ref as null, while transport/auth errors fail.
+  # REST's nonzero exit must not be mistaken for a missing branch.
+  out=$("$GH" api graphql \
+    -f 'query=query($owner:String!,$name:String!,$ref:String!){repository(owner:$owner,name:$name){ref(qualifiedName:$ref){target{oid}}}}' \
+    -f "owner=${1%/*}" -f "name=${1#*/}" -f "ref=refs/heads/$2" \
+    --jq '.data.repository.ref.target.oid // empty') || die "cannot query $1:$2"
+  [[ -z "$out" || "$out" =~ ^[0-9a-f]{40}$ ]] || die "invalid branch response for $1:$2"
+  printf '%s' "$out"
 }
 
 pr_number() { # step
   local step=$1 out
-  out=$("$GH" api "repos/$(step_repo "$step")/pulls?state=all&head=$(step_head_filter "$step")&base=$(urlenc "$(step_base "$step")")&per_page=1" \
-    --jq '.[0].number // empty' 2>/dev/null) || return 0
-  [[ "$out" =~ ^[0-9]+$ ]] && printf '%s' "$out"
-  return 0
+  out=$("$GH" api "repos/$(step_repo "$step")/pulls?state=all&head=$(step_head_filter "$step")&base=$(urlenc "$(step_base "$step")")&per_page=100" \
+    --jq 'if length == 0 then "" elif length == 1 then .[0].number else error("multiple matching PRs") end') \
+    || die "cannot uniquely resolve PR for $step"
+  [[ -z "$out" || "$out" =~ ^[0-9]+$ ]] || die "invalid PR response for $step"
+  printf '%s' "$out"
 }
 
 pr_field() { # repo number jq
   local out
-  out=$("$GH" api "repos/$1/pulls/$2" --jq "$3" 2>/dev/null) || return 0
+  out=$("$GH" api "repos/$1/pulls/$2" --jq "$3") || die "cannot query PR #$2"
   printf '%s' "$out"
 }
 
@@ -585,7 +659,7 @@ check() {
   check_remote
   note ""
   note "Preflight passed. Nothing was changed."
-  note "Run PUBLISH_CYCLING_STACK=YES $SCRIPT_NAME --publish to create the five drafts."
+  note "Run PUBLISH_CYCLING_STACK=YES $SCRIPT_NAME --publish to create the cycling drafts and independent access draft."
 }
 
 print_plan() {
@@ -667,7 +741,7 @@ publish() {
   done
 
   note ""
-  note "All five drafts are in place. Run $SCRIPT_NAME --verify to re-check them."
+  note "All ${#STEPS[@]} drafts are in place. Run $SCRIPT_NAME --verify to re-check them."
 }
 
 verify() {

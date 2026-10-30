@@ -4,13 +4,15 @@ Adds `cyclewaytag|track`, `cyclewaytag|lane`, and `cyclewaytag|shared_lane` as a
 
 Draft: the access and direction changes in this PR affect bicycle routing and need review.
 
-This upstream PR is cumulative: it also contains part 1 (the selector). Review the `[generator]` commits.
+This upstream PR is cumulative: it contains part 1 (the selector) and an independent motor-access prerequisite. The prerequisite is merged as its own exact commit before the incremental cycling-classification commits; it is not hidden inside the display-type diff.
 
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.
 - `cycleway=no` combined with a positive side-specific value now resolves independently of OSM tag order; a regression test reproduces the previous bug.
 - Bicycle direction and access flags are refined in the same classification pass.
+- Owns the shared lane/shared-lane `ftypes` checkers used by the generator and renderer, so the format PR no longer introduces classifier APIs.
+- Includes the generated classifier assets in the first commit consuming the new types, so intermediate commits do not depend on a later regeneration commit to load them.
 
 ## Compatibility
 
@@ -26,7 +28,7 @@ This upstream PR is cumulative: it also contains part 1 (the selector). Review t
 
 ## Review notes
 
-- The cycling style uses `hwtag=yescar` to render ways where motor vehicles are allowed as shared space. This PR now treats `motor_vehicle=permissive` like `yes`, so two additional `hwtag|yescar` combinations appeared on the test extract: one pedestrian way and one sidewalk. The intent is cycling-related, but the pedestrian/sidewalk side effect deserves review.
+- The cycling style uses `hwtag=yescar` for shared-space treatment. The independent `prepare/motor-vehicle-permissive` prerequisite owns that access change and its dedicated tests, including pedestrian/sidewalk implications. The complete preview retains the behavior rather than silently removing it during extraction.
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
 - Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
 
@@ -36,7 +38,7 @@ Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicma
 
 - The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
 - Eight-type cap: the Vancouver retention experiment produced identical aggregate type-combination dumps (209 lines containing `cyclewaytag`). This does not prove per-road equality or pixel equivalence. Keep the current ranking pending matched per-feature measurements, including any access/direction/surface type displaced by prioritizing cycling.
-- Routing: this PR changes access/direction flags as well as display classification. `motor_vehicle=permissive` is an independently reviewable access change and should be extracted before merge if routing reviewers want it separate. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
+- Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is now an independent prerequisite. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
 - Pedestrian reuse is a follow-up, not part of this stack.
 
 ## Stack
