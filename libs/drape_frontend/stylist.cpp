@@ -287,9 +287,12 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   }
   if (useSideLines)
   {
+    if (sideDemo->m_left.m_kind == cycling_demo::Kind::Shared ||
+        sideDemo->m_right.m_kind == cycling_demo::Kind::Shared)
+      collectCore(cycleClassif.GetTypeByPath({"cyclewaytag", "shared_lane"}));
     auto const collect = [&](cycling_demo::Side const & side, int sign)
     {
-      if (side.m_kind == cycling_demo::Kind::None)
+      if (side.m_kind == cycling_demo::Kind::None || side.m_kind == cycling_demo::Kind::Shared)
         return;
       auto const type = cycleClassif.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(side.m_kind)});
       drule::KeysT sideKeys;
@@ -341,6 +344,36 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
 
   feature::FilterRulesByRuntimeSelector(f, zoomLevel, m_rulesHolder, keys);
   feature::FilterRulesByRuntimeSelector(f, zoomLevel, cycleRules, cycleCoreKeys);
+
+  // Cycling direction symbols belong to hwtag types, not the facility stroke.
+  // Borrow them in generic modes too, retaining the original runtime selectors
+  // (notably the bicycle contraflow exception to a car one-way restriction).
+  if (geomType == feature::GeomType::Line && style != cycleStyle)
+  {
+    drule::KeysT arrows;
+    for (uint32_t type : types)
+    {
+      drule::KeysT candidates;
+      cycleClassif.GetObject(type)->GetSuitable(zoomLevel, geomType, candidates);
+      for (auto const & key : candidates)
+      {
+        if (key.m_type != drule::line)
+          continue;
+        auto const rule = cycleRules.Find(key)->GetLine();
+        if (rule && rule->pathsym && rule->pathsym->name.find("cycling-arrow-") == 0)
+          arrows.push_back(key);
+      }
+    }
+    feature::FilterRulesByRuntimeSelector(f, zoomLevel, cycleRules, arrows);
+    if (!arrows.empty())
+    {
+      keys.erase(std::remove_if(keys.begin(), keys.end(), [&](auto const & key)
+      {
+        return key.m_type == drule::line && m_rulesHolder.Find(key)->GetLine()->pathsym.has_value();
+      }), keys.end());
+      cycleCoreKeys.insert(cycleCoreKeys.end(), arrows.begin(), arrows.end());
+    }
+  }
 
   if (keys.empty() && cycleCoreKeys.empty())
     return;

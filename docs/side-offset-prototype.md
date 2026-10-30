@@ -22,7 +22,12 @@ does not change #12692. Saving the branch does not make it a merge candidate.
 - Generic and cycling styles can both display the offset strokes.
 - Below zoom 17, attached infrastructure uses one conservative centerline
   summary. At zoom 17 and above, explicit sides replace that summary with
-  offset strokes. Dedicated cycleways keep their core treatment at all zooms.
+  offset strokes for lanes and tracks. Shared lanes always use one dotted
+  centerline, including when both sides are shared; mixed roads may have a
+  dotted centerline and an offset lane or track. Dedicated cycleways keep
+  their core treatment at all zooms.
+  Cycling one-way symbols retain the original cycling-style zoom thresholds
+  and bicycle contraflow selectors in both Standard and Cycling modes.
 
 ## Deliberate limits
 

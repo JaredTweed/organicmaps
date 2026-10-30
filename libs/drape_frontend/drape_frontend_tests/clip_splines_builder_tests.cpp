@@ -130,7 +130,9 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
   struct Case { Kind left, right, summary; size_t sides; };
   auto const lineSet = [](df::Stylist const & stylist)
   { return std::set<drule::LineRule const *>(stylist.m_lineRules.begin(), stylist.m_lineRules.end()); };
-  for (auto const & item : {Case{Kind::Lane, Kind::Shared, Kind::Shared, 2},
+  for (auto const & item : {Case{Kind::Lane, Kind::Shared, Kind::Shared, 1},
+                            Case{Kind::Shared, Kind::Shared, Kind::Shared, 0},
+                            Case{Kind::Shared, Kind::Track, Kind::Shared, 1},
                             Case{Kind::Track, Kind::Lane, Kind::Lane, 2},
                             Case{Kind::None, Kind::Track, Kind::Track, 1}})
   {
@@ -154,15 +156,20 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
         else
         {
           MockTestFeature expected({P(0, 0), P(10, 0)}, road);
+          if (item.summary == Kind::Shared)
+            expected.AddStyleType(summary);
           df::Stylist roadStyle(expected, zoom, 0, style);
           TEST_EQUAL(result.m_cyclewaySides.size(), item.sides, (zoom, style));
           TEST(lineSet(result) == lineSet(roadStyle), (zoom, style));
-          if (item.left == Kind::None)
+          if (item.sides == 0)
+            continue;
+          if (item.left == Kind::None || item.left == Kind::Shared)
             TEST_EQUAL(result.m_cyclewaySides.front().m_side, 1, ());
           else
           {
             TEST_EQUAL(result.m_cyclewaySides.front().m_side, -1, ());
-            TEST_EQUAL(result.m_cyclewaySides.back().m_side, 1, ());
+            if (item.sides == 2)
+              TEST_EQUAL(result.m_cyclewaySides.back().m_side, 1, ());
           }
         }
       }
@@ -189,6 +196,50 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomSummaryWithoutAggregateType)
     std::set<drule::LineRule const *> actual(result.m_lineRules.begin(), result.m_lineRules.end());
     std::set<drule::LineRule const *> wanted(summaryStyle.m_lineRules.begin(), summaryStyle.m_lineRules.end());
     TEST(actual == wanted, (style));
+  }
+}
+
+UNIT_TEST(ClipSplinesBuilder_CyclingDirectionSymbols)
+{
+  classificator::Load();
+  classificator::EnsureStyleLoaded(MapStyleDefaultLight);
+  auto const & cl = classif(MapStyleDefaultLight);
+  auto const symbols = [](df::Stylist const & stylist)
+  {
+    std::multiset<std::string> result;
+    for (auto const rule : stylist.m_lineRules)
+      if (rule->pathsym && rule->pathsym->name.find("cycling-arrow-") == 0)
+        result.insert(rule->pathsym->name);
+    return result;
+  };
+  for (auto const facility : {cl.GetTypeByPath({"highway", "cycleway"}),
+                              cl.GetTypeByPath({"cyclewaytag", "track"}),
+                              cl.GetTypeByPath({"cyclewaytag", "lane"}),
+                              cl.GetTypeByPath({"cyclewaytag", "shared_lane"})})
+  {
+    for (auto const direction : {"oneway", "onedir_bicycle", "bidir_bicycle"})
+    {
+      for (uint8_t const zoom : {14, 15, 16, 17, 18})
+      {
+        MockTestFeature feature({P(0, 0), P(10, 0)}, cl.GetTypeByPath({"highway", "secondary"}));
+        feature.AddStyleType(facility);
+        feature.AddStyleType(cl.GetTypeByPath({"hwtag", direction}));
+        if (std::string(direction) == "bidir_bicycle")
+          feature.AddStyleType(cl.GetTypeByPath({"hwtag", "oneway"}));
+        for (auto const & styles : {std::pair{MapStyleDefaultLight, MapStyleCyclingLight},
+                                   std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
+        {
+          df::Stylist reference(feature, zoom, 0, styles.second);
+          auto const wanted = symbols(reference);
+          TEST_EQUAL(wanted.empty(), zoom < 15 || std::string(direction) == "bidir_bicycle", (zoom, direction));
+          feature.SetSideDemo(cycling_demo::Kind::Lane, cycling_demo::Kind::Shared);
+          df::Stylist standard(feature, zoom, 0, styles.first);
+          df::Stylist cycling(feature, zoom, 0, styles.second);
+          TEST(symbols(standard) == wanted, (zoom, direction, facility));
+          TEST(symbols(cycling) == wanted, (zoom, direction, facility));
+        }
+      }
+    }
   }
 }
 
