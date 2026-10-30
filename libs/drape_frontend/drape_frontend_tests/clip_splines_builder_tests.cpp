@@ -33,6 +33,7 @@ public:
     m_parsed.m_points = true;
     m_parsed.m_triangles = true;
     m_parsed.m_metadata = true;
+    m_parsed.m_metaIds = true;
     m_parsed.m_relations = true;
   }
 };
@@ -81,7 +82,7 @@ UNIT_TEST(ClipSplinesBuilder_CyclingCoreWidths)
   for (auto const type : {cl.GetTypeByPath({"highway", "cycleway"}),
                           cl.GetTypeByPath({"highway", "footway", "bicycle"})})
   {
-    for (auto const styles : {std::pair{MapStyleDefaultLight, MapStyleCyclingLight},
+    for (auto const & styles : {std::pair{MapStyleDefaultLight, MapStyleCyclingLight},
                               std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
     {
       for (uint8_t const zoom : {14, 16, 18})
