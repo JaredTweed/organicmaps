@@ -7,6 +7,7 @@
 #include "base/buffer_vector.hpp"
 
 #include <string>
+#include <vector>
 
 class FeatureType;
 
@@ -109,6 +110,13 @@ public:
 
   using LineRulesT = buffer_vector<drule::LineRule const *, 4>;
   LineRulesT m_lineRules;
+
+  struct SideRules
+  {
+    int m_side;  // -1 left, +1 right, relative to stored feature geometry.
+    LineRulesT m_rules;
+  };
+  std::vector<SideRules> m_cyclewaySides;
 
   ftypes::RoadShieldsSetT m_roadShields;
 

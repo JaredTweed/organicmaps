@@ -1,4 +1,5 @@
 #include "drape_frontend/apply_feature_functors.hpp"
+
 #include "drape_frontend/apply_feature_params.hpp"
 
 #include "drape_frontend/area_shape.hpp"
@@ -11,6 +12,7 @@
 #include "drape_frontend/text_layout.hpp"
 #include "drape_frontend/text_shape.hpp"
 
+#include "indexer/cycling_side_demo.hpp"
 #include "indexer/road_shields_parser.hpp"
 
 #include "geometry/clipping.hpp"
@@ -725,10 +727,13 @@ void ApplyLineFeatureGeometry::BuildGeometry(int zoomLevel, bool isIsoline)
   m_readCount += m_f.GetPointsCount();
 #endif
 
-  m_builder.Build(m_f, zoomLevel, isIsoline);
+  auto const demo = cycling_demo::Decode(m_f.GetMetadata(feature::Metadata::FMD_TEST_ID));
+  double const padding = demo ? 64.0 * m_params.m_vparams.GetVisualScale() / m_params.m_currentScaleGtoP : 0.0;
+  m_builder.Build(m_f, zoomLevel, isIsoline, padding);
 }
 
-void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & lineRules, bool isIsoline)
+void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & lineRules, bool isIsoline,
+                                                std::vector<Stylist::SideRules> const & sideRules)
 {
   ASSERT(!lineRules.empty(), ());
   ASSERT(HasGeometry(), ());
@@ -744,17 +749,76 @@ void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & line
   bool const needSplineOffsets =
       m_relsInfo.HasColors() || std::any_of(lineRules.begin(), lineRules.end(),
                                            [](drule::LineRule const * rule) { return rule->dashdot.has_value(); });
+  // Offset the complete feature before clipping, so tile edges do not move
+  // endpoints or restart the side geometry independently in each tile.
+  m2::SharedSpline const sideSource = sideRules.empty() ? m2::SharedSpline() : m2::SharedSpline(m_builder.GetPath());
   m_clippedSplines = m_builder.Release(isIsoline, needSplineOffsets);
-
-  if (m_clippedSplines.empty())
-    return;
 
   for (drule::LineRule const * r : lineRules)
     ProcessRule(*r);
+  if (!sideRules.empty())
+    ProcessSideRules(sideSource, lineRules, sideRules);
 
 #ifdef LINES_GENERATION_CALC_FILTERED_POINTS
   LinesStat::Get().InsertLine(m_f.GetID(), m_tileKey.m_zoomLevel, m_readCount, static_cast<int>(builtSize));
 #endif
+}
+
+void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
+                                                Stylist::LineRulesT const & roadRules,
+                                                std::vector<Stylist::SideRules> const & sideRules)
+{
+  double const visualScale = m_params.m_vparams.GetVisualScale();
+  double const strokeScale = visualScale * 0.65;
+  double roadWidth = 0.0;
+  for (auto const rule : roadRules)
+    if (!rule->pathsym)
+      roadWidth = std::max(roadWidth, rule->width * visualScale);
+  for (auto const & side : sideRules)
+  {
+    double sideWidth = 0.0;
+    for (auto const rule : side.m_rules)
+      sideWidth = std::max(sideWidth, rule->width * strokeScale);
+    double const distance = (0.5 * (roadWidth + sideWidth) + 2.0 * visualScale) / m_params.m_currentScaleGtoP;
+    auto const shifted = source.Equidistant(side.m_side * distance);
+    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, shifted);
+    for (auto const & piece : pieces)
+    {
+      // Same source-distance projection used by ClipSplinesBuilder; preserve
+      // each shifted feature's phase when it is split between tile readers.
+      double clippedOffset = 0.0;
+      auto const & path = shifted->GetPath();
+      auto const start = piece->GetPath().front();
+      for (size_t i = 1; i < path.size(); ++i)
+      {
+        auto const segment = path[i] - path[i - 1];
+        double const lengthSquared = segment.SquaredLength();
+        if (lengthSquared == 0.0)
+          continue;
+        double const t = DotProduct(start - path[i - 1], segment) / lengthSquared;
+        double const length = std::sqrt(lengthSquared);
+        if (t >= 0.0 && t <= 1.0 && (path[i - 1] + segment * t).EqualDxDy(start, 1e-12))
+        {
+          clippedOffset += length * t;
+          break;
+        }
+        clippedOffset += length;
+      }
+      for (auto const rule : side.m_rules)
+      {
+        LineViewParams params;
+        params.m_tileCenter = m_params.m_tileRect.Center();
+        ExtractLineParams(*rule, strokeScale, params);
+        params.m_depth = PriorityToDepth(rule->priority, drule::line, 0);
+        params.m_rank = m_f.GetRank();
+        params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
+        params.m_zoomLevel = m_params.m_tileKey.m_zoomLevel;
+        params.m_dashPhaseReversed = m_dashPhaseReversed;
+        params.m_dashPhaseOffset = m_dashPhaseOffset + (m_dashPhaseReversed ? -clippedOffset : clippedOffset);
+        m_params.m_insertShape(make_unique_dp<LineShape>(piece, params));
+      }
+    }
+  }
 }
 
 void ApplyLineFeatureGeometry::ProcessRule(drule::LineRule const & lineRule)

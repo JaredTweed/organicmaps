@@ -12,6 +12,7 @@
 #include "routing_common/pedestrian_model.hpp"
 
 #include "indexer/classificator.hpp"
+#include "indexer/cycling_side_demo.hpp"
 #include "indexer/feature_data.hpp"
 #include "indexer/feature_visibility.hpp"
 
@@ -3906,6 +3907,63 @@ UNIT_CLASS_TEST(TestWithClassificator, OsmType_MultipleComplexTypesSmoke)
     for (auto const & result : results)
       TEST(params.IsTypeExist(GetType(result)), (type, params));
   }
+}
+
+UNIT_CLASS_TEST(TestWithClassificator, OsmType_SideDemoIndependentKinds)
+{
+  auto const params = GetFeatureBuilderParams({{"highway", "secondary"}, {"cycleway:left", "track"},
+                                               {"cycleway:right", "shared_lane"}});
+  auto const sides = cycling_demo::Decode(params.GetMetadata().Get(feature::Metadata::FMD_TEST_ID));
+  TEST(sides, (params));
+  TEST(sides->m_left.m_kind == cycling_demo::Kind::Track, ());
+  TEST(sides->m_right.m_kind == cycling_demo::Kind::Shared, ());
+  TEST(params.IsTypeExist(GetType({"highway", "secondary"})), (params));
+  TEST(!params.IsTypeExist(GetType({"highway", "cycleway"})), (params));
+}
+
+UNIT_CLASS_TEST(TestWithClassificator, OsmType_SideDemoBothAndOverride)
+{
+  auto const params = GetFeatureBuilderParams({{"highway", "residential"}, {"cycleway:both", "lane"},
+                                               {"cycleway:left", "no"}, {"cycleway:right:oneway", "-1"}});
+  auto const sides = cycling_demo::Decode(params.GetMetadata().Get(feature::Metadata::FMD_TEST_ID));
+  TEST(sides, (params));
+  TEST(sides->m_left.m_kind == cycling_demo::Kind::None, ());
+  TEST(sides->m_right.m_kind == cycling_demo::Kind::Lane, ());
+  TEST(sides->m_right.m_direction == cycling_demo::Direction::Backward, ());
+}
+
+UNIT_CLASS_TEST(TestWithClassificator, OsmType_SideDemoReversedWay)
+{
+  auto const params = GetFeatureBuilderParams({{"highway", "secondary"}, {"oneway", "-1"},
+      {"cycleway:left", "lane"}, {"cycleway:left:oneway", "-1"}, {"cycleway:right", "track"}});
+  auto const sides = cycling_demo::Decode(params.GetMetadata().Get(feature::Metadata::FMD_TEST_ID));
+  TEST(sides, (params));
+  TEST(sides->m_right.m_kind == cycling_demo::Kind::Lane, ());
+  TEST(sides->m_right.m_direction == cycling_demo::Direction::Forward, ());
+  TEST(sides->m_left.m_kind == cycling_demo::Kind::Track, ());
+}
+
+UNIT_CLASS_TEST(TestWithClassificator, OsmType_SideDemoSeparateAndAmbiguous)
+{
+  auto const separate = GetFeatureBuilderParams({{"highway", "residential"}, {"cycleway:left", "separate"}});
+  auto const sides = cycling_demo::Decode(separate.GetMetadata().Get(feature::Metadata::FMD_TEST_ID));
+  TEST(sides, (separate));
+  TEST(sides->m_left.m_kind == cycling_demo::Kind::None, ());
+  auto const ambiguous = GetFeatureBuilderParams({{"highway", "residential"}, {"cycleway", "lane"}});
+  TEST(!cycling_demo::Decode(ambiguous.GetMetadata().Get(feature::Metadata::FMD_TEST_ID)), ());
+  auto const dedicated = GetFeatureBuilderParams({{"highway", "cycleway"}, {"cycleway:right", "lane"}});
+  TEST(!cycling_demo::Decode(dedicated.GetMetadata().Get(feature::Metadata::FMD_TEST_ID)), ());
+  TEST(!cycling_demo::Decode("offset-bike-v1:invalid"), ());
+}
+
+UNIT_CLASS_TEST(TestWithClassificator, OsmType_SideDemoProtectionAndAdvisory)
+{
+  auto const params = GetFeatureBuilderParams({{"highway", "secondary"}, {"cycleway:left", "lane"},
+      {"cycleway:left:separation", "bollard"}, {"cycleway:right", "lane"}, {"cycleway:right:lane", "advisory"}});
+  auto const sides = cycling_demo::Decode(params.GetMetadata().Get(feature::Metadata::FMD_TEST_ID));
+  TEST(sides, (params));
+  TEST(sides->m_left.m_kind == cycling_demo::Kind::Track, ());
+  TEST(sides->m_right.m_kind == cycling_demo::Kind::Shared, ());
 }
 
 }  // namespace osm_type_test

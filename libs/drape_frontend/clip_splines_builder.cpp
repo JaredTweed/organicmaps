@@ -21,7 +21,7 @@ double constexpr kProlongingDotSqr = math::Pow2(0.995);
 double constexpr kIsolineSmoothScale = 1.6;  // same as Inflate(0.3*szX, 0.3*szY) per side
 }  // namespace
 
-void ClipSplinesBuilder::Build(FeatureType & f, int zoomLevel, bool isIsoline)
+void ClipSplinesBuilder::Build(FeatureType & f, int zoomLevel, bool isIsoline, double padding)
 {
   m_path.clear();
   m_splineOffsets.clear();
@@ -36,6 +36,7 @@ void ClipSplinesBuilder::Build(FeatureType & f, int zoomLevel, bool isIsoline)
   if (limitRect.IsValid())
   {
     m2::RectD checkRect = m_params.m_tileRect;
+    checkRect.Inflate(padding, padding);
     if (isIsoline)
       checkRect.Scale(kIsolineSmoothScale);
 

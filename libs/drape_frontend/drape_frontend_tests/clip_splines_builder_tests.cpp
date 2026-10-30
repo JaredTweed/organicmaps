@@ -9,6 +9,8 @@
 #include "indexer/feature_algo.hpp"
 #include "indexer/feature_data.hpp"
 
+#include "geometry/clipping.hpp"
+
 #include <cmath>
 #include <vector>
 
@@ -63,6 +65,35 @@ void TestPath(df::ClipSplinesBuilder const & builder, std::vector<P> const & exp
   TEST_EQUAL(got.size(), expected.size(), (got, expected));
   for (size_t i = 0; i < expected.size(); ++i)
     TEST_EQUAL(got[i], expected[i], (i, got, expected));
+}
+
+UNIT_TEST(ClipSplinesBuilder_SideOffsetPadding)
+{
+  auto params = MakeParams(kNoSimplifyZoom, kMinSqr);
+  params.m_tileRect = m2::RectD(0, 0, 10, 10);
+  MockTestFeature feature({P(-2, -1), P(12, -1)});
+  df::ClipSplinesBuilder builder(params);
+  builder.Build(feature, kNoSimplifyZoom);
+  TEST(!builder.HasGeometry(), ());
+  builder.Build(feature, kNoSimplifyZoom, false, 2.0);
+  TEST(builder.HasGeometry(), ());
+  m2::SharedSpline source(builder.GetPath());
+  auto const shifted = source.Equidistant(-2.0);
+  auto const pieces = m2::ClipSplineByRect(params.m_tileRect, shifted);
+  TEST_EQUAL(pieces.size(), 1, ());
+  TEST_EQUAL(pieces.front()->GetPath().front(), P(0, 1), ());
+  TEST_EQUAL(pieces.front()->GetPath().back(), P(10, 1), ());
+}
+
+UNIT_TEST(ClipSplinesBuilder_SideOffsetReversal)
+{
+  m2::SharedSpline forward(std::vector<P>{P(0, 0), P(10, 0)});
+  m2::SharedSpline reversed(std::vector<P>{P(10, 0), P(0, 0)});
+  auto const left = forward.Equidistant(-2.0);
+  auto const reversedRight = reversed.Equidistant(2.0);
+  TEST_EQUAL(left->GetPath().front(), P(0, 2), ());
+  TEST_EQUAL(left->GetPath().front(), reversedRight->GetPath().back(), ());
+  TEST_EQUAL(left->GetPath().back(), reversedRight->GetPath().front(), ());
 }
 
 UNIT_TEST(ClipSplinesBuilder_SinglePoint)

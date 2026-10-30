@@ -328,7 +328,11 @@ void RuleDrawer::ProcessLineStyle(FeatureType & f, Stylist const & s)
   bool const isIsoline = m_isIsoline(f);
   double dashPhaseOffset = 0.0;
   bool dashPhaseReversed = false;
-  bool const hasDashedLine =
+  bool const hasDashedSides = std::any_of(s.m_cyclewaySides.begin(), s.m_cyclewaySides.end(),
+      [](Stylist::SideRules const & side)
+      { return std::any_of(side.m_rules.begin(), side.m_rules.end(),
+                          [](auto const rule) { return rule->dashdot.has_value(); }); });
+  bool const hasDashedLine = hasDashedSides ||
       std::any_of(s.m_lineRules.begin(), s.m_lineRules.end(),
                   [](drule::LineRule const * rule) { return rule->dashdot.has_value(); });
   bool const needsDashPhase =
@@ -347,7 +351,7 @@ void RuleDrawer::ProcessLineStyle(FeatureType & f, Stylist const & s)
   applyGeom.BuildGeometry(m_zoomLevel, isIsoline);
 
   if (applyGeom.HasGeometry())
-    applyGeom.ProcessLineRules(s.m_lineRules, isIsoline);
+    applyGeom.ProcessLineRules(s.m_lineRules, isIsoline, s.m_cyclewaySides);
 
   if (s.m_pathtextRule || s.m_shieldRule)
   {

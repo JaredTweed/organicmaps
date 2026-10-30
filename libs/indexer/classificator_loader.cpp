@@ -107,6 +107,8 @@ void Load()
 
   LoadFamily(GetStyleReader().GetCurrentStyle());
   EnsureStyleLoaded(MapStyleOutdoorsLight);
+  // The local offset prototype reuses cycling strokes over generic roads too.
+  EnsureStyleLoaded(MapStyleCyclingLight);
 
   LOG(LDEBUG, ("Reading of classificator finished"));
 }

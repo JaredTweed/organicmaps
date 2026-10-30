@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Side-offset examples</name>
+    <description>Local visual prototype. Zoom in to see facilities beside the normal road. These locations use the local Vancouver OSM extract; this is not a routable production map.</description>
+    <Placemark>
+      <name>01 Water Street - dashed and dotted sides</name>
+      <description>Mixed sides: cycleway:left=lane and cycleway:right=shared_lane. OSM way 22871114. Inspect near Carrall Street, zoomed in.</description>
+      <Point><coordinates>-123.1041688,49.2834043</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>02 West 49th Avenue - dashed and solid sides</name>
+      <description>Mixed sides: cycleway:left=lane and cycleway:right=track. OSM way 36997659.</description>
+      <Point><coordinates>-123.1189459,49.2262116</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>03 East 14th Avenue - dotted both sides</name>
+      <description>cycleway:both=shared_lane, cycleway:both:lane=pictogram. OSM way 4682872.</description>
+      <Point><coordinates>-123.1032733,49.2584373</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>04 West 1st Avenue - one-sided dashed lane</name>
+      <description>cycleway:left=no, cycleway:right=lane. OSM way 4691914.</description>
+      <Point><coordinates>-123.1142998,49.2681437</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>05 Ash Street - dashed both sides</name>
+      <description>cycleway:both=lane, cycleway:both:lane=exclusive. OSM way 23608235.</description>
+      <Point><coordinates>-123.1174374,49.2654375</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>06 East 5th Avenue - one-sided solid track</name>
+      <description>cycleway:left=track, cycleway:right=no. OSM way 1136274805.</description>
+      <Point><coordinates>-123.1006322,49.2664106</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>

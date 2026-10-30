@@ -1,6 +1,7 @@
 #include "drape_frontend/stylist.hpp"
 
 #include "indexer/classificator.hpp"
+#include "indexer/cycling_side_demo.hpp"
 #include "indexer/classificator_loader.hpp"
 #include "indexer/feature.hpp"
 #include "indexer/feature_utils.hpp"
@@ -238,10 +239,41 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
 
   auto const & hatchingChecker = IsHatchingTerritoryChecker::Instance();
   auto const geomType = types.GetGeomType();
+  auto const sideDemo = geomType == feature::GeomType::Line ?
+      cycling_demo::Decode(f.GetMetadata(feature::Metadata::FMD_TEST_ID)) : std::optional<cycling_demo::Sides>{};
+  if (sideDemo && zoomLevel >= 14)
+  {
+    MapStyle const cycleStyle = MapStyleIsDark(style) ? MapStyleCyclingDark : MapStyleCyclingLight;
+    auto const & cycleClassif = classif(cycleStyle);
+    auto const & cycleRules = drule::GetRules(cycleStyle);
+    auto const collect = [&](cycling_demo::Side const & side, int sign)
+    {
+      if (side.m_kind == cycling_demo::Kind::None)
+        return;
+      auto const type = cycleClassif.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(side.m_kind)});
+      drule::KeysT sideKeys;
+      cycleClassif.GetObject(type)->GetSuitable(zoomLevel, geomType, sideKeys);
+      SideRules rules{sign, {}};
+      for (auto const & key : sideKeys)
+      {
+        if (key.m_type != drule::line)
+          continue;
+        auto const rule = cycleRules.Find(key)->GetLine();
+        if (rule && !rule->pathsym)
+          rules.m_rules.push_back(rule);
+      }
+      if (!rules.m_rules.empty())
+        m_cyclewaySides.push_back(std::move(rules));
+    };
+    collect(sideDemo->m_left, -1);
+    collect(sideDemo->m_right, 1);
+  }
 
   drule::KeysT keys;
   for (uint32_t t : types)
   {
+    if (sideDemo && ftype::Trunc(t, 1) == cl.GetTypeByPath({"cyclewaytag"}))
+      continue;  // Draw attached facilities beside the primary road, not over it.
     drule::KeysT typeKeys;
     cl.GetObject(t)->GetSuitable(zoomLevel, geomType, typeKeys);
     bool const hasHatching = hatchingChecker(t);
