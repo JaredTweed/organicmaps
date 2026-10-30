@@ -21,14 +21,23 @@ the original code and appearance. That supersedes the earlier author-side
 publication hold, not the need for maintainer agreement. The selector's code
 remains at `c24dc38dfe`; none of the drafts is marked ready.
 
+**Ownership-only quality revision:** [review notes](code-quality-review.md) and
+[source checks](code-quality-review.json) record the shared metaline codec/test
+move to `indexer`. No classification, style, shader, geometry or phase behavior
+changes are included; the phone side-offset prototype remains separate.
+The updated renderer passes [298 native tests](code-quality-renderer-native-results.json)
+and the exact style preview passes [295](code-quality-style-native-results.json).
+The seven codec tests now run in `indexer_tests`. Earlier exact-head and
+pixel-comparison records below retain their original source pins.
+
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `c24dc38dfe` |
 | prerequisite | https://github.com/organicmaps/organicmaps/pull/14054 | `prepare/motor-vehicle-permissive` | `6daf0d8755` |
 | 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `33c33e44b0` |
-| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `30ebe4827d` |
-| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `45b08c9aa7` |
-| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `82b6f69887` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `d74a51b3cd` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `fdc131de53` |
+| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `34a0624d67` |
 
 Titles are numbered `1/5` through `5/5`, and every body carries the same stack
 block with links to all five drafts.
@@ -44,9 +53,9 @@ checked against the script by the tests.
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `c24dc38dfe` | `master` | `organicmaps/organicmaps` | yes |
 | 2 | `prepare/cycling-tag-data` | `33c33e44b0` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 3 | `prepare/cycling-metalines` | `30ebe4827d` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 4 | `prepare/cycling-dash` | `45b08c9aa7` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 5 | `prepare/cycling-style` | `82b6f69887` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
+| 3 | `prepare/cycling-metalines` | `d74a51b3cd` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-dash` | `fdc131de53` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 5 | `prepare/cycling-style` | `34a0624d67` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
 `ab/cycling-style` at `7af82a316a` and is kept for provenance.

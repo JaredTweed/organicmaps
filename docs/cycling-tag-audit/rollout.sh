@@ -55,10 +55,10 @@ readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=c24dc38dfe5e258837855cb84683c6ad0083adc7
 readonly ACCESS_HEAD=6daf0d87550ccfcf8ee199b3b8173a53245990cb
 readonly TAG_DATA_HEAD=33c33e44b03c448cdfa4380af27c04dc6af0430b
-readonly METALINES_HEAD=30ebe4827d84ceed1e301165682e9116eec9e9fd
-readonly DASH_HEAD=45b08c9aa7db72f03f9ef6da51b8c45ed948921f
+readonly METALINES_HEAD=d74a51b3cd48b43f459f049106a5e268824fbed8
+readonly DASH_HEAD=fdc131de535a20c53e9bd219fa3a1cef4867b01a
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=82b6f698878501810f4f6a2d7239e2bd36ff836e
+readonly STYLE_HEAD=34a0624d6700cb7dd062be67abf7d5ac24224bcb
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
 readonly ACCESS_TITLE='[generator] Recognize permissive motor vehicle access'
@@ -348,6 +348,7 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 - Preserves #12692's chain grouping and temporary collector layout. Collision-free tagged keys are a separate follow-up: fixing collisions can change chain membership, direction, offsets and rendered dash phase.
 - Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
 - Applies optional offsets only when every chain's feature list, reversal flags and offset count match the authoritative section. Damaged, stale or trailing optional data leaves the legacy model untouched; validation is all-or-nothing.
+- The shared codec and serialization tests live in `indexer`, not `drape_frontend`; the generator no longer imports this file-format definition from the renderer. This ownership-only refactor preserves the codec body, binary layouts and rendering behavior.
 
 ## Compatibility
 
@@ -359,13 +360,14 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 
 - `generator_tests --filter=Metalines` passes.
 - Regression fixtures cover versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches. Tagged-key fixtures belong to the separate grouping follow-up.
-- Earlier full `indexer_tests` evidence predates this additive-section revision; do not treat it as an exact-head run.
+- Codec tests now run in `indexer_tests`, including signed-ID limits and atomic preservation of existing phases for every truncated optional-data prefix. Exact consuming-head results are recorded in parts 4-5.
 - `drape_frontend_tests --filter=ClipSplines` passes.
 - Exact original/candidate generators match all 82,785 Vancouver features and 2,010 directed chains/offsets. The optional section validates completely; preserving the legacy section costs 27,209 bytes (about 1.1%) on this map.
 - Completed Pixel audit covers 60 saved-camera views across themes and OpenGL/Vulkan, with repeated cold starts. Eleven cross-build pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict certification; no tolerance or universal equivalence claim is made.
 
 ## Scope
 
+- This revision was refined with Codex assistance.
 - Stores offsets only; the renderer use is 4/5.
 - One centerline chain per road pattern; no side-specific data.
 - Additive phase metadata preserves the authoritative legacy section. Emitted legacy records and resolved offsets are included in the matched-map audit; historical-client coverage is reported separately.
@@ -398,6 +400,7 @@ This upstream PR is cumulative: it also contains parts 1-3.
 - Uses the stored metaline offset and geometry direction to advance the dash phase.
 - Updates line geometry, clipping, line helpers, and shaders; the Vulkan shader pack is regenerated.
 - Applies the phase only to patterned cycling infrastructure, using the shared lane checkers.
+- Uses the shared `indexer` metaline codec from part 3. Its ownership-only relocation does not change any phase calculation, classification, shader or style asset.
 
 ## Compatibility
 
@@ -408,12 +411,13 @@ This upstream PR is cumulative: it also contains parts 1-3.
 
 - Clean debug build of `drape_frontend_tests`.
 - Clip-splines and reversed-metaline phase tests pass.
-- Exact head `45b08c9aa7` passes 296 native tests: 65 classification/metalines, 23 reader/clipping/phase, 181 indexer and 27 routing-common tests, all with Debug assertions.
+- Exact head `fdc131de53` passes 298 native tests: 65 classification/metalines, 18 clipping/phase, 188 indexer (including 7 codec tests) and 27 routing-common tests, all with Debug assertions.
 - Complete style-preview Pixel audit covers 60 saved-camera views on OpenGL/Vulkan with repeated cold starts. Eleven pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict pixel certification; this is not an exact-head screenshot test of this master-based branch.
 - Earlier phone spot checks showed Cambie lane dashes, shared-lane dots, and solid tracks. This is not exhaustive visual-equivalence evidence; fixed-coordinate checks across zooms, themes, clipping, direction reversal and graphics backends remain required.
 
 ## Scope
 
+- This revision was refined with Codex assistance.
 - Continuous phase on the centerline; no per-side rendering or per-side arrows.
 - Uses the stored offsets; no color, width, or style change.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
@@ -449,7 +453,7 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4 plus the
 - The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
 - Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
 - Exact baseline/candidate Android native builds succeed. The complete tracked `data/` trees match. Separately generated Vancouver maps match all 82,785 features (including stored type order and metadata) and all 2,010 directed chains/offsets using isolated, explicitly verified classifiers. Aggregate type counts are not used as the proof.
-- On exact candidate `82b6f69887`, 293 native tests pass with Debug assertions: 62 classification/metalines tests, 23 reader/clipping/phase tests, 181 indexer tests and 27 routing-common tests. This is not generated-route or pixel-equivalence evidence.
+- On exact candidate `34a0624d67`, 295 native tests pass with Debug assertions: 62 classification/metalines tests, 18 clipping/phase tests, 188 indexer tests (including 7 codec tests) and 27 routing-common tests. This is not generated-route or pixel-equivalence evidence.
 - The earlier Qt/OpenGL audit had a stable-pair discrepancy of 17 grayscale road-edge pixels; it remains archived, not erased by the new phone result.
 - Completed Pixel OpenGL/Vulkan audit: 60 saved-camera views, both themes and repeated cold starts. Eleven cross-build pairs are exact; the reference repeats exactly in 10 views and the candidate in 11. No pair stable in both builds differs cross-build. Maximum difference is 289/1,219,096 map pixels (about 0.024%). Strict pixel equivalence remains unverified; no tolerance was introduced. One volume-panel-contaminated case was recaptured in full with identical settings and explicit provenance, preserving the raw evidence.
 - Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
@@ -463,6 +467,7 @@ Do not merge as-is: the base is the maintainer's `ab/cycling-style` branch, depe
 
 ## Scope
 
+- This revision was refined with Codex assistance. The shared metaline codec/tests moved into `indexer`; the codec body and the writer/reader logic are unchanged after ownership-name and formatting normalization. All other runtime sources and tracked assets are unchanged from the previous split preview.
 - Centerline style only; side-specific facilities are deferred.
 - Conflicting-tag order and collision-free chain grouping are separate behavioral follow-ups, excluded to preserve #12692's classification and grouping logic.
 - This old-base preview does not certify the eventual merged-master integration. Rebase/regenerate and repeat the comparison on that actual integration before claiming final equivalence; do not silently revert unrelated upstream work to match an older baseline.

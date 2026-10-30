@@ -16,6 +16,10 @@ validation is complete; author permission does not imply vng's agreement.
 
 - Keep selector, generator, stored phase data and renderer as distinct review
   units. The format PR must read its output without needing the renderer PR.
+- Own the shared metaline codec in `indexer`, with its serialization tests in
+  `indexer_tests`. Generator code must not import this data format from the
+  rendering layer. The [ownership-only revision](code-quality-review.md)
+  preserves existing codec logic and drawing behavior.
 - Keep the five existing drafts rather than renumbering before maintainer review.
   Official parts 2-4 are cumulative against master, not isolated GitHub diffs.
   Review commit ranges; rebase each onto master after its predecessors land.

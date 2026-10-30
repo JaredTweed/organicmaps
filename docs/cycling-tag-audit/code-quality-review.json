@@ -1,0 +1,62 @@
+{
+  "scope": "Ownership-only refactor; not a new pixel-equivalence claim against #12692",
+  "comparisons": [
+    {
+      "previous": "30ebe4827d84ceed1e301165682e9116eec9e9fd",
+      "candidate": "d74a51b3cd48b43f459f049106a5e268824fbed8",
+      "codec_unchanged_except_namespace": true,
+      "writer_unchanged_except_ownership_and_format": true,
+      "reader_unchanged_except_ownership": true,
+      "all_other_runtime_sources_and_assets_unchanged": true,
+      "changed_paths": [
+        "generator/metalines_builder.cpp",
+        "libs/drape_frontend/CMakeLists.txt",
+        "libs/drape_frontend/drape_frontend_tests/CMakeLists.txt",
+        "libs/drape_frontend/read_metaline_task.cpp",
+        "libs/drape_frontend/read_metaline_task.hpp",
+        "libs/indexer/CMakeLists.txt",
+        "libs/indexer/indexer_tests/CMakeLists.txt",
+        "libs/indexer/indexer_tests/metaline_data_tests.cpp",
+        "libs/indexer/metaline_data.hpp"
+      ]
+    },
+    {
+      "previous": "45b08c9aa7db72f03f9ef6da51b8c45ed948921f",
+      "candidate": "fdc131de535a20c53e9bd219fa3a1cef4867b01a",
+      "codec_unchanged_except_namespace": true,
+      "writer_unchanged_except_ownership_and_format": true,
+      "reader_unchanged_except_ownership": true,
+      "all_other_runtime_sources_and_assets_unchanged": true,
+      "changed_paths": [
+        "generator/metalines_builder.cpp",
+        "libs/drape_frontend/CMakeLists.txt",
+        "libs/drape_frontend/drape_frontend_tests/CMakeLists.txt",
+        "libs/drape_frontend/read_metaline_task.cpp",
+        "libs/drape_frontend/read_metaline_task.hpp",
+        "libs/indexer/CMakeLists.txt",
+        "libs/indexer/indexer_tests/CMakeLists.txt",
+        "libs/indexer/indexer_tests/metaline_data_tests.cpp",
+        "libs/indexer/metaline_data.hpp"
+      ]
+    },
+    {
+      "previous": "82b6f698878501810f4f6a2d7239e2bd36ff836e",
+      "candidate": "34a0624d6700cb7dd062be67abf7d5ac24224bcb",
+      "codec_unchanged_except_namespace": true,
+      "writer_unchanged_except_ownership_and_format": true,
+      "reader_unchanged_except_ownership": true,
+      "all_other_runtime_sources_and_assets_unchanged": true,
+      "changed_paths": [
+        "generator/metalines_builder.cpp",
+        "libs/drape_frontend/CMakeLists.txt",
+        "libs/drape_frontend/drape_frontend_tests/CMakeLists.txt",
+        "libs/drape_frontend/read_metaline_task.cpp",
+        "libs/drape_frontend/read_metaline_task.hpp",
+        "libs/indexer/CMakeLists.txt",
+        "libs/indexer/indexer_tests/CMakeLists.txt",
+        "libs/indexer/indexer_tests/metaline_data_tests.cpp",
+        "libs/indexer/metaline_data.hpp"
+      ]
+    }
+  ]
+}

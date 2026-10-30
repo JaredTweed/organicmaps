@@ -1,0 +1,35 @@
+{
+  "source_commit": "fdc131de535a20c53e9bd219fa3a1cef4867b01a",
+  "memory_limit_mib": 1800,
+  "workers": 1,
+  "tests": [
+    {
+      "target": "indexer_tests",
+      "filter": null,
+      "exit_code": 0,
+      "passed": 188,
+      "all_passed": true
+    },
+    {
+      "target": "generator_tests",
+      "filter": "OsmType|Metalines",
+      "exit_code": 0,
+      "passed": 65,
+      "all_passed": true
+    },
+    {
+      "target": "drape_frontend_tests",
+      "filter": "ClipSplines|DashedLinePhase",
+      "exit_code": 0,
+      "passed": 18,
+      "all_passed": true
+    },
+    {
+      "target": "routing_common_tests",
+      "filter": null,
+      "exit_code": 0,
+      "passed": 27,
+      "all_passed": true
+    }
+  ]
+}

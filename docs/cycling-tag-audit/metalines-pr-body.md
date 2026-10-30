@@ -11,6 +11,7 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 - Preserves #12692's chain grouping and temporary collector layout. Collision-free tagged keys are a separate follow-up: fixing collisions can change chain membership, direction, offsets and rendered dash phase.
 - Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
 - Applies optional offsets only when every chain's feature list, reversal flags and offset count match the authoritative section. Damaged, stale or trailing optional data leaves the legacy model untouched; validation is all-or-nothing.
+- The shared codec and serialization tests live in `indexer`, not `drape_frontend`; the generator no longer imports this file-format definition from the renderer. This ownership-only refactor preserves the codec body, binary layouts and rendering behavior.
 
 ## Compatibility
 
@@ -22,13 +23,14 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 
 - `generator_tests --filter=Metalines` passes.
 - Regression fixtures cover versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches. Tagged-key fixtures belong to the separate grouping follow-up.
-- Earlier full `indexer_tests` evidence predates this additive-section revision; do not treat it as an exact-head run.
+- Codec tests now run in `indexer_tests`, including signed-ID limits and atomic preservation of existing phases for every truncated optional-data prefix. Exact consuming-head results are recorded in parts 4-5.
 - `drape_frontend_tests --filter=ClipSplines` passes.
 - Exact original/candidate generators match all 82,785 Vancouver features and 2,010 directed chains/offsets. The optional section validates completely; preserving the legacy section costs 27,209 bytes (about 1.1%) on this map.
 - Completed Pixel audit covers 60 saved-camera views across themes and OpenGL/Vulkan, with repeated cold starts. Eleven cross-build pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict certification; no tolerance or universal equivalence claim is made.
 
 ## Scope
 
+- This revision was refined with Codex assistance.
 - Stores offsets only; the renderer use is 4/5.
 - One centerline chain per road pattern; no side-specific data.
 - Additive phase metadata preserves the authoritative legacy section. Emitted legacy records and resolved offsets are included in the matched-map audit; historical-client coverage is reported separately.
