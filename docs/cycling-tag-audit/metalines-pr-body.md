@@ -8,7 +8,7 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 
 - Keeps `metalines` at version 1. A separate `metalines_offsets` section uses the already-supported version-3 layout, including feature IDs/directions and double offsets.
 - Unnamed painted lane and shared-lane ways are added to metalines in separate chains.
-- Grouping uses an ordered `(kind, name, ref)` key rather than collidable name hashes or numeric sentinels. This changes the generator's temporary collector format; regenerate intermediate files rather than mixing old and new collectors.
+- Preserves #12692's chain grouping and temporary collector layout. Collision-free tagged keys are a separate follow-up: fixing collisions can change chain membership, direction, offsets and rendered dash phase.
 - Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
 - Applies optional offsets only when every chain's feature list, reversal flags and offset count match the authoritative section. Damaged, stale or trailing optional data leaves the legacy model untouched; validation is all-or-nothing.
 
@@ -21,11 +21,11 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 ## Testing
 
 - `generator_tests --filter=Metalines` passes.
-- Regression fixtures cover collector-key round trips and distinct grouping kinds; versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches.
+- Regression fixtures cover versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches. Tagged-key fixtures belong to the separate grouping follow-up.
 - Earlier full `indexer_tests` evidence predates this additive-section revision; do not treat it as an exact-head run.
 - `drape_frontend_tests --filter=ClipSplines` passes.
 - Exact original/candidate generators match all 82,785 Vancouver features and 2,010 directed chains/offsets. The optional section validates completely; preserving the legacy section costs 27,209 bytes (about 1.1%) on this map.
-- Earlier phone previews are limited evidence, not a complete visual-equivalence result. Fixed-camera pixel comparisons across zoom, theme, reversal and clipping remain required; the current Pixel is disconnected.
+- Completed Pixel audit covers 60 saved-camera views across themes and OpenGL/Vulkan, with repeated cold starts. Eleven cross-build pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict certification; no tolerance or universal equivalence claim is made.
 
 ## Scope
 
@@ -37,6 +37,8 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 ## Stack
 
 Part 3 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)

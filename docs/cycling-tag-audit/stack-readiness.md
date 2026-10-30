@@ -1,30 +1,34 @@
 # Cycling PR stack readiness
 
 Status: **published as five official drafts** (selector opened 2026-10-28, split
-completed 2026-10-29). PR #12692's code is protected; only review comments have
+completed 2026-10-29), with independent motor-access draft
+[#14054](https://github.com/organicmaps/organicmaps/pull/14054) added 2026-10-30.
+PR #12692's code is protected; only review comments have
 been added. Do not push its head branch (`JaredTweed:master`).
 
-The next revision is prepared locally: the five cycling parts retain their
-numbers, with an independent motor-access prerequisite added outside the
-numbered stack. Candidate pins live in `rollout.sh`; the table below records
-the last published heads until that revision is pushed.
+The five cycling parts retain their numbers, with an independent motor-access
+prerequisite outside the numbered stack. After exact-head native validation,
+the split heads were updated under explicit remote leases. Pins live in
+`rollout.sh`; original PR #12692 remains unchanged.
 
 **2026-10-30 discussion gate:** vng asked to agree the primary-road model on
 [#14040](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420).
-The user chose to preserve #12692's appearance and keep offsets separate.
+The user chose to preserve #12692's appearance and keep side-offset line rendering separate.
 The [response](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599)
 and [constraint notes](vng-model-constraints.md) separate those decisions.
-No public code-head rewrites or independent access PR are being published
-while this boundary is discussed. Only the selector description/discussion is
-updated; its code remains at `c24dc38dfe`.
+The user subsequently authorized updating the split drafts while preserving
+the original code and appearance. That supersedes the earlier author-side
+publication hold, not the need for maintainer agreement. The selector's code
+remains at `c24dc38dfe`; none of the drafts is marked ready.
 
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `c24dc38dfe` |
-| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `0a9b94bcef` |
-| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `18e4dfaabe` |
-| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `3d77a89925` |
-| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `89de1b8f46` |
+| prerequisite | https://github.com/organicmaps/organicmaps/pull/14054 | `prepare/motor-vehicle-permissive` | `6daf0d8755` |
+| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `33c33e44b0` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `30ebe4827d` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `45b08c9aa7` |
+| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `82b6f69887` |
 
 Titles are numbered `1/5` through `5/5`, and every body carries the same stack
 block with links to all five drafts.
@@ -39,10 +43,10 @@ checked against the script by the tests.
 | # | Branch on `JaredTweed/organicmaps` | Head | PR base | Target | Draft |
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `c24dc38dfe` | `master` | `organicmaps/organicmaps` | yes |
-| 2 | `prepare/cycling-tag-data` | `0a9b94bcef` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 3 | `prepare/cycling-metalines` | `18e4dfaabe` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 4 | `prepare/cycling-dash` | `3d77a89925` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 5 | `prepare/cycling-style` | `89de1b8f46` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
+| 2 | `prepare/cycling-tag-data` | `33c33e44b0` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 3 | `prepare/cycling-metalines` | `30ebe4827d` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-dash` | `45b08c9aa7` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 5 | `prepare/cycling-style` | `82b6f69887` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
 `ab/cycling-style` at `7af82a316a` and is kept for provenance.
@@ -62,7 +66,7 @@ official PRs are the review units.
    change rendering. This is not a general zero-risk guarantee.
 2. **Cycling types.** Adds `cyclewaytag|track`, `lane`, and `shared_lane` while
    keeping the road's main `highway` type. Includes access/direction refinements
-   and an order-invariance fix for `cycleway=no` plus a positive side value. The
+   matching #12692. The order-invariance fix is a separate follow-up. The
    PR keeps the incremental classification history. Generated classifier assets
    now accompany the first commit that consumes the types. Shared lane checkers
    belong here. The unrelated permissive motor-access fix is an independent,
@@ -70,12 +74,11 @@ official PRs are the review units.
 3. **Metalines offsets.** Retains version-1 `metalines`, adding optional
    version-3-layout `metalines_offsets`, one double offset per feature;
    unnamed painted lanes/shared lanes are added to metalines in separate
-   chains. Ordered tagged
-   `(kind, name, ref)` keys remove hash/sentinel collisions. The reader explicitly
+   chains. Grouping and collector layout preserve #12692; collision-free
+   tagged keys are a separate behavioral follow-up. The reader explicitly
    consumes v2 float offsets and v3 doubles; v1 has no offsets. Optional data is
    validated against every authoritative feature/direction list before any
-   offsets are applied. The renderer does not use offsets yet. Temporary
-   collector files must be regenerated.
+   offsets are applied. The renderer does not use offsets yet.
 4. **Continuous dash phase.** Uses the stored offsets and geometry direction in
    line geometry, clipping, and shaders; the Vulkan pack is regenerated. Only
    patterned cycling infrastructure is phased. No color, width, or style change.
@@ -101,13 +104,45 @@ except two additional `hwtag|yescar` occurrences, explained by the
 they do not prove per-road routing correctness. Raw data is in
 [`actual-generator-results.json`](actual-generator-results.json).
 
-The prior five-draft kit passed live verification. The current six-draft
-candidate kit intentionally refuses the old remote heads: its pins are local
-proposed revisions, not a claim that those revisions are published. Its local
-ancestry, DCO, whitespace and source-overlap checks passed against upstream
-`1ae5fab44b`; do not describe that as a full live publication preflight pass.
+The six-draft kit passes publication preflight against upstream `f1b50dbcb5`:
+ancestry, DCO, whitespace, protected refs and upstream source-overlap checks.
+Rewritten preparation refs were pushed atomically with exact remote leases;
+the rollout script itself never force-pushes. All six drafts are published.
 
 ## Candidate evidence
+
+### Appearance-preserving revision
+
+The newer baseline excludes two behavioral fixes that the earlier
+candidate bundled with extraction: conflicting `cycleway=no`/side-tag
+precedence and collision-free chain keys. Their follow-up branches are
+`prepare/cycling-order-followup` (`9e7915de8d`) and
+`prepare/cycling-chain-key-followup` (`9990d07b85`). Neither is part of the
+ordered equivalence baseline or its publication steps.
+
+New heads are types `33c33e44b0`, optional metalines `30ebe4827d`,
+renderer `45b08c9aa7`, and style preview `82b6f69887`. On the style preview,
+classification logic and chain grouping match #12692; only the additive
+metalines compatibility work differs in the generator. Runtime code/assets
+are unchanged from the earlier candidate. Its rebuilt Android native library
+is byte-identical to that earlier candidate, with fresh source provenance.
+
+The Pixel is now connected. Original-reference captures across five sites,
+three zooms, two themes and OpenGL/Vulkan are complete, with repeated
+cold starts. Cameras are normalized only by the original reference, then
+shared unchanged with the candidate. The completed 60-view phone comparison
+has 11 exact cross-build pairs and no cross-build differences among pairs
+stable in both builds. Only 10 original and 11 candidate views repeat exactly;
+maximum cross-build difference is 289/1,219,096 pixels. Strict certification
+remains false. One system-overlay-contaminated case was recaptured in full,
+with the substitution recorded and original evidence preserved. See
+[visual-phone-results.json](visual-phone-results.json).
+All matched features/chains pass in [visual-equivalence-baseline-data.json](visual-equivalence-baseline-data.json).
+The exact revised master and style heads pass 296 and 293 native tests:
+[master results](equivalence-master-native-results.json),
+[style results](equivalence-style-native-results.json). All 73 research tests pass.
+The old evidence below remains historical evidence, not an exact-head test
+claim for these newer revisions.
 
 - Independent motor-access branch `6daf0d8755` builds and passes the full
   `OsmType` group. The first usable cycling commit `532f644147` also builds
@@ -129,8 +164,9 @@ ancestry, DCO, whitespace and source-overlap checks passed against upstream
   trees match. This does not erase the remaining pixel discrepancies.
 - Of 60 fixed-camera Qt views, 36 match cross-build exactly; 23 are also stable
   within both builds. One stable pair differs by 17 grayscale road-edge pixels.
-  The strict visual-equivalence result remains false. Pixel/Vulkan coverage is
-  absent because the phone is disconnected; generated-route tests remain open.
+  That strict visual-equivalence result remains false. Pixel/Vulkan coverage
+  was absent in that earlier report; the new phone run is recorded separately.
+  Generated-route tests remain open.
 
 Local review ranges (not claims of isolated public GitHub diffs):
 
@@ -138,10 +174,10 @@ Local review ranges (not claims of isolated public GitHub diffs):
 | --- | --- |
 | Selector | `303ef27fbc..c24dc38dfe` |
 | Independent access | `303ef27fbc..6daf0d8755` |
-| Cycling types, after both prerequisites | `407057c693..29c724492b` |
-| Optional metaline data | `29c724492b..af080bbfb1` |
-| Renderer | `af080bbfb1..29834257a1` |
-| Complete style preview, including dependencies | `7af82a316a..f8f603fc7e` |
+| Cycling types, after both prerequisites | `407057c693..33c33e44b0` |
+| Optional metaline data | `33c33e44b0..30ebe4827d` |
+| Renderer | `30ebe4827d..45b08c9aa7` |
+| Complete style preview, including dependencies | `7af82a316a..82b6f69887` |
 
 ## Known open questions for review
 

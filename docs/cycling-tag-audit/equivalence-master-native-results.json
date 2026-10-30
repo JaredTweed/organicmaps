@@ -1,0 +1,52 @@
+{
+  "source_commit": "45b08c9aa7db72f03f9ef6da51b8c45ed948921f",
+  "assertions": "Debug",
+  "checks": {
+    "generator_tests": {
+      "args": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/generator_tests",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/home/jared/Repos/organicmaps/organicmaps-cycling-visual-check/build-visual-artifacts/equivalence-master-native-checks/generator_tests-writable",
+        "--filter=OsmType|Metalines"
+      ],
+      "binary_sha256": "9a583a7cb76e5eac8dfdc45b4e120a7dae86e4dbf8c6b040022c45686afb277c",
+      "log_sha256": "cf8472e2809c8c58d9560504affd8926666ece72305fe95d9bf3df31a08c1fc1",
+      "exit_code": 0,
+      "tests_run": 65
+    },
+    "drape_frontend_tests": {
+      "args": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/drape_frontend_tests",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/home/jared/Repos/organicmaps/organicmaps-cycling-visual-check/build-visual-artifacts/equivalence-master-native-checks/drape_frontend_tests-writable",
+        "--filter=MetalineData|ClipSplines|DashedLinePhase"
+      ],
+      "binary_sha256": "3d1c20d72e036d50e200bc5b8790dd9e0ac236250bc475d9889e91b968dc5a09",
+      "log_sha256": "ac29b97e7b8635cb591bb1de21087764f24d054d260723844035411834af0b18",
+      "exit_code": 0,
+      "tests_run": 23
+    },
+    "indexer_tests": {
+      "args": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/indexer_tests",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/home/jared/Repos/organicmaps/organicmaps-cycling-visual-check/build-visual-artifacts/equivalence-master-native-checks/indexer_tests-writable"
+      ],
+      "binary_sha256": "b0380fdb6f91552329d5eb342076508bd29d5c24797da9a83ce1909bbadc3f6b",
+      "log_sha256": "8ea0c14ff686d8f79f16330cd8032a39dd88054dd46a476df5cea242ad03af24",
+      "exit_code": 0,
+      "tests_run": 181
+    },
+    "routing_common_tests": {
+      "args": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/routing_common_tests",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/home/jared/Repos/organicmaps/organicmaps-cycling-visual-check/build-visual-artifacts/equivalence-master-native-checks/routing_common_tests-writable"
+      ],
+      "binary_sha256": "b47fd1eb2c2c7988c698baf3aab6c55bcda80fc3ad5682d3fc20c7df1a71b159",
+      "log_sha256": "39a702133bbac5d1f1575c39fbdcc682c6192f26865517af34dce6bbaba99d7e",
+      "exit_code": 0,
+      "tests_run": 27
+    }
+  }
+}

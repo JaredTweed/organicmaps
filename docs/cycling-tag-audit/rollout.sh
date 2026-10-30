@@ -26,9 +26,9 @@
 #   5. style      JaredTweed:prepare/cycling-style     -> organicmaps:ab/cycling-style
 #
 # The five-part cycling stack also has an independent motor-access prerequisite.
-# The plan is six drafts; only five are currently published. Candidate code
-# heads and the new access PR are held pending the model discussion; see
-# stack-readiness.md. Parts 2-4 are cumulative; part 5 targets the maintainer
+# All six are published as drafts; exact pins and validation are recorded in
+# stack-readiness.md. Maintainer agreement is still pending.
+# Parts 2-4 are cumulative; part 5 targets the maintainer
 # style branch. The independent access PR targets master without the selector.
 
 set -Eeuo pipefail
@@ -54,11 +54,11 @@ readonly STYLE_BRANCH=prepare/cycling-style
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=c24dc38dfe5e258837855cb84683c6ad0083adc7
 readonly ACCESS_HEAD=6daf0d87550ccfcf8ee199b3b8173a53245990cb
-readonly TAG_DATA_HEAD=29c724492b77d430e21546d8cb46d2aff1083e3e
-readonly METALINES_HEAD=af080bbfb1ebb5b89ea627a45479104e35ed10fa
-readonly DASH_HEAD=29834257a1dc009bf8628f956aefcc726e513aae
+readonly TAG_DATA_HEAD=33c33e44b03c448cdfa4380af27c04dc6af0430b
+readonly METALINES_HEAD=30ebe4827d84ceed1e301165682e9116eec9e9fd
+readonly DASH_HEAD=45b08c9aa7db72f03f9ef6da51b8c45ed948921f
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=f8f603fc7e24e1cad765423fc75c392d3aa0ae56
+readonly STYLE_HEAD=82b6f698878501810f4f6a2d7239e2bd36ff836e
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
 readonly ACCESS_TITLE='[generator] Recognize permissive motor vehicle access'
@@ -215,7 +215,7 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 - This PR does not add side-aware data or offset rendering. The #12692 comparison preview remains the existing appearance; left/right offset rendering is a separate proposal/prototype, pending agreement on side/direction semantics.
 - Existing legacy modifiers, notably `highway|ford`, need explicit clarification before a global one-highway assertion or migration. They are not silently removed by this selector change.
 
-See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). Further split-head rewrites are held while this boundary is discussed.
+See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). The author subsequently authorized draft-only split updates preserving #12692's appearance; that is not maintainer agreement on the model. This selector's code remains unchanged.
 
 ## Testing
 
@@ -231,6 +231,8 @@ Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com
 ## Stack
 
 Part 1 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054). It is not part of this selector diff.
 
 1. **organicmaps#14040 — selector (this PR)**
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
@@ -285,9 +287,9 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.
-- `cycleway=no` combined with a positive side-specific value now resolves independently of OSM tag order; a regression test reproduces the previous bug.
+- Keeps #12692's existing conflicting-tag precedence. An order-invariance fix for `cycleway=no` plus a positive side-specific value is a separate follow-up, because it can change classification and appearance.
 - Bicycle direction and access flags are refined in the same classification pass.
-- Owns the shared lane/shared-lane `ftypes` checkers used by the generator and renderer, so the format PR no longer introduces classifier APIs.
+- Owns the lane/shared-lane `ftypes` checkers used by the renderer, so the format PR no longer introduces classifier APIs. Baseline generator grouping remains #12692's implementation.
 - Includes the generated classifier assets in the first commit consuming the new types, so intermediate commits do not depend on a later regeneration commit to load them.
 
 ## Compatibility
@@ -300,7 +302,7 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 - `generator_tests --filter=OsmType` passes on a clean debug build.
 - Full `routing_common_tests` suite passes.
 - On a road-only Vancouver extract, both builds retained 82,785 features; the MWM grew by 3,760 bytes (0.16%), with 787 lane, 963 shared-lane, and 108 track occurrences.
-- The new order-invariance regression fails before the fix and passes after it.
+- The order-invariance regression belongs to the separate behavioral follow-up, not this equivalence baseline.
 
 ## Review notes
 
@@ -320,6 +322,8 @@ Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicma
 ## Stack
 
 Part 2 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. **organicmaps#14041 — cycling types (this PR)**
@@ -341,7 +345,7 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 
 - Keeps `metalines` at version 1. A separate `metalines_offsets` section uses the already-supported version-3 layout, including feature IDs/directions and double offsets.
 - Unnamed painted lane and shared-lane ways are added to metalines in separate chains.
-- Grouping uses an ordered `(kind, name, ref)` key rather than collidable name hashes or numeric sentinels. This changes the generator's temporary collector format; regenerate intermediate files rather than mixing old and new collectors.
+- Preserves #12692's chain grouping and temporary collector layout. Collision-free tagged keys are a separate follow-up: fixing collisions can change chain membership, direction, offsets and rendered dash phase.
 - Reads v1 (no offsets), experimental v2 (float offsets), and v3 (double offsets) explicitly. Consuming v2 offsets is essential to keep subsequent feature records aligned.
 - Applies optional offsets only when every chain's feature list, reversal flags and offset count match the authoritative section. Damaged, stale or trailing optional data leaves the legacy model untouched; validation is all-or-nothing.
 
@@ -354,11 +358,11 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 ## Testing
 
 - `generator_tests --filter=Metalines` passes.
-- Regression fixtures cover collector-key round trips and distinct grouping kinds; versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches.
+- Regression fixtures cover versioned decoding, reversal, unknown versions, truncated/trailing optional sections and stale feature/direction/count mismatches. Tagged-key fixtures belong to the separate grouping follow-up.
 - Earlier full `indexer_tests` evidence predates this additive-section revision; do not treat it as an exact-head run.
 - `drape_frontend_tests --filter=ClipSplines` passes.
 - Exact original/candidate generators match all 82,785 Vancouver features and 2,010 directed chains/offsets. The optional section validates completely; preserving the legacy section costs 27,209 bytes (about 1.1%) on this map.
-- Earlier phone previews are limited evidence, not a complete visual-equivalence result. Fixed-camera pixel comparisons across zoom, theme, reversal and clipping remain required; the current Pixel is disconnected.
+- Completed Pixel audit covers 60 saved-camera views across themes and OpenGL/Vulkan, with repeated cold starts. Eleven cross-build pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict certification; no tolerance or universal equivalence claim is made.
 
 ## Scope
 
@@ -370,6 +374,8 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 ## Stack
 
 Part 3 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
@@ -402,6 +408,8 @@ This upstream PR is cumulative: it also contains parts 1-3.
 
 - Clean debug build of `drape_frontend_tests`.
 - Clip-splines and reversed-metaline phase tests pass.
+- Exact head `45b08c9aa7` passes 296 native tests: 65 classification/metalines, 23 reader/clipping/phase, 181 indexer and 27 routing-common tests, all with Debug assertions.
+- Complete style-preview Pixel audit covers 60 saved-camera views on OpenGL/Vulkan with repeated cold starts. Eleven pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict pixel certification; this is not an exact-head screenshot test of this master-based branch.
 - Earlier phone spot checks showed Cambie lane dashes, shared-lane dots, and solid tracks. This is not exhaustive visual-equivalence evidence; fixed-coordinate checks across zooms, themes, clipping, direction reversal and graphics backends remain required.
 
 ## Scope
@@ -413,6 +421,8 @@ This upstream PR is cumulative: it also contains parts 1-3.
 ## Stack
 
 Part 4 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
@@ -439,8 +449,9 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4 plus the
 - The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
 - Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
 - Exact baseline/candidate Android native builds succeed. The complete tracked `data/` trees match. Separately generated Vancouver maps match all 82,785 features (including stored type order and metadata) and all 2,010 directed chains/offsets using isolated, explicitly verified classifiers. Aggregate type counts are not used as the proof.
-- On the exact candidate, the complete `OsmType` group, 10 metalines tests, 5 reader tests, 16 clipping tests and both phase tests pass with Debug assertions. This is not generated-route or pixel-equivalence evidence.
-- A 60-view Qt/OpenGL audit has 36 exact cross-build matches, but strict certification remains false: repeats vary, and one two-repeat-stable view differs by 17 grayscale road-edge pixels. The Pixel is disconnected; no Pixel/Vulkan equivalence is claimed. These are explicit validation gates, not a tolerance-based pass.
+- On exact candidate `82b6f69887`, 293 native tests pass with Debug assertions: 62 classification/metalines tests, 23 reader/clipping/phase tests, 181 indexer tests and 27 routing-common tests. This is not generated-route or pixel-equivalence evidence.
+- The earlier Qt/OpenGL audit had a stable-pair discrepancy of 17 grayscale road-edge pixels; it remains archived, not erased by the new phone result.
+- Completed Pixel OpenGL/Vulkan audit: 60 saved-camera views, both themes and repeated cold starts. Eleven cross-build pairs are exact; the reference repeats exactly in 10 views and the candidate in 11. No pair stable in both builds differs cross-build. Maximum difference is 289/1,219,096 map pixels (about 0.024%). Strict pixel equivalence remains unverified; no tolerance was introduced. One volume-panel-contaminated case was recaptured in full with identical settings and explicit provenance, preserving the raw evidence.
 - Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
 
 ## Open questions
@@ -453,12 +464,16 @@ Do not merge as-is: the base is the maintainer's `ab/cycling-style` branch, depe
 ## Scope
 
 - Centerline style only; side-specific facilities are deferred.
+- Conflicting-tag order and collision-free chain grouping are separate behavioral follow-ups, excluded to preserve #12692's classification and grouping logic.
+- This old-base preview does not certify the eventual merged-master integration. Rebase/regenerate and repeat the comparison on that actual integration before claiming final equivalence; do not silently revert unrelated upstream work to match an older baseline.
 - The type-cap experiment produced equal aggregate type-combination dumps on the Vancouver extract, not a per-road or pixel-equivalence proof. The current ranking stays pending matched-feature measurements.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 ## Stack
 
 Part 5 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)

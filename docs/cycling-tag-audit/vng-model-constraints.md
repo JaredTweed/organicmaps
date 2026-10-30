@@ -58,9 +58,9 @@ intentional visual differences. Generic-style adoption needs its own review.
 
 ## Publication boundary
 
-The revised split and optional-offset format are prepared and tested locally.
-The five public code heads remain at the published pins recorded in
-`stack-readiness.md`. The independent motor-access draft has not been created.
-Hold code-head rewrites and that new PR while the model discussion proceeds;
-updating the first PR's scope/description does not change its code head.
+After the user's subsequent authorization and exact-head native validation,
+the split code heads were updated to the pins in `stack-readiness.md`.
+The independent motor-access draft is #14054. All six remain drafts; this
+author-side authorization does not resolve vng's model/rendering questions.
+The selector's code is unchanged. Side-offset line rendering is still separate.
 Original #12692 code remains protected at `955cd49403`.

@@ -19,6 +19,8 @@ This upstream PR is cumulative: it also contains parts 1-3.
 
 - Clean debug build of `drape_frontend_tests`.
 - Clip-splines and reversed-metaline phase tests pass.
+- Exact head `45b08c9aa7` passes 296 native tests: 65 classification/metalines, 23 reader/clipping/phase, 181 indexer and 27 routing-common tests, all with Debug assertions.
+- Complete style-preview Pixel audit covers 60 saved-camera views on OpenGL/Vulkan with repeated cold starts. Eleven pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict pixel certification; this is not an exact-head screenshot test of this master-based branch.
 - Earlier phone spot checks showed Cambie lane dashes, shared-lane dots, and solid tracks. This is not exhaustive visual-equivalence evidence; fixed-coordinate checks across zooms, themes, clipping, direction reversal and graphics backends remain required.
 
 ## Scope
@@ -30,6 +32,8 @@ This upstream PR is cumulative: it also contains parts 1-3.
 ## Stack
 
 Part 4 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)

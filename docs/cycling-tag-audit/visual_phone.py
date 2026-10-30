@@ -18,6 +18,7 @@ from generate_visual_map import digest, REGION
 PACKAGE = "app.organicmaps.cyclingfinal.debug"
 ACTIVITY = PACKAGE + "/app.organicmaps.SplashActivity"
 CORE_ASSETS = ("types.txt", "classificator.txt", "drules_cycling.bin", "colors.txt", "patterns.txt")
+REFERENCE_COMMIT = "955cd49403ed025c24beec09f5551e8d274a38ff"
 
 
 def command(arguments, **kwargs):
@@ -109,7 +110,29 @@ def backend_from_log(log):
     return values.pop()
 
 
-def capture(apk, fixtures_file, camera_dir, output, serial):
+def stabilize_camera(viewport, restore, attempts=4):
+    history = [viewport]
+    for _ in range(attempts):
+        actual = restore(viewport)
+        history.append(actual)
+        if actual == viewport:
+            return actual, history
+        viewport = actual
+    raise ValueError("Reference camera serialization does not reach a fixed point")
+
+
+def unlocked_foreground(focus, policy):
+    locked = re.search(r"\n\s+showing=(true|false)\b", policy)
+    windows = re.finditer(r"(?ms)^  Window #\d+ (Window\{[^\n]*\}):\n(.*?)(?=^  Window #|\Z)", focus)
+    for window in windows:
+        if re.search(r"VolumeDialog|NotificationShade|InputMethod", window[1]) and \
+                re.search(r"\bisOnScreen=true\b", window[2]):
+            return False
+    return bool(re.search(r"mCurrentFocus=.*" + re.escape(PACKAGE) + r"/", focus) and
+                locked is not None and locked[1] == "false")
+
+
+def capture(apk, fixtures_file, camera_dir, output, serial, prepare_cameras=False):
     from PIL import Image
     if output.exists():
         raise ValueError("Refusing to overwrite a capture")
@@ -118,6 +141,8 @@ def capture(apk, fixtures_file, camera_dir, output, serial):
         raise ValueError("APK bundle changed")
     if bundle["map_sha256"] != digest(bundle["map"]):
         raise ValueError("Map bundle changed")
+    if prepare_cameras and bundle["source_commit"] != REFERENCE_COMMIT:
+        raise ValueError("Only the untouched reference may prepare cameras")
     fixtures = json.loads(fixtures_file.read_text())
     if not fixtures or len({f["name"] for f in fixtures}) != len(fixtures):
         raise ValueError("Expected nonempty unique fixtures")
@@ -183,7 +208,10 @@ def capture(apk, fixtures_file, camera_dir, output, serial):
         if not re.fullmatch(r"[a-zA-Z0-9_-]+", camera_key):
             raise ValueError("Unsafe camera name")
         camera_file = camera_dir / (camera_key + ".txt")
+        stamp_file = camera_dir / (camera_key + ".normalized.json")
         if not camera_file.exists():
+            if not prepare_cameras:
+                raise ValueError("Reference camera must be prepared first: " + camera_key)
             seed = {**fixture, "theme": "light", "backend": "OpenGLES3"}
             adb("shell", "am", "force-stop", PACKAGE)
             transfer(settings(seed).encode(), "files/settings.ini")
@@ -194,10 +222,29 @@ def capture(apk, fixtures_file, camera_dir, output, serial):
             time.sleep(1)
             camera_file.write_text(read_viewport())
         viewport = camera_file.read_text()
+        if not stamp_file.exists():
+            if not prepare_cameras:
+                raise ValueError("Reference camera has not been normalized: " + camera_key)
+            seed = {**fixture, "theme": "light", "backend": "OpenGLES3"}
+            def restore(value):
+                launch(settings(seed, value))
+                return read_viewport(seed)
+            viewport, history = stabilize_camera(viewport, restore)
+            camera_file.write_text(viewport)
+            stamp_file.write_text(json.dumps({"source_commit": REFERENCE_COMMIT, "device": result["device"],
+                                              "viewport_sha256": digest(camera_file), "roundtrips": history}, indent=2) + "\n")
+        stamp = json.loads(stamp_file.read_text())
+        if stamp["source_commit"] != REFERENCE_COMMIT or stamp["device"] != result["device"] or \
+                stamp["viewport_sha256"] != digest(camera_file):
+            raise ValueError("Reference camera provenance changed: " + camera_key)
         data = settings(fixture, viewport)
         (output / (name + ".settings.ini")).write_text(data)
         for suffix in ("", ".repeat"):
             launch(data)
+            focus = text("shell", "dumpsys", "window")
+            policy = text("shell", "dumpsys", "window", "policy")
+            if not unlocked_foreground(focus, policy):
+                raise ValueError("The unlocked isolated map must be foreground")
             pid = text("shell", "pidof", PACKAGE)
             if not pid.isdecimal():
                 raise ValueError("No unambiguous running app process")
@@ -209,6 +256,11 @@ def capture(apk, fixtures_file, camera_dir, output, serial):
             result["actual_backends"][name] = actual
             screenshot = output / (name + suffix + ".png")
             screenshot.write_bytes(adb("exec-out", "screencap", "-p"))
+            after = text("shell", "dumpsys", "window")
+            if not unlocked_foreground(after, text("shell", "dumpsys", "window", "policy")):
+                raise ValueError("System UI or focus changed during screenshot")
+            (output / (name + suffix + ".windows-before.txt")).write_text(focus)
+            (output / (name + suffix + ".windows-after.txt")).write_text(after)
             result["image_sha256"][screenshot.name] = digest(screenshot)
             with Image.open(screenshot) as image:
                 roi = [int(image.width * .08), int(image.height * .12),
@@ -233,8 +285,9 @@ if __name__ == "__main__":
     for name in ("apk", "fixtures", "cameras", "output"):
         shot.add_argument("--" + name, type=Path, required=True)
     shot.add_argument("--serial", required=True)
+    shot.add_argument("--prepare-cameras", action="store_true")
     args = parser.parse_args()
     if args.action == "package":
         package(args.shell, args.library, args.native_manifest, args.map, args.output, args.build_tools, args.keystore)
     else:
-        capture(args.apk, args.fixtures, args.cameras, args.output, args.serial)
+        capture(args.apk, args.fixtures, args.cameras, args.output, args.serial, args.prepare_cameras)

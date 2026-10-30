@@ -9,9 +9,9 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.
-- `cycleway=no` combined with a positive side-specific value now resolves independently of OSM tag order; a regression test reproduces the previous bug.
+- Keeps #12692's existing conflicting-tag precedence. An order-invariance fix for `cycleway=no` plus a positive side-specific value is a separate follow-up, because it can change classification and appearance.
 - Bicycle direction and access flags are refined in the same classification pass.
-- Owns the shared lane/shared-lane `ftypes` checkers used by the generator and renderer, so the format PR no longer introduces classifier APIs.
+- Owns the lane/shared-lane `ftypes` checkers used by the renderer, so the format PR no longer introduces classifier APIs. Baseline generator grouping remains #12692's implementation.
 - Includes the generated classifier assets in the first commit consuming the new types, so intermediate commits do not depend on a later regeneration commit to load them.
 
 ## Compatibility
@@ -24,7 +24,7 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 - `generator_tests --filter=OsmType` passes on a clean debug build.
 - Full `routing_common_tests` suite passes.
 - On a road-only Vancouver extract, both builds retained 82,785 features; the MWM grew by 3,760 bytes (0.16%), with 787 lane, 963 shared-lane, and 108 track occurrences.
-- The new order-invariance regression fails before the fix and passes after it.
+- The order-invariance regression belongs to the separate behavioral follow-up, not this equivalence baseline.
 
 ## Review notes
 
@@ -44,6 +44,8 @@ Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicma
 ## Stack
 
 Part 2 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
 1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
 2. **organicmaps#14041 — cycling types (this PR)**

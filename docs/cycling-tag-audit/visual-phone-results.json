@@ -1,0 +1,1198 @@
+{
+  "data": {
+    "ambiguous_feature_groups": 0,
+    "baseline_chains": 2010,
+    "baseline_features": 82785,
+    "baseline_highway_profile": {
+      "multiple_highway_families": {
+        "cycleway + footway": 137,
+        "footway + ford": 6
+      },
+      "non_shared_path_examples": [
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 6534,
+          "osm_ids": [
+            9223372036956905624
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 13665,
+          "osm_ids": [
+            9223372036930113031
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 13802,
+          "osm_ids": [
+            9223372037822211833
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 14289,
+          "osm_ids": [
+            9223372037822213231
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 16163,
+          "osm_ids": [
+            9223372037191865810
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 33240,
+          "osm_ids": [
+            9223372038050908504
+          ]
+        }
+      ],
+      "note": "Observation, not approval of extra exceptions. Legacy highway|ford needs explicit clarification.",
+      "scope": "Line features; nested subtypes count as one highway family"
+    },
+    "baseline_metadata": {
+      "classifier_paths": {
+        "classificator.txt": "/home/jared/Repos/organicmaps/organicmaps-cycling-visual-check/data/classificator.txt",
+        "types.txt": "/home/jared/Repos/organicmaps/organicmaps-cycling-visual-check/data/types.txt"
+      },
+      "kind": "metadata",
+      "metalines_version": 3,
+      "offsets_applied": false,
+      "offsets_present": false,
+      "sections": {
+        "features": 1845854,
+        "geom0": 68,
+        "geom1": 2975,
+        "geom2": 21345,
+        "geom3": 170362,
+        "header": 32,
+        "idx": 185584,
+        "meta": 31471,
+        "metalines": 101577,
+        "offs": 80232,
+        "rgninfo": 21,
+        "trg0": 0,
+        "trg1": 0,
+        "trg2": 1363,
+        "trg3": 6780,
+        "version": 10
+      }
+    },
+    "candidate_chains": 2010,
+    "candidate_features": 82785,
+    "candidate_highway_profile": {
+      "multiple_highway_families": {
+        "cycleway + footway": 137,
+        "footway + ford": 6
+      },
+      "non_shared_path_examples": [
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 6534,
+          "osm_ids": [
+            9223372036956905624
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 13665,
+          "osm_ids": [
+            9223372036930113031
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 13802,
+          "osm_ids": [
+            9223372037822211833
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 14289,
+          "osm_ids": [
+            9223372037822213231
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 16163,
+          "osm_ids": [
+            9223372037191865810
+          ]
+        },
+        {
+          "highways": [
+            "footway",
+            "ford"
+          ],
+          "id": 33240,
+          "osm_ids": [
+            9223372038050908504
+          ]
+        }
+      ],
+      "note": "Observation, not approval of extra exceptions. Legacy highway|ford needs explicit clarification.",
+      "scope": "Line features; nested subtypes count as one highway family"
+    },
+    "candidate_metadata": {
+      "classifier_paths": {
+        "classificator.txt": "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data/classificator.txt",
+        "types.txt": "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data/types.txt"
+      },
+      "kind": "metadata",
+      "metalines_version": 1,
+      "offsets_applied": true,
+      "offsets_present": true,
+      "sections": {
+        "features": 1845854,
+        "geom0": 68,
+        "geom1": 2975,
+        "geom2": 21345,
+        "geom3": 170362,
+        "header": 32,
+        "idx": 185584,
+        "meta": 31471,
+        "metalines": 27177,
+        "metalines_offsets": 101577,
+        "offs": 80232,
+        "rgninfo": 21,
+        "trg0": 0,
+        "trg1": 0,
+        "trg2": 1363,
+        "trg3": 6780,
+        "version": 10
+      }
+    },
+    "chain_differences": 0,
+    "changed_examples": [],
+    "changed_feature_groups": 0,
+    "exact_matched_data_equal": true,
+    "overlapping_chain_order_changed": false,
+    "overlapping_feature_memberships": 0,
+    "scope": "OSM identity plus exact geometry, retained types/names/ref/layer/rank/address/metadata, directed chains and offsets",
+    "unidentified_features": 0
+  },
+  "provenance": {
+    "baseline": {
+      "elapsed_seconds": {
+        "features": 110.80036222597118,
+        "geometry": 336.5337822979782,
+        "preprocess": 4.815232402062975
+      },
+      "export_schema": "matched-feature-v5-complete-source-identities",
+      "export_sha256": "5f3c374458ed1d349717eec319b6b516e30f64c7f20bfec643af169db1f1baea",
+      "exporter_sha256": "97af84d53b937ef71a1733a6ee10b009a7c1778f40eee91c6ae127884436f011",
+      "generation_workers": 1,
+      "generator_sha256": "64ee7ddf91ed3ebcebeea83a733865400604cec04367db76c17104371979a912",
+      "map_bytes": 2447904,
+      "map_sha256": "0bfe6826938cb1531e0cb927b965630f56da0527ccab98ce5acffd50f94e7c82",
+      "osm2ft_sha256": "e2cd6ea079470ac5de9827c6711284232dfd532b5f99c326905ab87e3ccd9937",
+      "osm_sha256": "d034b4a5f1758e0b856b5bc09057e79200853f2970f5a12cb1ba927881c9ce08",
+      "resources": {
+        "classificator.txt": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d",
+        "colors.txt": "5a48d81077f418427f94df3ae5b58dc0c28c39343ffe76536162a8dcf47a59d9",
+        "drules_cycling.bin": "fcc2e5ac026c5ee3221086372434db6b470d896160ce7b76ff9753eb56f21fa0",
+        "drules_cycling.txt": "be8112aa730a893631e8a3834eea18d32154fe773ca8a6d848ab60c54e67a400",
+        "patterns.txt": "c29e992302bbfea254374df2df27f6e29614b2aa96c0311c5567066426574d21",
+        "types.txt": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95"
+      },
+      "scope": "Road-only geometry/index/metalines fixture, not a production or routing-graph map",
+      "source_clean": true,
+      "source_commit": "955cd49403ed025c24beec09f5551e8d274a38ff",
+      "submodules": " 8aa5145039b972ba30e98e788752d37d14568824 3party/BLAKE3 (1.8.5-5-g8aa5145)\n 85010b874b5b33286dc74e53ce9e8c9eaa8b59b9 3party/CMake-MetalShaderSupport (heads/main)\n 6433e5c70bb9ec995f72d767934acaff8ef11ae3 3party/Vulkan-Headers (v1.4.355)\n 62e2e655e5dbf4531c3a891e6e0becc46944805a 3party/boost_headers (heads/master)\n c61098da494eea1cbd091118118dcee417faacea 3party/expat (R_2_8_2)\n 34164f547b7df3f5d794ff67e9f885c36819ebfc 3party/fast_float (v6.1.0-369-g34164f5)\n d620667f10a548dee94dbc8c144bb22f79162176 3party/fast_obj (v1.3-6-gd620667)\n 85c8efe0afa5ad0df35114e317a065f544943c52 3party/freetype/freetype (VER-2-13-2-578-g85c8efe0a)\n-395ccad2c1e0daae535c4d20bb0a3f2424648e17 3party/freetype/freetype/subprojects/dlg\n 33bb3461e10864b5406353d3a1fb7ff34c2314b8 3party/gflags (v2.3.0)\n 98bd97183db1806b834245d4292eaef713fc184f 3party/glaze (98bd971)\n 7c9ea952338b792cb2f70d7c663e498725073797 3party/glfw (3.4-81-g7c9ea952)\n e7970a8b26732f1b0df9690f7180546f8c30e48e 3party/glm (0.9.5.3-2971-ge7970a8b)\n 52eb8108c5bdec04579160ae17225d66034bd723 3party/googletest (release-1.8.0-3544-g52eb8108)\n 56feae4035bdd48f62ba2b8d8c16232d4d89b3a4 3party/harfbuzz/harfbuzz (14.2.1)\n 21d1eb0f306e1141c10931e914dfc038c06121da 3party/icu/icu (cldr/2023-09-27-1183-g21d1eb0f30)\n 8936b58fe26e8c3da834b8f60b06511d537b4c63 3party/imgui/imgui (v1.62-5420-g8936b58fe)\n 7b2387161c542fa9f427352dcdef76097d0d692b 3party/minizip-ng (4.2.2)\n c8033ce9d039e7f9d134877c363397b3cfe20816 3party/pugixml/pugixml (latest)\n 819011bb01628fe1aa2f1da9f2c842a48fd5680b 3party/utfcpp (v2.3.4-149-g819011b)\n 12731092979c6d07f42da27da673a9f6c7b13586 3party/zlib-ng (v1.2.8_jtkv4-2415-g12731092)\n 93559bd7c9d6a77eadc2dd9358e316dc90cc4ec6 tools/kothic (93559bd)\n 45bb767d7939aaca39901d494c080fc4e7916ba7 tools/osmctools (0.0.1~1)\n 0b5d80d8ebeb3e769f9f9d0928a537298f86de3e tools/python/twine (v0.10.0-208-g0b5d80d)\n"
+    },
+    "candidate": {
+      "elapsed_seconds": {
+        "features": 119.59798457892612,
+        "geometry": 366.7601200899808,
+        "preprocess": 5.706396988942288
+      },
+      "export_schema": "matched-feature-v5-complete-source-identities",
+      "export_sha256": "490e2b2866e2990edcc0a84c9b5d7a67c5f52e6dbfb24a51b6d2af93b40b07a2",
+      "exporter_sha256": "97af84d53b937ef71a1733a6ee10b009a7c1778f40eee91c6ae127884436f011",
+      "generation_workers": 1,
+      "generator_sha256": "129848b8b5582d59c340cdb977fd52acbfbf4a646e7e2192bb55ee22f28040c8",
+      "map_bytes": 2475113,
+      "map_sha256": "4895da142ba6198066fd9fa386e6dbfd0658f23247d40f6c9ee3b2854f1c1e0e",
+      "osm2ft_sha256": "2a87554b77e3345f4abf3c66626bfe8f4266c32c116450fc3f8ac12b55dcb899",
+      "osm_sha256": "d034b4a5f1758e0b856b5bc09057e79200853f2970f5a12cb1ba927881c9ce08",
+      "resources": {
+        "classificator.txt": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d",
+        "colors.txt": "5a48d81077f418427f94df3ae5b58dc0c28c39343ffe76536162a8dcf47a59d9",
+        "drules_cycling.bin": "fcc2e5ac026c5ee3221086372434db6b470d896160ce7b76ff9753eb56f21fa0",
+        "drules_cycling.txt": "be8112aa730a893631e8a3834eea18d32154fe773ca8a6d848ab60c54e67a400",
+        "patterns.txt": "c29e992302bbfea254374df2df27f6e29614b2aa96c0311c5567066426574d21",
+        "types.txt": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95"
+      },
+      "scope": "Road-only geometry/index/metalines fixture, not a production or routing-graph map",
+      "source_clean": true,
+      "source_commit": "82b6f698878501810f4f6a2d7239e2bd36ff836e",
+      "submodules": " 8aa5145039b972ba30e98e788752d37d14568824 3party/BLAKE3 (1.8.5-5-g8aa5145)\n 85010b874b5b33286dc74e53ce9e8c9eaa8b59b9 3party/CMake-MetalShaderSupport (heads/main)\n 6433e5c70bb9ec995f72d767934acaff8ef11ae3 3party/Vulkan-Headers (v1.4.355)\n 62e2e655e5dbf4531c3a891e6e0becc46944805a 3party/boost_headers (heads/master)\n c61098da494eea1cbd091118118dcee417faacea 3party/expat (R_2_8_2)\n 34164f547b7df3f5d794ff67e9f885c36819ebfc 3party/fast_float (v6.1.0-369-g34164f5)\n d620667f10a548dee94dbc8c144bb22f79162176 3party/fast_obj (v1.3-6-gd620667)\n 85c8efe0afa5ad0df35114e317a065f544943c52 3party/freetype/freetype (VER-2-13-2-578-g85c8efe0a)\n-395ccad2c1e0daae535c4d20bb0a3f2424648e17 3party/freetype/freetype/subprojects/dlg\n 33bb3461e10864b5406353d3a1fb7ff34c2314b8 3party/gflags (v2.3.0)\n 98bd97183db1806b834245d4292eaef713fc184f 3party/glaze (98bd971)\n 7c9ea952338b792cb2f70d7c663e498725073797 3party/glfw (3.4-81-g7c9ea952)\n e7970a8b26732f1b0df9690f7180546f8c30e48e 3party/glm (0.9.5.3-2971-ge7970a8b)\n 52eb8108c5bdec04579160ae17225d66034bd723 3party/googletest (release-1.8.0-3544-g52eb8108)\n 56feae4035bdd48f62ba2b8d8c16232d4d89b3a4 3party/harfbuzz/harfbuzz (14.2.1)\n 21d1eb0f306e1141c10931e914dfc038c06121da 3party/icu/icu (cldr/2023-09-27-1183-g21d1eb0f30)\n 8936b58fe26e8c3da834b8f60b06511d537b4c63 3party/imgui/imgui (v1.62-5420-g8936b58fe)\n 7b2387161c542fa9f427352dcdef76097d0d692b 3party/minizip-ng (4.2.2)\n c8033ce9d039e7f9d134877c363397b3cfe20816 3party/pugixml/pugixml (latest)\n 819011bb01628fe1aa2f1da9f2c842a48fd5680b 3party/utfcpp (v2.3.4-149-g819011b)\n 12731092979c6d07f42da27da673a9f6c7b13586 3party/zlib-ng (v1.2.8_jtkv4-2415-g12731092)\n 93559bd7c9d6a77eadc2dd9358e316dc90cc4ec6 tools/kothic (93559bd)\n 45bb767d7939aaca39901d494c080fc4e7916ba7 tools/osmctools (0.0.1~1)\n 0b5d80d8ebeb3e769f9f9d0928a537298f86de3e tools/python/twine (v0.10.0-208-g0b5d80d)\n"
+    }
+  },
+  "screenshots": {
+    "baseline_manifest_sha256": "300d30134b4190bb642f3bd0206c6933802391dd10ee1cfae040850f1cc8db48",
+    "baseline_recaptures": [],
+    "candidate_manifest_sha256": "2f446aaca40fe10c9ab7a26f644dd8bebe131eae8fef3bda92c5ba78f2c8fccd",
+    "candidate_recaptures": [
+      {
+        "cases": [
+          "mixed-contraflow-z18-light-OpenGLES3"
+        ],
+        "original_manifest_sha256": "08a4774629e8d495db5a6a90df5e0f623194362a27a0b6c3a9fb04880fc0a0be",
+        "policy": "Replace both cold starts of every contaminated case; never select by pixel agreement",
+        "reason": "Android volume panel visibly contaminated mixed-contraflow-z18-light-OpenGLES3.png. Replaced both cold starts, selected by overlay presence, not pixel agreement. Original captures and initial comparison retained.",
+        "recapture_manifest_sha256": "cac648af1bddd00110a2cfc8a5849a8033a19b79f9b6778665f86792220a2056",
+        "superseded_image_sha256": {
+          "mixed-contraflow-z18-light-OpenGLES3.png": "1ed90896d2c28ea9a21026eaa4ad14138f1293275864e2cc76b81261505118dc",
+          "mixed-contraflow-z18-light-OpenGLES3.repeat.png": "dfba962e4111b4d645f04d1f59751328c623754d65c953e0adf25569bbac3c13"
+        }
+      }
+    ],
+    "case_count": 60,
+    "cases": {
+      "feature-zero-z14-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 13,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 8.202799451396773e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z14-dark-Vulkan": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 10,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 6.5622395611174185e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z14-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 47,
+        "exact_equal": false,
+        "max_channel_difference": 27,
+        "mean_absolute_difference": 0.00014655668353162233,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z14-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 8,
+        "exact_equal": false,
+        "max_channel_difference": 2,
+        "mean_absolute_difference": 5.468532967597849e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z16-dark-OpenGLES3": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z16-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 289,
+        "exact_equal": false,
+        "max_channel_difference": 45,
+        "mean_absolute_difference": 0.001997655093063494,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z16-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 186,
+        "exact_equal": false,
+        "max_channel_difference": 52,
+        "mean_absolute_difference": 0.0005252525915377733,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z16-light-Vulkan": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 3,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 2.460839835419032e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z18-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z18-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 3,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 2.1874131870391394e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z18-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.6405598902793546e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "feature-zero-z18-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 64,
+        "exact_equal": false,
+        "max_channel_difference": 102,
+        "mean_absolute_difference": 0.0014204514383335412,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z14-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 24,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.4491612364134299e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z14-dark-Vulkan": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z14-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 33,
+        "exact_equal": false,
+        "max_channel_difference": 16,
+        "mean_absolute_difference": 4.620910357620182e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z14-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 15,
+        "exact_equal": false,
+        "max_channel_difference": 16,
+        "mean_absolute_difference": 3.417833104748655e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z16-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 51,
+        "exact_equal": false,
+        "max_channel_difference": 184,
+        "mean_absolute_difference": 0.0021819446540715416,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z16-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 15,
+        "exact_equal": false,
+        "max_channel_difference": 172,
+        "mean_absolute_difference": 0.00037678192146749174,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z16-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 11,
+        "exact_equal": false,
+        "max_channel_difference": 11,
+        "mean_absolute_difference": 6.616924890793396e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z16-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 22,
+        "exact_equal": false,
+        "max_channel_difference": 11,
+        "mean_absolute_difference": 0.00013835388408022555,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z18-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 117,
+        "mean_absolute_difference": 4.730281016972139e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z18-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 8.202799451396773e-07,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z18-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 179,
+        "mean_absolute_difference": 7.464547500771063e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "lane-z18-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z14-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 38,
+        "exact_equal": false,
+        "max_channel_difference": 69,
+        "mean_absolute_difference": 0.0003281119780558709,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z14-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 15,
+        "exact_equal": false,
+        "max_channel_difference": 12,
+        "mean_absolute_difference": 2.2967838463910964e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z14-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 31,
+        "exact_equal": false,
+        "max_channel_difference": 45,
+        "mean_absolute_difference": 0.00034096303052972584,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z14-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 52,
+        "exact_equal": false,
+        "max_channel_difference": 45,
+        "mean_absolute_difference": 0.00038334416102860916,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z16-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 4,
+        "exact_equal": false,
+        "max_channel_difference": 46,
+        "mean_absolute_difference": 3.910001071832462e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z16-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z16-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 27,
+        "mean_absolute_difference": 1.558531895765387e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z16-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 1,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 8.202799451396773e-07,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z18-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 7,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 5.468532967597849e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z18-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 6,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 4.101399725698386e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z18-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 1.6405598902793546e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "mixed-contraflow-z18-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 5,
+        "exact_equal": false,
+        "max_channel_difference": 2,
+        "mean_absolute_difference": 4.921679670838064e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z14-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 9,
+        "exact_equal": false,
+        "max_channel_difference": 6,
+        "mean_absolute_difference": 2.3241265112290854e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z14-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 20,
+        "exact_equal": false,
+        "max_channel_difference": 24,
+        "mean_absolute_difference": 7.710631484312967e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z14-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 9,
+        "exact_equal": false,
+        "max_channel_difference": 41,
+        "mean_absolute_difference": 0.0001044489796811189,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z14-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 46,
+        "exact_equal": false,
+        "max_channel_difference": 41,
+        "mean_absolute_difference": 0.00012386227171609128,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z16-dark-OpenGLES3": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 4,
+        "exact_equal": false,
+        "max_channel_difference": 3,
+        "mean_absolute_difference": 3.5545464289386013e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z16-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 6,
+        "exact_equal": false,
+        "max_channel_difference": 3,
+        "mean_absolute_difference": 4.374826374078279e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z16-light-OpenGLES3": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 7,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 5.741959615977741e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z16-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 7,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 5.741959615977741e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z18-dark-OpenGLES3": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z18-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z18-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "shared-z18-light-Vulkan": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z14-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 8,
+        "exact_equal": false,
+        "max_channel_difference": 3,
+        "mean_absolute_difference": 6.288812912737526e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z14-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 24,
+        "exact_equal": false,
+        "max_channel_difference": 10,
+        "mean_absolute_difference": 5.304476978569913e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z14-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 9,
+        "exact_equal": false,
+        "max_channel_difference": 10,
+        "mean_absolute_difference": 1.3944759067374514e-05,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z14-light-Vulkan": {
+        "baseline_stable": true,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z16-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": true,
+        "changed_pixels": 0,
+        "exact_equal": true,
+        "max_channel_difference": 0,
+        "mean_absolute_difference": 0.0,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z16-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 4,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 2.460839835419032e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z16-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 3,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 2.460839835419032e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z16-light-Vulkan": {
+        "baseline_stable": true,
+        "candidate_stable": false,
+        "changed_pixels": 2,
+        "exact_equal": false,
+        "max_channel_difference": 2,
+        "mean_absolute_difference": 2.460839835419032e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z18-dark-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 5,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 3.007693132178817e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z18-dark-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 50,
+        "exact_equal": false,
+        "max_channel_difference": 249,
+        "mean_absolute_difference": 0.0029467189895901005,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z18-light-OpenGLES3": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 3,
+        "exact_equal": false,
+        "max_channel_difference": 1,
+        "mean_absolute_difference": 2.460839835419032e-06,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      },
+      "track-z18-light-Vulkan": {
+        "baseline_stable": false,
+        "candidate_stable": false,
+        "changed_pixels": 48,
+        "exact_equal": false,
+        "max_channel_difference": 242,
+        "mean_absolute_difference": 0.0028914868066173623,
+        "pixels": 1219096,
+        "roi": [
+          80,
+          269,
+          856,
+          1840
+        ]
+      }
+    },
+    "exact_tested_viewports_equal": false,
+    "scope": "Only the recorded device/backends/viewports; not universal visual equivalence"
+  },
+  "verified_tested_visual_equivalence": false
+}

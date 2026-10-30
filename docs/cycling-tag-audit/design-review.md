@@ -7,11 +7,10 @@ head before this work is `955cd49403ed025c24beec09f5551e8d274a38ff`.
 Changes belong only on the split preparation branches and research branch.
 
 The 2026-10-30 [primary-road constraint discussion](vng-model-constraints.md)
-now gates public code-head rewrites. The user chose to preserve #12692's
-appearance and keep offsets in a separate proposal/prototype. The following
-candidate changes are prepared and tested locally, not yet published to the
-five draft heads. Only the selector's scope/description and discussion have
-been updated publicly.
+is not a maintainer approval. The user chose to preserve #12692's appearance,
+keep side-offset line rendering in a separate proposal/prototype, and subsequently authorized
+updates to the split drafts. Candidate changes remain local until their
+validation is complete; author permission does not imply vng's agreement.
 
 ## Decisions for this revision
 
@@ -25,6 +24,9 @@ been updated publicly.
   all participate in rendering.
 - Preserve centerline categories, colors, widths, casings, arrows and phase
   behavior. No side-aware rendering or type-retention reprioritization here.
+- Keep conflicting-tag order and collision-free grouping fixes outside the
+  baseline. Both can alter generated output on edge cases even when one map
+  happens to match. See [behavioral-followups.md](behavioral-followups.md).
 - Extract `motor_vehicle=permissive` into an independent prerequisite, with
   specific access/override tests and no cycling classifier dependency. Merge
   that exact commit into the types branch; do not duplicate or silently drop
@@ -41,10 +43,10 @@ been updated publicly.
 - Accepting v2 without reading its interleaved floats desynchronizes the
   metalines stream. Explicit v1/v2/v3 decoding and multi-chain fixtures guard
   version widths, feature IDs, reversal and truncated-offset handling.
-- Fixed unnamed-chain integers can collide with named-road hashes. Use an
-  ordered `(kind, name, ref)` tuple. No platform-dependent hash or reserved
-  numeric value participates in equality. Collector temporary files change
-  format and must be regenerated together.
+- Fixed unnamed-chain integers can collide with named-road hashes. An ordered
+  `(kind, name, ref)` tuple is prepared as a separate follow-up, not part of
+  the equivalence baseline. It changes collector files and potentially chain
+  output; a separate regeneration and appearance review is required.
 
 ## Required evidence before merge
 
@@ -69,7 +71,19 @@ been updated publicly.
 
 These are merge gates, not claims that the stack is perfect or approved.
 
+The style preview still targets the older `ab/cycling-style` foundation.
+Current master contains unrelated intervening rendering/classification work.
+An old-base preview cannot certify the eventual merged-master result: rebase,
+regenerate and repeat the matched-data/camera audit on the actual integration.
+Do not revert unrelated upstream changes merely to force an old screenshot
+match. Any unavoidable base difference must be documented and resolved
+explicitly before claiming the final integration equivalent.
+
 ## Checks for the concrete fixes
+
+The counts below describe the earlier candidate that included the two now
+separate behavioral fixes. New-baseline results must identify their actual
+source heads rather than inherit those exact-head claims.
 
 - Built `generator_tests` and `drape_frontend_tests` with Debug assertions,
   one compiler job, reduced local unity batching, and a hard 1800 MiB cgroup

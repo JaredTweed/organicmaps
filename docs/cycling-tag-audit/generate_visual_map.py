@@ -22,6 +22,7 @@ def digest(path):
 
 
 def run_fixture(root, build, osm, output, exporter, expected):
+    osm_digest = digest(osm)
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     if commit != expected or subprocess.check_output(["git", "status", "--porcelain"], cwd=root):
         raise ValueError("Fixture source must be clean and at the expected commit")
@@ -68,9 +69,11 @@ def run_fixture(root, build, osm, output, exporter, expected):
     for name in resources:
         shutil.copy2(root / "data" / name, output / "data" / name)
     if subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip() != expected or \
-            subprocess.check_output(["git", "status", "--porcelain"], cwd=root) or digest(generator) != generator_digest:
+            subprocess.check_output(["git", "status", "--porcelain"], cwd=root) or digest(generator) != generator_digest or \
+            digest(osm) != osm_digest:
         raise ValueError("Source or generator changed during the audit")
-    manifest = {"source_commit": commit, "source_clean": True, "osm_sha256": digest(osm),
+    manifest = {"source_commit": commit, "source_clean": True, "osm_sha256": osm_digest,
+                "export_schema": "matched-feature-v5-complete-source-identities",
                 "generator_sha256": generator_digest, "map_sha256": digest(mwm),
                 "map_bytes": mwm.stat().st_size, "osm2ft_sha256": digest(mapping),
                 "export_sha256": digest(output / "features.jsonl"),

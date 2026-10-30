@@ -1,5 +1,66 @@
 # Visual equivalence audit
 
+## New baseline under validation
+
+The appearance-preserving candidate is now `82b6f698878501810f4f6a2d7239e2bd36ff836e`.
+Conflicting-tag order and collision-free chain-key fixes are separate follow-ups,
+not included in that baseline. Its classification logic and chain grouping are
+the original #12692 implementation; the generator's retained difference is the
+additive compatibility format. All runtime sources and tracked assets match the
+earlier candidate, and rebuilding produces the identical Android native binary.
+
+The Pixel comparison is complete. The reference/candidate matrix uses reference-only
+camera normalization to an exact serialized fixed point, then rejects any
+candidate camera drift. It includes real OpenGL and Vulkan, both themes, three
+nominal deep-link zooms, five sites and repeated independent cold starts.
+The saved camera rectangles, not the fixture names, define the exact viewports.
+Neither a strict complete phone pass nor an all-regions guarantee is claimed.
+
+The new matched-map result is in
+[visual-equivalence-baseline-data.json](visual-equivalence-baseline-data.json):
+82,785 features and 2,010 directed chains/offsets match exactly, with no
+unidentified or ambiguous features. Its exact-head native result is
+[equivalence-style-native-results.json](equivalence-style-native-results.json):
+62 generator, 23 reader/clipping/phase, 181 indexer and 27 routing-common
+tests pass (293 total), all with Debug assertions.
+
+The completed original-reference phone run repeats exactly in 10 of 60
+views. The largest observed reference-repeat difference is 182 pixels in
+the fixed 1,219,096-pixel map region. This precludes a strict full-matrix
+repeat-stable pass on this run; it is not a candidate regression and not
+permission to ignore candidate differences.
+
+### Completed phone result
+
+[visual-phone-results.json](visual-phone-results.json) records all 60 views:
+11 cross-build pairs match exactly; 10 reference views and 11 candidate views
+repeat exactly. Two pairs are exact and stable in both builds, with no
+cross-build discrepancies among the pairs stable in both builds. The largest
+cross-build difference is 289 of 1,219,096 pixels (about 0.024%). The strict
+equivalence flag is false: no pixel tolerance or baseline-variability waiver
+was introduced.
+
+One candidate screenshot contained Android's volume panel. Both cold starts
+of that complete case were recaptured using identical provenance/settings,
+not selected for pixel agreement. Original captures and the contaminated
+comparison remain preserved locally; the new manifest records superseded
+image hashes, both manifest hashes and the replacement reason. Capture now
+rejects visible volume, notification or keyboard overlays before/after a frame.
+
+The [reference manifest](visual-phone-baseline-manifest.json) and
+[candidate manifest](visual-phone-candidate-manifest.json) bind exact APK,
+native, asset, map and PNG hashes. Raw frames remain under
+`organicmaps-cycling-visual-check/build-visual-artifacts/` in
+`baseline-phone-reference`, `equivalence-phone`,
+`equivalence-phone-overlay-recapture` and `equivalence-phone-validated`.
+Private settings backups and window-manager dumps are not committed.
+
+No styling regression was apparent in the inspected views. This does not
+certify every frame, supported GPU, region, zoom or final merged-master base.
+
+The following results are retained evidence for the earlier candidate. They
+must not be described as new exact-head generation or phone results.
+
 This audit compares original PR #12692 at
 `955cd49403ed025c24beec09f5551e8d274a38ff` with the candidate style tree at
 `f8f603fc7e24e1cad765423fc75c392d3aa0ae56`. It does not modify the original
@@ -58,7 +119,7 @@ mixed-side contraflow, at zooms 14/16/18, light/dark themes and densities 1/2.
   screenshots saved. Cleanup after that completion signal is bounded and
   recorded separately in the capture manifests.
 
-The Pixel 8 Pro remains disconnected. These desktop results do not certify
+At the time of these desktop captures the Pixel 8 Pro was disconnected. These desktop results do not certify
 Pixel OpenGL/Vulkan behavior. Generated route graphs are also outside this
 road-only fixture.
 
@@ -71,7 +132,7 @@ launches at the same saved camera. Graphics fallback is an error.
 camera/settings and matching assets. It compares exact pixels, checks repeat
 stability, and binds captures to the corresponding map/export checksums and
 source revisions. Missing screenshots never count as a pass. Desktop OpenGL
-captures are reported separately from the absent Pixel/Vulkan coverage.
+captures are reported separately from the new Pixel/Vulkan runs.
 
 Required fixtures include solid track, dashed lane, dotted shared lane, mixed
 sides, contraflow, reversed chains and clipped intersections at multiple zooms,

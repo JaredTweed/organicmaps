@@ -181,6 +181,10 @@ def compare_captures(baseline, candidate):
                                                    candidate / (name + ".repeat.png"), a["roi"])["exact_equal"]
         cases[name] = result
     return {"cases": cases, "case_count": len(cases),
+            "baseline_manifest_sha256": digest(baseline / "capture.json"),
+            "candidate_manifest_sha256": digest(candidate / "capture.json"),
+            "baseline_recaptures": a.get("recaptures", []),
+            "candidate_recaptures": b.get("recaptures", []),
             "exact_tested_viewports_equal": all(item["exact_equal"] and item["baseline_stable"] and
                                                 item["candidate_stable"] for item in cases.values()),
             "scope": "Only the recorded device/backends/viewports; not universal visual equivalence"}

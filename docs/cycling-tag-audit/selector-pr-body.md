@@ -17,7 +17,7 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 - This PR does not add side-aware data or offset rendering. The #12692 comparison preview remains the existing appearance; left/right offset rendering is a separate proposal/prototype, pending agreement on side/direction semantics.
 - Existing legacy modifiers, notably `highway|ford`, need explicit clarification before a global one-highway assertion or migration. They are not silently removed by this selector change.
 
-See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). Further split-head rewrites are held while this boundary is discussed.
+See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). The author subsequently authorized draft-only split updates preserving #12692's appearance; that is not maintainer agreement on the model. This selector's code remains unchanged.
 
 ## Testing
 
@@ -33,6 +33,8 @@ Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com
 ## Stack
 
 Part 1 of 5, in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054). It is not part of this selector diff.
 
 1. **organicmaps#14040 — selector (this PR)**
 2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)

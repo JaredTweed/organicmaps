@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from visual_equivalence import compare_exports, digest, highway_profile, pixel_metrics, verify_capture_binding
+from visual_phone import stabilize_camera, unlocked_foreground
 
 
 def feature(fid, osm, kind, x):
@@ -13,6 +14,21 @@ def feature(fid, osm, kind, x):
 
 
 class VisualEquivalenceTests(unittest.TestCase):
+    def test_phone_requires_an_unlocked_foreground_map(self):
+        focus = "mCurrentFocus=Window{abc u0 app.organicmaps.cyclingfinal.debug/app.organicmaps.MwmActivity}"
+        self.assertTrue(unlocked_foreground(focus, "\n showing=false\n"))
+        self.assertFalse(unlocked_foreground(focus, "\n showing=true\n"))
+        self.assertFalse(unlocked_foreground("mCurrentFocus=launcher", "\n showing=false\n"))
+        self.assertFalse(unlocked_foreground("", "\n showing=false\n"))
+
+    def test_reference_camera_requires_an_exact_serialization_fixed_point(self):
+        values = iter(["rounded", "rounded"])
+        stable, history = stabilize_camera("seed", lambda _: next(values))
+        self.assertEqual(stable, "rounded")
+        self.assertEqual(history, ["seed", "rounded", "rounded"])
+        with self.assertRaises(ValueError):
+            stabilize_camera("seed", lambda value: value + "x")
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
