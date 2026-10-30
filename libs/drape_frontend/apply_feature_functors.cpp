@@ -769,7 +769,7 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
                                                 std::vector<Stylist::SideRules> const & sideRules)
 {
   double const visualScale = m_params.m_vparams.GetVisualScale();
-  double const strokeScale = visualScale * 0.65;
+  double const strokeScale = visualScale;
   double roadWidth = 0.0;
   for (auto const rule : roadRules)
     if (!rule->pathsym)

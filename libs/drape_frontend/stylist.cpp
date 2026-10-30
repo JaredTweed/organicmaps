@@ -241,11 +241,25 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   auto const geomType = types.GetGeomType();
   auto const sideDemo = geomType == feature::GeomType::Line ?
       cycling_demo::Decode(f.GetMetadata(feature::Metadata::FMD_TEST_ID)) : std::optional<cycling_demo::Sides>{};
+  MapStyle const cycleStyle = MapStyleIsDark(style) ? MapStyleCyclingDark : MapStyleCyclingLight;
+  auto const & cycleClassif = classif(cycleStyle);
+  auto const & cycleRules = drule::GetRules(cycleStyle);
+  auto const highwayRoot = cl.GetTypeByPath({"highway"});
+  auto const cyclewayRoot = cl.GetTypeByPath({"cyclewaytag"});
+  auto const dedicatedCycleway = cl.GetTypeByPath({"highway", "cycleway"});
+  auto const bicycleFootway = cl.GetTypeByPathSafe({"highway", "footway", "bicycle"});
+  auto const bicyclePath = cl.GetTypeByPathSafe({"highway", "path", "bicycle"});
+  auto const isDedicated = [&](uint32_t type)
+  {
+    return ftype::Trunc(type, 2) == dedicatedCycleway ||
+           (bicycleFootway != Classificator::INVALID_TYPE && ftype::Trunc(type, 3) == bicycleFootway) ||
+           (bicyclePath != Classificator::INVALID_TYPE && ftype::Trunc(type, 3) == bicyclePath);
+  };
+  bool const restoreCore = geomType == feature::GeomType::Line && style != cycleStyle &&
+                           std::any_of(types.begin(), types.end(), isDedicated);
+  drule::KeysT cycleCoreKeys;
   if (sideDemo && zoomLevel >= 14)
   {
-    MapStyle const cycleStyle = MapStyleIsDark(style) ? MapStyleCyclingDark : MapStyleCyclingLight;
-    auto const & cycleClassif = classif(cycleStyle);
-    auto const & cycleRules = drule::GetRules(cycleStyle);
     auto const collect = [&](cycling_demo::Side const & side, int sign)
     {
       if (side.m_kind == cycling_demo::Kind::None)
@@ -272,14 +286,27 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   drule::KeysT keys;
   for (uint32_t t : types)
   {
-    if (sideDemo && ftype::Trunc(t, 1) == cl.GetTypeByPath({"cyclewaytag"}))
+    if (sideDemo && ftype::Trunc(t, 1) == cyclewayRoot)
       continue;  // Draw attached facilities beside the primary road, not over it.
     drule::KeysT typeKeys;
     cl.GetObject(t)->GetSuitable(zoomLevel, geomType, typeKeys);
     bool const hasHatching = hatchingChecker(t);
+    bool const restoreUnlocated = geomType == feature::GeomType::Line && style != cycleStyle &&
+                                  !sideDemo && ftype::Trunc(t, 1) == cyclewayRoot;
+    if ((restoreCore && isDedicated(t)) || restoreUnlocated)
+    {
+      drule::KeysT cyclingKeys;
+      cycleClassif.GetObject(t)->GetSuitable(zoomLevel, geomType, cyclingKeys);
+      for (auto const & key : cyclingKeys)
+        if (key.m_type == drule::line)
+          cycleCoreKeys.push_back(key);
+    }
 
     for (auto & k : typeKeys)
     {
+      if (k.m_type == drule::line &&
+          ((restoreCore && ftype::Trunc(t, 1) == highwayRoot) || restoreUnlocated))
+        continue;
       // Take overlay drules from the main type only.
       if (t == mainOverlayType || (k.m_type != drule::caption && k.m_type != drule::symbol &&
                                    k.m_type != drule::shield && k.m_type != drule::pathtext))
@@ -292,8 +319,9 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   }
 
   feature::FilterRulesByRuntimeSelector(f, zoomLevel, m_rulesHolder, keys);
+  feature::FilterRulesByRuntimeSelector(f, zoomLevel, cycleRules, cycleCoreKeys);
 
-  if (keys.empty())
+  if (keys.empty() && cycleCoreKeys.empty())
     return;
 
   // Leave only one area drule and an optional hatching drule.
@@ -301,6 +329,9 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
 
   for (auto const & key : keys)
     ProcessKey(f, key);
+  drule::MakeUnique(cycleCoreKeys);
+  for (auto const & key : cycleCoreKeys)
+    m_lineRules.push_back(cycleRules.Find(key)->GetLine());
 
   if (m_captionRule || m_pathtextRule)
   {

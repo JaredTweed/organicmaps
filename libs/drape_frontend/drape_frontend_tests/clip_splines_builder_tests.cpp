@@ -3,15 +3,19 @@
 #include "drape_frontend/apply_feature_params.hpp"
 #include "drape_frontend/clip_splines_builder.hpp"
 #include "drape_frontend/line_shape_helper.hpp"
+#include "drape_frontend/stylist.hpp"
 #include "drape_frontend/tile_key.hpp"
 
 #include "indexer/feature.hpp"
 #include "indexer/feature_algo.hpp"
 #include "indexer/feature_data.hpp"
+#include "indexer/classificator.hpp"
+#include "indexer/classificator_loader.hpp"
 
 #include "geometry/clipping.hpp"
 
 #include <cmath>
+#include <set>
 #include <vector>
 
 // Friend of FeatureType (declared in indexer/feature.hpp). Lets a test set up
@@ -20,7 +24,7 @@
 class MockTestFeature : public FeatureType
 {
 public:
-  explicit MockTestFeature(std::vector<m2::PointD> const & points) : FeatureType(FeatureID{}, 0)
+  explicit MockTestFeature(std::vector<m2::PointD> const & points, uint32_t type = 0) : FeatureType(FeatureID{}, type)
   {
     m_header = static_cast<uint8_t>(feature::HeaderGeomType::Line);
     m_points.assign(points.begin(), points.end());
@@ -28,6 +32,8 @@ public:
     feature::CalcRect(m_points, m_limitRect);
     m_parsed.m_points = true;
     m_parsed.m_triangles = true;
+    m_parsed.m_metadata = true;
+    m_parsed.m_relations = true;
   }
 };
 
@@ -65,6 +71,36 @@ void TestPath(df::ClipSplinesBuilder const & builder, std::vector<P> const & exp
   TEST_EQUAL(got.size(), expected.size(), (got, expected));
   for (size_t i = 0; i < expected.size(); ++i)
     TEST_EQUAL(got[i], expected[i], (i, got, expected));
+}
+
+UNIT_TEST(ClipSplinesBuilder_CyclingCoreWidths)
+{
+  classificator::Load();
+  classificator::EnsureStyleLoaded(MapStyleDefaultLight);
+  auto const & cl = classif(MapStyleDefaultLight);
+  for (auto const type : {cl.GetTypeByPath({"highway", "cycleway"}),
+                          cl.GetTypeByPath({"highway", "footway", "bicycle"})})
+  {
+    for (auto const styles : {std::pair{MapStyleDefaultLight, MapStyleCyclingLight},
+                              std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
+    {
+      for (uint8_t const zoom : {14, 16, 18})
+      {
+        MockTestFeature feature({P(0, 0), P(10, 0)}, type);
+        df::Stylist standard(feature, zoom, 0, styles.first);
+        df::Stylist cycling(feature, zoom, 0, styles.second);
+        std::set<drule::LineRule const *> standardLines, cyclingLines;
+        for (auto const rule : standard.m_lineRules)
+          if (!rule->pathsym)
+            standardLines.insert(rule);
+        for (auto const rule : cycling.m_lineRules)
+          if (!rule->pathsym)
+            cyclingLines.insert(rule);
+        TEST(!cyclingLines.empty(), (type, zoom));
+        TEST(standardLines == cyclingLines, (type, zoom));
+      }
+    }
+  }
 }
 
 UNIT_TEST(ClipSplinesBuilder_SideOffsetPadding)

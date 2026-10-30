@@ -9,7 +9,10 @@ to #12692. Do not push it or edit GitHub as part of this experiment.
   or both-side cycling facilities are rendered alongside that road.
 - Dedicated cycleways retain their core-line treatment.
 - Solid track, dashed lane and dotted shared-lane strokes reuse the existing
-  cycling drawing rules, at 65% stroke scale and a visible gap from the road.
+  cycling drawing rules at full stroke scale, with a visible gap from the road.
+- Dedicated cycleways/designated shared paths and unlocated cycling overlays
+  retain cycling-style core widths even in the default map style; they must
+  not fall back to the generic style's hairline cycleway treatment.
 - Explicit side-specific tags override both-side tags; reversed OSM geometry
   swaps sides and reverses stored directions. Separately mapped facilities
   are not duplicated by attached offset strokes.
