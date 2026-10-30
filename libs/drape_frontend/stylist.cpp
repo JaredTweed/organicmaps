@@ -241,6 +241,7 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   auto const geomType = types.GetGeomType();
   auto const sideDemo = geomType == feature::GeomType::Line ?
       cycling_demo::Decode(f.GetMetadata(feature::Metadata::FMD_TEST_ID)) : std::optional<cycling_demo::Sides>{};
+  bool const useSideLines = sideDemo && zoomLevel >= kCyclewaySideMinZoom;
   MapStyle const cycleStyle = MapStyleIsDark(style) ? MapStyleCyclingDark : MapStyleCyclingLight;
   auto const & cycleClassif = classif(cycleStyle);
   auto const & cycleRules = drule::GetRules(cycleStyle);
@@ -258,7 +259,33 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   bool const restoreCore = geomType == feature::GeomType::Line && style != cycleStyle &&
                            std::any_of(types.begin(), types.end(), isDedicated);
   drule::KeysT cycleCoreKeys;
-  if (sideDemo && zoomLevel >= 14)
+  auto const collectCore = [&](uint32_t type)
+  {
+    drule::KeysT cyclingKeys;
+    cycleClassif.GetObject(type)->GetSuitable(zoomLevel, geomType, cyclingKeys);
+    for (auto const & key : cyclingKeys)
+      if (key.m_type == drule::line)
+        cycleCoreKeys.push_back(key);
+  };
+  if (sideDemo && !useSideLines && std::none_of(types.begin(), types.end(),
+      [&](uint32_t type) { return ftype::Trunc(type, 1) == cyclewayRoot; }))
+  {
+    // Side metadata survives the classifier type cap. Do not lose overview
+    // styling merely because the aggregate cycleway type was dropped.
+    auto summary = cycling_demo::Kind::None;
+    for (auto const kind : {sideDemo->m_left.m_kind, sideDemo->m_right.m_kind})
+    {
+      if (kind == cycling_demo::Kind::Shared)
+        summary = kind;
+      else if (kind == cycling_demo::Kind::Lane && summary != cycling_demo::Kind::Shared)
+        summary = kind;
+      else if (kind == cycling_demo::Kind::Track && summary == cycling_demo::Kind::None)
+        summary = kind;
+    }
+    if (summary != cycling_demo::Kind::None)
+      collectCore(cycleClassif.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(summary)}));
+  }
+  if (useSideLines)
   {
     auto const collect = [&](cycling_demo::Side const & side, int sign)
     {
@@ -286,26 +313,20 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   drule::KeysT keys;
   for (uint32_t t : types)
   {
-    if (sideDemo && ftype::Trunc(t, 1) == cyclewayRoot)
+    if (useSideLines && ftype::Trunc(t, 1) == cyclewayRoot)
       continue;  // Draw attached facilities beside the primary road, not over it.
     drule::KeysT typeKeys;
     cl.GetObject(t)->GetSuitable(zoomLevel, geomType, typeKeys);
     bool const hasHatching = hatchingChecker(t);
-    bool const restoreUnlocated = geomType == feature::GeomType::Line && style != cycleStyle &&
-                                  !sideDemo && ftype::Trunc(t, 1) == cyclewayRoot;
-    if ((restoreCore && isDedicated(t)) || restoreUnlocated)
-    {
-      drule::KeysT cyclingKeys;
-      cycleClassif.GetObject(t)->GetSuitable(zoomLevel, geomType, cyclingKeys);
-      for (auto const & key : cyclingKeys)
-        if (key.m_type == drule::line)
-          cycleCoreKeys.push_back(key);
-    }
+    bool const restoreSummary = geomType == feature::GeomType::Line && style != cycleStyle &&
+                                !useSideLines && ftype::Trunc(t, 1) == cyclewayRoot;
+    if ((restoreCore && isDedicated(t)) || restoreSummary)
+      collectCore(t);
 
     for (auto & k : typeKeys)
     {
       if (k.m_type == drule::line &&
-          ((restoreCore && ftype::Trunc(t, 1) == highwayRoot) || restoreUnlocated))
+          ((restoreCore && ftype::Trunc(t, 1) == highwayRoot) || restoreSummary))
         continue;
       // Take overlay drules from the main type only.
       if (t == mainOverlayType || (k.m_type != drule::caption && k.m_type != drule::symbol &&

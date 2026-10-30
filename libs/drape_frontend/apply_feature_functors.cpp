@@ -728,7 +728,8 @@ void ApplyLineFeatureGeometry::BuildGeometry(int zoomLevel, bool isIsoline)
 #endif
 
   auto const demo = cycling_demo::Decode(m_f.GetMetadata(feature::Metadata::FMD_TEST_ID));
-  double const padding = demo ? 64.0 * m_params.m_vparams.GetVisualScale() / m_params.m_currentScaleGtoP : 0.0;
+  double const padding = demo && zoomLevel >= Stylist::kCyclewaySideMinZoom ?
+      64.0 * m_params.m_vparams.GetVisualScale() / m_params.m_currentScaleGtoP : 0.0;
   m_builder.Build(m_f, zoomLevel, isIsoline, padding);
 }
 

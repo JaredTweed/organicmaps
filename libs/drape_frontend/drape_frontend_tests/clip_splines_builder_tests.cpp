@@ -11,6 +11,7 @@
 #include "indexer/feature_data.hpp"
 #include "indexer/classificator.hpp"
 #include "indexer/classificator_loader.hpp"
+#include "indexer/cycling_side_demo.hpp"
 
 #include "geometry/clipping.hpp"
 
@@ -35,6 +36,21 @@ public:
     m_parsed.m_metadata = true;
     m_parsed.m_metaIds = true;
     m_parsed.m_relations = true;
+  }
+
+  void AddStyleType(uint32_t type)
+  {
+    auto const count = GetTypesCount();
+    CHECK_LESS(count, m_types.size(), ());
+    m_types[count] = type;
+    m_header = (m_header & ~feature::HEADER_MASK_TYPE) | count;
+  }
+
+  void SetSideDemo(cycling_demo::Kind left, cycling_demo::Kind right)
+  {
+    m_metadata.Set(feature::Metadata::FMD_TEST_ID,
+                   cycling_demo::Encode({{left, cycling_demo::Direction::Unknown},
+                                         {right, cycling_demo::Direction::Unknown}}));
   }
 };
 
@@ -101,6 +117,78 @@ UNIT_TEST(ClipSplinesBuilder_CyclingCoreWidths)
         TEST(standardLines == cyclingLines, (type, zoom));
       }
     }
+  }
+}
+
+UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
+{
+  classificator::Load();
+  classificator::EnsureStyleLoaded(MapStyleDefaultLight);
+  auto const & cl = classif(MapStyleDefaultLight);
+  auto const road = cl.GetTypeByPath({"highway", "secondary"});
+  using Kind = cycling_demo::Kind;
+  struct Case { Kind left, right, summary; size_t sides; };
+  auto const lineSet = [](df::Stylist const & stylist)
+  { return std::set<drule::LineRule const *>(stylist.m_lineRules.begin(), stylist.m_lineRules.end()); };
+  for (auto const & item : {Case{Kind::Lane, Kind::Shared, Kind::Shared, 2},
+                            Case{Kind::Track, Kind::Lane, Kind::Lane, 2},
+                            Case{Kind::None, Kind::Track, Kind::Track, 1}})
+  {
+    auto const summary = cl.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(item.summary)});
+    for (auto const style : {MapStyleDefaultLight, MapStyleCyclingLight, MapStyleDefaultDark, MapStyleCyclingDark})
+    {
+      for (uint8_t const zoom : {13, 14, 16, 17, 18})
+      {
+        MockTestFeature feature({P(0, 0), P(10, 0)}, road);
+        feature.AddStyleType(summary);
+        feature.SetSideDemo(item.left, item.right);
+        df::Stylist result(feature, zoom, 0, style);
+        if (zoom < 17)
+        {
+          MockTestFeature expected({P(0, 0), P(10, 0)}, road);
+          expected.AddStyleType(summary);
+          df::Stylist summaryStyle(expected, zoom, 0, style);
+          TEST(result.m_cyclewaySides.empty(), (zoom, style));
+          TEST(lineSet(result) == lineSet(summaryStyle), (zoom, style));
+        }
+        else
+        {
+          MockTestFeature expected({P(0, 0), P(10, 0)}, road);
+          df::Stylist roadStyle(expected, zoom, 0, style);
+          TEST_EQUAL(result.m_cyclewaySides.size(), item.sides, (zoom, style));
+          TEST(lineSet(result) == lineSet(roadStyle), (zoom, style));
+          if (item.left == Kind::None)
+            TEST_EQUAL(result.m_cyclewaySides.front().m_side, 1, ());
+          else
+          {
+            TEST_EQUAL(result.m_cyclewaySides.front().m_side, -1, ());
+            TEST_EQUAL(result.m_cyclewaySides.back().m_side, 1, ());
+          }
+        }
+      }
+    }
+  }
+}
+
+UNIT_TEST(ClipSplinesBuilder_CyclingZoomSummaryWithoutAggregateType)
+{
+  classificator::Load();
+  classificator::EnsureStyleLoaded(MapStyleDefaultLight);
+  auto const & cl = classif(MapStyleDefaultLight);
+  auto const road = cl.GetTypeByPath({"highway", "secondary"});
+  auto const lane = cl.GetTypeByPath({"cyclewaytag", "lane"});
+  for (auto const style : {MapStyleDefaultLight, MapStyleCyclingLight, MapStyleDefaultDark, MapStyleCyclingDark})
+  {
+    MockTestFeature feature({P(0, 0), P(10, 0)}, road);
+    feature.SetSideDemo(cycling_demo::Kind::Track, cycling_demo::Kind::Lane);
+    MockTestFeature expected({P(0, 0), P(10, 0)}, road);
+    expected.AddStyleType(lane);
+    df::Stylist result(feature, 16, 0, style);
+    df::Stylist summaryStyle(expected, 16, 0, style);
+    TEST(result.m_cyclewaySides.empty(), (style));
+    std::set<drule::LineRule const *> actual(result.m_lineRules.begin(), result.m_lineRules.end());
+    std::set<drule::LineRule const *> wanted(summaryStyle.m_lineRules.begin(), summaryStyle.m_lineRules.end());
+    TEST(actual == wanted, (style));
   }
 }
 

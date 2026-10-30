@@ -20,6 +20,9 @@ does not change #12692. Saving the branch does not make it a merge candidate.
 - Unqualified tags without explicit sides retain the existing centerline
   fallback. This prototype does not guess an unrecorded side.
 - Generic and cycling styles can both display the offset strokes.
+- Below zoom 17, attached infrastructure uses one conservative centerline
+  summary. At zoom 17 and above, explicit sides replace that summary with
+  offset strokes. Dedicated cycleways keep their core treatment at all zooms.
 
 ## Deliberate limits
 
@@ -42,7 +45,8 @@ Install separately as `app.organicmaps.cyclingsides.debug`, labeled
 
 The included `side-offset-examples.kml` category provides six real OSM
 locations. Side means relative to OSM way direction, not screen left/right.
-Inspect at street-level zoom; the offset overlay begins at zoom 14.
+Inspect at street-level zoom; separate side lines begin at zoom 17. Zoom out
+below 17 to see the centerline summary instead, at its normal visibility scales.
 
 - Water Street: lane on one side and shared lane on the other.
 - West 49th Avenue: lane on one side and track on the other.
