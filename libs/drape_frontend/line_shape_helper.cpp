@@ -3,12 +3,85 @@
 #include "drape/glsl_func.hpp"
 
 #include "base/assert.hpp"
+#include "geometry/parametrized_segment.hpp"
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 
 namespace df
 {
+glsl::vec2 InterpolateLinePixelOffset(std::vector<m2::PointD> const & path, std::vector<m2::PointF> const & offsets,
+                                      size_t segment, m2::PointD const & point)
+{
+  ASSERT_EQUAL(path.size(), offsets.size(), ());
+  segment = std::min(segment, path.size() - 2);
+  double const length = (path[segment + 1] - path[segment]).Length();
+  float const t = length == 0 ? 0 : std::clamp((point - path[segment]).Length() / length, 0.0, 1.0);
+  return glsl::ToVec2(offsets[segment]) * (1 - t) + glsl::ToVec2(offsets[segment + 1]) * t;
+}
+
+float JunctionTaper::Scale(double distance) const
+{
+  double factor = 1;
+  if (m_span > 0)
+    for (double junction : m_distances)
+      factor = std::min(factor, std::abs(distance - junction) / m_span);
+  return factor * factor * (3 - 2 * factor);
+}
+
+JunctionTaper MakeJunctionTaper(m2::SharedSpline const & source, std::vector<m2::PointD> const & junctions, double span,
+                                double tolerance)
+{
+  JunctionTaper result{source, {}, span};
+  auto const & path = source->GetPath();
+  if (junctions.empty() || path.size() < 2 || span <= 0 || tolerance <= 0)
+    return result;
+  std::vector<double> distances{0};
+  for (size_t i = 1; i < path.size(); ++i)
+    distances.push_back(distances.back() + (path[i] - path[i - 1]).Length());
+  for (auto const & junction : junctions)
+  {
+    double best = tolerance * tolerance;
+    std::optional<double> position;
+    for (size_t i = 1; i < path.size(); ++i)
+    {
+      auto const p = m2::ParametrizedSegment<m2::PointD>(path[i - 1], path[i]).ClosestPointTo(junction);
+      double const error = (p - junction).SquaredLength();
+      if (error <= best)
+      {
+        best = error;
+        position = distances[i - 1] + (p - path[i - 1]).Length();
+      }
+    }
+    if (position)
+      result.m_distances.push_back(*position);
+  }
+  if (result.m_distances.empty())
+    return result;
+  auto samples = distances;
+  for (double junction : result.m_distances)
+    for (int i = -4; i <= 4; ++i)
+      samples.push_back(std::clamp(junction + span * i / 4, 0.0, distances.back()));
+  std::sort(samples.begin(), samples.end());
+  samples.erase(std::unique(samples.begin(), samples.end()), samples.end());
+  std::vector<m2::PointD> points;
+  size_t segment = 1;
+  for (double distance : samples)
+  {
+    while (segment + 1 < distances.size() && distances[segment] < distance)
+      ++segment;
+    double const length = distances[segment] - distances[segment - 1];
+    if (length <= 0)
+      continue;
+    double const t = (distance - distances[segment - 1]) / length;
+    points.push_back(path[segment - 1] * (1 - t) + path[segment] * t);
+  }
+  if (points.size() >= 2)
+    result.m_spline = m2::SharedSpline(std::move(points));
+  return result;
+}
+
 double PathSymbolOffsetForClip(double first, double step, double sourceDistance)
 {
   ASSERT_GREATER(step, 0.0, ());

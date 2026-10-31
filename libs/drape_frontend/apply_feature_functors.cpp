@@ -772,10 +772,14 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
 {
   double const visualScale = m_params.m_vparams.GetVisualScale();
   double const strokeScale = visualScale;
-  std::vector<m2::SplineClipInfo> ranges;
-  auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, source, &ranges);
   for (auto const & side : sideRules)
   {
+    auto const rect = mercator::RectByCenterXYAndSizeInMeters(source->GetPath().front(), 16.0);
+    double const span = rect.SizeX() / 2;
+    auto const taper = MakeJunctionTaper(source, side.m_junctions, span, span / 8);
+    auto const & taperedSource = taper.m_spline;
+    std::vector<m2::SplineClipInfo> ranges;
+    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, taperedSource, &ranges);
     double sideWidth = 0.0;
     for (auto const rule : side.m_rules)
       sideWidth = std::max(sideWidth, rule->width * strokeScale);
@@ -786,10 +790,26 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
       auto const & piece = pieces[index];
       auto const & range = ranges[index];
       double const clippedOffset = range.m_startDistance;
-      auto const & path = source->GetPath();
+      auto const & path = taperedSource->GetPath();
       auto const startOffset =
           LinePixelOffsetOnSegment(path, range.m_startSegment, piece->GetPath().front(), lateralOffset);
       auto const endOffset = LinePixelOffsetOnSegment(path, range.m_endSegment, piece->GetPath().back(), lateralOffset);
+      std::vector<m2::PointF> pointOffsets;
+      if (!taper.m_distances.empty())
+      {
+        auto const & piecePath = piece->GetPath();
+        double distance = clippedOffset;
+        for (size_t i = 0; i < piecePath.size(); ++i)
+        {
+          if (i != 0)
+            distance += (piecePath[i] - piecePath[i - 1]).Length();
+          auto const offset = (i == 0                      ? startOffset
+                               : i + 1 == piecePath.size() ? endOffset
+                                                           : LinePixelOffset(piecePath, i, lateralOffset)) *
+                              taper.Scale(distance);
+          pointOffsets.emplace_back(offset.x, offset.y);
+        }
+      }
       for (auto const rule : side.m_rules)
       {
         LineViewParams params;
@@ -798,6 +818,7 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
         params.m_lateralOffsetPixels = lateralOffset;
         params.m_startOffsetPixels = m2::PointF(startOffset.x, startOffset.y);
         params.m_endOffsetPixels = m2::PointF(endOffset.x, endOffset.y);
+        params.m_pointOffsetsPixels = pointOffsets;
         params.m_depth = PriorityToDepth(rule->priority, drule::line, 0);
         params.m_rank = m_f.GetRank();
         params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
@@ -819,6 +840,9 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
         params.m_offset = PathSymbolOffsetForClip(symbol.offset * visualScale, params.m_step,
                                                   orientedStart * m_params.m_currentScaleGtoP);
         params.m_lateralOffsetPixels = side.m_reverseArrow ? -lateralOffset : lateralOffset;
+        params.m_pointOffsetsPixels = pointOffsets;
+        if (side.m_reverseArrow)
+          std::reverse(params.m_pointOffsetsPixels.begin(), params.m_pointOffsetsPixels.end());
         params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
         m_params.m_insertShape(make_unique_dp<PathSymbolShape>(side.GetArrowSpline(piece), params));
       }

@@ -20,6 +20,63 @@
 #include <set>
 #include <vector>
 
+UNIT_TEST(ClipSplines_JunctionPayloadRoundTrip)
+{
+  cycling_demo::Sides sides{{cycling_demo::Kind::Lane, cycling_demo::Direction::Forward},
+                            {cycling_demo::Kind::Shared, cycling_demo::Direction::Both}};
+  auto legacy = cycling_demo::Encode(sides);
+  TEST(legacy.starts_with(cycling_demo::kPrefix), (legacy));
+  TEST(cycling_demo::Decode(legacy), ());
+  sides.m_left.m_junctions = {{-123.12, 56.7}};
+  auto decoded = cycling_demo::Decode(cycling_demo::Encode(sides));
+  TEST(decoded, ());
+  TEST_EQUAL(decoded->m_left.m_junctions, sides.m_left.m_junctions, ());
+  decoded->Reverse();
+  TEST_EQUAL(decoded->m_right.m_junctions, sides.m_left.m_junctions, ());
+  TEST_EQUAL(static_cast<char>(decoded->m_right.m_direction), 'r', ());
+  TEST(!cycling_demo::Decode("offset-bike-v2:lf00|nan,1|"), ());
+  TEST(!cycling_demo::Decode("offset-bike-v2:lf00|1,2;|"), ());
+  TEST(!cycling_demo::Decode("offset-bike-v2:lf00|1,2|3,4|"), ());
+}
+
+UNIT_TEST(ClipSplines_JunctionTaperOnlyAtAuthorizedPoints)
+{
+  m2::SharedSpline source(std::vector<m2::PointD>{{0, 0}, {100, 0}});
+  auto const taper = df::MakeJunctionTaper(source, {{50, 0}}, 8, 0.01);
+  TEST_EQUAL(taper.m_distances.size(), 1, ());
+  TEST_ALMOST_EQUAL_ABS(taper.Scale(50), 0.0f, 1e-6f, ());
+  TEST_ALMOST_EQUAL_ABS(taper.Scale(46), 0.5f, 1e-6f, ());
+  TEST_ALMOST_EQUAL_ABS(taper.Scale(58), 1.0f, 1e-6f, ());
+  TEST_ALMOST_EQUAL_ABS(taper.m_spline->GetLength(), source->GetLength(), 1e-9, ());
+  TEST_GREATER(taper.m_spline->GetSize(), 2, ());
+  auto const unrelated = df::MakeJunctionTaper(source, {{50, 1}}, 8, 0.01);
+  TEST(unrelated.m_distances.empty(), ());
+  TEST_EQUAL(unrelated.m_spline->GetPath(), source->GetPath(), ());
+}
+
+UNIT_TEST(ClipSplines_JunctionTaperSurvivesTileClipping)
+{
+  auto const taper =
+      df::MakeJunctionTaper(m2::SharedSpline(std::vector<m2::PointD>{{0, 0}, {100, 0}}), {{50, 0}}, 8, 0.01);
+  std::vector<m2::SplineClipInfo> ranges;
+  auto const pieces = m2::ClipSplineByRect(m2::RectD(47, -1, 53, 1), taper.m_spline, &ranges);
+  TEST_EQUAL(pieces.size(), 1, ());
+  TEST_ALMOST_EQUAL_ABS(ranges.front().m_startDistance, 47.0, 1e-9, ());
+  TEST_ALMOST_EQUAL_ABS(taper.Scale(ranges.front().m_startDistance), taper.Scale(47), 1e-6f, ());
+}
+
+UNIT_TEST(ClipSplines_JunctionArrowOffsetsFollowReversedStroke)
+{
+  std::vector<m2::PointD> path{{0, 0}, {10, 0}};
+  std::vector<m2::PointF> offsets{{0, 4}, {0, 0}};
+  auto forward = df::InterpolateLinePixelOffset(path, offsets, 0, {2, 0});
+  std::reverse(path.begin(), path.end());
+  std::reverse(offsets.begin(), offsets.end());
+  auto reverse = df::InterpolateLinePixelOffset(path, offsets, 0, {2, 0});
+  TEST_ALMOST_EQUAL_ABS(forward.y, 3.2f, 1e-6f, ());
+  TEST_ALMOST_EQUAL_ABS(forward.y, reverse.y, 1e-6f, ());
+}
+
 // Friend of FeatureType (declared in indexer/feature.hpp). Lets a test set up
 // a fully-formed line feature without going through a real .mwm load.
 /// @todo Factor out as a reusable class into some xxx_test_support.

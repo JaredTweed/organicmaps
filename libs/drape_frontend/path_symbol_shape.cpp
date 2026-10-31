@@ -1,4 +1,5 @@
 #include "drape_frontend/path_symbol_shape.hpp"
+#include "drape_frontend/line_shape_helper.hpp"
 #include "drape_frontend/render_state_extension.hpp"
 #include "drape_frontend/visual_params.hpp"
 
@@ -46,8 +47,11 @@ void PathSymbolShape::Draw(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::Bat
 
     glsl::vec2 const n = halfPxSize.y * glsl::normalize(glsl::vec2(-splineIter.m_dir.y, splineIter.m_dir.x));
     glsl::vec2 const d = halfPxSize.x * glsl::normalize(glsl::vec2(splineIter.m_dir.x, splineIter.m_dir.y));
-    glsl::vec2 const offset =
+    glsl::vec2 offset =
         m_params.m_lateralOffsetPixels * glsl::normalize(glsl::vec2(splineIter.m_dir.y, -splineIter.m_dir.x));
+    if (m_params.m_pointOffsetsPixels.size() == m_spline->GetPath().size())
+      offset = InterpolateLinePixelOffset(m_spline->GetPath(), m_params.m_pointOffsetsPixels, splineIter.GetIndex(),
+                                          splineIter.m_pos);
 
     buffer.emplace_back(pivot, offset - d - n, lt);
     buffer.emplace_back(pivot, offset - d + n, lb);

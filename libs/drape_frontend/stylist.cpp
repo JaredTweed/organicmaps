@@ -336,6 +336,8 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       drule::KeysT sideKeys;
       cycleClassif.GetObject(type)->GetSuitable(zoomLevel, geomType, sideKeys);
       SideRules rules{sign, {}};
+      if (sign != 0)
+        rules.m_junctions = side.m_junctions;
       drule::LineRule const * stroke = nullptr;
       for (auto const & key : sideKeys)
       {
