@@ -433,7 +433,7 @@ UNIT_TEST(ClipSplinesBuilder_ScreenSpaceGap)
           // pixel length, independently of the map/model-view zoom scale.
           auto const transformed = extrusion * smoothZoom;
           auto const pixels = glsl::normalize(transformed) * glsl::length(extrusion);
-          TEST_ALMOST_EQUAL_ABS(std::abs(pixels.y) - 0.5f * (road + line), gap, 1e-4, (smoothZoom));
+          TEST_ALMOST_EQUAL_ABS(std::abs(pixels.y) - 0.5f * (road + line), gap, 1e-4f, (smoothZoom));
         }
         TEST_EQUAL(df::SideOffsetPixels(road, line, gap, 0), 0.0f, ());
       }
@@ -444,14 +444,14 @@ UNIT_TEST(ClipSplinesBuilder_ScreenSpaceMiter)
   std::vector<P> const corner{P(0, 0), P(10, 0), P(10, 10)};
   auto const right = df::LinePixelOffset(corner, 1, 5);
   auto const left = df::LinePixelOffset(corner, 1, -5);
-  TEST_ALMOST_EQUAL_ABS(right.x, 5.0f, 1e-5, ());
-  TEST_ALMOST_EQUAL_ABS(right.y, -5.0f, 1e-5, ());
-  TEST_ALMOST_EQUAL_ABS(glsl::length(left + right), 0.0f, 1e-5, ());
+  TEST_ALMOST_EQUAL_ABS(right.x, 5.0f, 1e-5f, ());
+  TEST_ALMOST_EQUAL_ABS(right.y, -5.0f, 1e-5f, ());
+  TEST_ALMOST_EQUAL_ABS(glsl::length(left + right), 0.0f, 1e-5f, ());
   std::vector<P> const reverse{P(0, 0), P(10, 0), P(0, 0.01)};
   auto const bounded = df::LinePixelOffset(reverse, 1, 5);
   TEST(std::isfinite(bounded.x) && std::isfinite(bounded.y), ());
   TEST_LESS_OR_EQUAL(glsl::length(bounded), 20.0f, ());
-  TEST_ALMOST_EQUAL_ABS(glsl::length(df::LinePixelOffset(corner, 1, 0)), 0.0f, 1e-5, ());
+  TEST_ALMOST_EQUAL_ABS(glsl::length(df::LinePixelOffset(corner, 1, 0)), 0.0f, 1e-5f, ());
 }
 
 UNIT_TEST(ClipSplinesBuilder_ScreenSpaceArrowReversal)
@@ -462,7 +462,7 @@ UNIT_TEST(ClipSplinesBuilder_ScreenSpaceArrowReversal)
   {
     auto const a = df::LinePixelOffset(forward, 0, offset);
     auto const b = df::LinePixelOffset(backward, 0, -offset);
-    TEST_ALMOST_EQUAL_ABS(glsl::length(a - b), 0.0f, 1e-5, ());
+    TEST_ALMOST_EQUAL_ABS(glsl::length(a - b), 0.0f, 1e-5f, ());
   }
 }
 
