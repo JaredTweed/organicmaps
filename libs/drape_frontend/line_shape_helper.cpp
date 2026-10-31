@@ -43,18 +43,28 @@ JunctionTaper MakeJunctionTaper(m2::SharedSpline const & source, std::vector<m2:
   for (auto const & junction : junctions)
   {
     double best = tolerance * tolerance;
+    double earliest = distances.back();
+    double latest = 0;
     std::optional<double> position;
     for (size_t i = 1; i < path.size(); ++i)
     {
       auto const p = m2::ParametrizedSegment<m2::PointD>(path[i - 1], path[i]).ClosestPointTo(junction);
       double const error = (p - junction).SquaredLength();
+      double const along = distances[i - 1] + (p - path[i - 1]).Length();
+      if (error <= tolerance * tolerance)
+      {
+        earliest = std::min(earliest, along);
+        latest = std::max(latest, along);
+      }
       if (error <= best)
       {
         best = error;
-        position = distances[i - 1] + (p - path[i - 1]).Length();
+        position = along;
       }
     }
-    if (position)
+    // The debug payload has coordinates, not a vertex identity in simplified
+    // geometry. At loops/self-crossings an ambiguous match must leave a gap.
+    if (position && latest - earliest <= 4 * tolerance)
       result.m_distances.push_back(*position);
   }
   if (result.m_distances.empty())

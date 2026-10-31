@@ -35,6 +35,13 @@ class JunctionFixtureTest(unittest.TestCase):
     def test_interior_shared_node_connects(self):
         self.assertEqual(annotate(fixture(interior=True))["junction_sides"], 1)
 
+    def test_reversed_road_swaps_approached_side(self):
+        root = fixture()
+        refs = root.find("way").findall("nd")
+        refs[0].set("ref", "2")
+        refs[1].set("ref", "1")
+        self.assertEqual(annotate(root)["roads"][0]["side"], "right")
+
     def test_restricted_or_grade_separated_connector_is_rejected(self):
         for key, value in (("bicycle", "no"), ("bicycle", "dismount"), ("access", "private"),
                            ("layer", "1"), ("level", "1"), ("area", "yes")):

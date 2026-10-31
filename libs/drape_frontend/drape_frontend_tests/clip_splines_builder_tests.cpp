@@ -65,6 +65,14 @@ UNIT_TEST(ClipSplines_JunctionTaperSurvivesTileClipping)
   TEST_ALMOST_EQUAL_ABS(taper.Scale(ranges.front().m_startDistance), taper.Scale(47), 1e-6f, ());
 }
 
+UNIT_TEST(ClipSplines_JunctionAmbiguousSelfCrossingIsRejected)
+{
+  m2::SharedSpline source(std::vector<m2::PointD>{{0, 0}, {10, 10}, {0, 10}, {10, 0}});
+  auto const taper = df::MakeJunctionTaper(source, {{5, 5}}, 2, 0.01);
+  TEST(taper.m_distances.empty(), ());
+  TEST_EQUAL(taper.m_spline->GetPath(), source->GetPath(), ());
+}
+
 UNIT_TEST(ClipSplines_JunctionArrowOffsetsFollowReversedStroke)
 {
   std::vector<m2::PointD> path{{0, 0}, {10, 0}};
