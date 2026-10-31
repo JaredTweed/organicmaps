@@ -760,28 +760,25 @@ void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & line
   for (drule::LineRule const * r : lineRules)
     ProcessRule(*r);
   if (!sideRules.empty())
-    ProcessSideRules(sideSource, lineRules, sideRules);
+    ProcessSideRules(sideSource, sideRules);
 
 #ifdef LINES_GENERATION_CALC_FILTERED_POINTS
   LinesStat::Get().InsertLine(m_f.GetID(), m_tileKey.m_zoomLevel, m_readCount, static_cast<int>(builtSize));
 #endif
 }
 
-void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source, Stylist::LineRulesT const & roadRules,
+void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
                                                 std::vector<Stylist::SideRules> const & sideRules)
 {
   double const visualScale = m_params.m_vparams.GetVisualScale();
   double const strokeScale = visualScale;
-  double roadWidth = 0.0;
-  for (auto const rule : roadRules)
-    if (!rule->pathsym)
-      roadWidth = std::max(roadWidth, rule->width * visualScale);
   for (auto const & side : sideRules)
   {
     double sideWidth = 0.0;
     for (auto const rule : side.m_rules)
       sideWidth = std::max(sideWidth, rule->width * strokeScale);
-    float const lateralOffset = SideOffsetPixels(roadWidth, sideWidth, 2.0 * visualScale, side.m_side);
+    float const lateralOffset =
+        SideOffsetPixels(side.m_roadWidth * visualScale, sideWidth, 2.0 * visualScale, side.m_side);
     auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, source);
     for (auto const & piece : pieces)
     {

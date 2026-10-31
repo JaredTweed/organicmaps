@@ -417,6 +417,61 @@ UNIT_TEST(ClipSplinesBuilder_CyclingSideArrowGeometry)
   TEST_EQUAL(piece->GetPath().back(), P(10, 2), ());
 }
 
+UNIT_TEST(ClipSplinesBuilder_CyclingBridgeContinuity)
+{
+  classificator::Load();
+  auto const & cl = classif();
+  bool sawDecoration = false;
+  for (auto const name : {"motorway", "primary", "secondary", "residential", "service", "footway"})
+    for (uint8_t const zoom : {14, 16, 17, 18, 19, 20})
+      for (auto const kind : {cycling_demo::Kind::Track, cycling_demo::Kind::Lane, cycling_demo::Kind::Shared})
+        for (auto const style : {MapStyleDefaultLight, MapStyleDefaultDark, MapStyleCyclingLight, MapStyleCyclingDark})
+        {
+          auto const roadType = cl.GetTypeByPath({"highway", name});
+          auto const bridgeType = cl.GetTypeByPath({"highway", name, "bridge"});
+          MockTestFeature plain({P(0, 0), P(10, 0)}, roadType);
+          MockTestFeature bridge({P(0, 0), P(10, 0)}, bridgeType);
+          for (auto * feature : {&plain, &bridge})
+          {
+            feature->AddStyleType(cl.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(kind)}));
+            feature->SetSideDemo(kind, cycling_demo::Kind::None, cycling_demo::Direction::Forward);
+          }
+          df::Stylist before(plain, zoom, 0, style);
+          df::Stylist onBridge(bridge, zoom, 0, style);
+          TEST_EQUAL(before.m_cyclewaySides.size(), 1, (name, zoom, style));
+          TEST_EQUAL(onBridge.m_cyclewaySides.size(), 1, (name, zoom, style));
+          auto const & a = before.m_cyclewaySides.front();
+          auto const & b = onBridge.m_cyclewaySides.front();
+          TEST_GREATER(a.m_roadWidth, 0.0f, (name, zoom));
+          TEST_EQUAL(a.m_roadWidth, b.m_roadWidth, (name, zoom, style));
+          TEST_EQUAL(a.m_side, b.m_side, ());
+          TEST_EQUAL(a.m_rules.front()->width, b.m_rules.front()->width, ());
+          TEST_EQUAL(a.m_arrowRule, b.m_arrowRule, ());
+          for (float const density : {1.0f, 3.0f})
+            TEST_EQUAL(df::SideOffsetPixels(a.m_roadWidth * density, a.m_rules.front()->width * density, 2.0f * density,
+                                            a.m_side),
+                       df::SideOffsetPixels(b.m_roadWidth * density, b.m_rules.front()->width * density, 2.0f * density,
+                                            b.m_side),
+                       ());
+
+          // Do not achieve continuity by hiding or replacing bridge drawing rules.
+          MockTestFeature bridgeOnly({P(0, 0), P(10, 0)}, bridgeType);
+          auto const standardStyle = MapStyleIsDark(style) ? MapStyleDefaultDark : MapStyleDefaultLight;
+          df::Stylist expected(bridgeOnly, zoom, 0, standardStyle);
+          std::set<drule::LineRule const *> actual(onBridge.m_lineRules.begin(), onBridge.m_lineRules.end());
+          std::set<drule::LineRule const *> original(expected.m_lineRules.begin(), expected.m_lineRules.end());
+          TEST(actual == original, (name, zoom, style));
+          for (auto const rule : onBridge.m_lineRules)
+          {
+            if (rule->pathsym || rule->width <= b.m_roadWidth)
+              continue;
+            sawDecoration = true;
+            TEST_GREATER(b.m_rules.front()->priority, rule->priority, (name, zoom, style));
+          }
+        }
+  TEST(sawDecoration, ());
+}
+
 UNIT_TEST(ClipSplinesBuilder_ScreenSpaceGap)
 {
   for (float const density : {1.0f, 2.0f, 3.0f})

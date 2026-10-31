@@ -394,6 +394,7 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
 
   drule::KeysT keys;
   LineRulesT normalRoadLines;
+  float cyclewayRoadWidth = 0;
   for (uint32_t t : types)
   {
     if (useSideLines && ftype::Trunc(t, 1) == cyclewayRoot)
@@ -408,6 +409,24 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       for (auto const & key : normalKeys)
         if (key.m_type == drule::line && !normalRules.Find(key)->GetLine()->pathsym)
           normalRoadLines.push_back(normalRules.Find(key)->GetLine());
+
+      auto widthKeys = normalKeys;
+      if (ftype::GetLevel(t) >= 3 && normalClassif.GetObject(ftype::Trunc(t, 3))->GetName() == "bridge")
+      {
+        // Only dimension the cycling displacement from the ordinary road.
+        // The complete bridge rules above remain part of the rendered road.
+        widthKeys.clear();
+        normalClassif.GetObject(ftype::Trunc(t, 2))->GetSuitable(zoomLevel, geomType, widthKeys);
+        feature::FilterRulesByRuntimeSelector(f, zoomLevel, normalRules, widthKeys);
+      }
+      for (auto const & key : widthKeys)
+      {
+        if (key.m_type != drule::line)
+          continue;
+        auto const rule = normalRules.Find(key)->GetLine();
+        if (!rule->pathsym)
+          cyclewayRoadWidth = std::max(cyclewayRoadWidth, rule->width);
+      }
       typeKeys.erase(
           std::remove_if(typeKeys.begin(), typeKeys.end(), [](auto const & key) { return key.m_type == drule::line; }),
           typeKeys.end());
@@ -432,6 +451,9 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       }
     }
   }
+
+  for (auto & side : m_cyclewaySides)
+    side.m_roadWidth = cyclewayRoadWidth;
 
   feature::FilterRulesByRuntimeSelector(f, zoomLevel, m_rulesHolder, keys);
   feature::FilterRulesByRuntimeSelector(f, zoomLevel, cycleRules, cycleCoreKeys);

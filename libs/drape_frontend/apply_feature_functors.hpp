@@ -161,8 +161,7 @@ public:
 
 private:
   void ProcessRule(drule::LineRule const & lineRule);
-  void ProcessSideRules(m2::SharedSpline const & source, Stylist::LineRulesT const & roadRules,
-                        std::vector<Stylist::SideRules> const & sideRules);
+  void ProcessSideRules(m2::SharedSpline const & source, std::vector<Stylist::SideRules> const & sideRules);
 
   RelationsDrawInfo m_relsInfo;
   ClipSplinesBuilder m_builder;

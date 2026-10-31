@@ -126,6 +126,7 @@ public:
     LineRulesT m_rules;
     drule::LineRule const * m_arrowRule = nullptr;
     bool m_reverseArrow = false;
+    float m_roadWidth = 0;  // Style pixels, excluding bridge decoration.
 
     m2::SharedSpline GetArrowSpline(m2::SharedSpline const & piece) const;
   };
