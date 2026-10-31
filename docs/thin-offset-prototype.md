@@ -65,7 +65,9 @@ cover both shared sides collapsing to one centered stroke, mixed facilities,
 equal stroke widths, and one-way direction agreement or suppression.
 See `thin-offset-shared-centerline-checks.json` for the tested source and hashes.
 
-The Android APK has not been rebuilt or installed for this revision. Existing
-ignored APK files may still contain the previous all-offset renderer; rebuild
-and repackage before using the installer to try this branch on a phone.
+The shared-centerline revision was subsequently built and installed from
+`63975ebfa4`. This branch adds the icon-only outline preview described in
+`solid-arrow-outline-preview.md`; its generated assets match the installed
+preview. Local ignored APK files may refer to different experiments, so check
+their manifests before installation.
 No split PR or #12692 code was changed, and no PR is opened for this branch.

@@ -1,0 +1,146 @@
+{
+  "renderer_source_commit": "63975ebfa457bff6e3575a05e47551293eb2d8a0",
+  "installed_apk_sha256": "c696907abe25f3227eaea0a869c092ad3e2ac2fe578600beb058845f0da5d636",
+  "native_sha256": "8a39f1d64b75886fbb7808bb8863e7356c872ab3c4e4089cb140f67fd4f80437",
+  "map_sha256": "250c8def5d5828bcfa504e51fc44689677dc9096175d66e6efb7da3cee0841ec",
+  "outline_colors": {
+    "light": "#0D47A1",
+    "dark": "#90CAF9"
+  },
+  "outline_svg_stroke_width": 0.6,
+  "source_svg_sha256": {
+    "data/styles/default/light/symbols/cycling-arrow-solid-xs.svg": "26a4052ccdf41aa837628c27c2face2128ce285d48868064a45f15da386daa8f",
+    "data/styles/default/light/symbols/cycling-arrow-solid-s.svg": "0877d0f80d953474315ffb27d6fe1d62452203f88d69622ecba741965af9b9e5",
+    "data/styles/default/light/symbols/cycling-arrow-solid-m.svg": "62d082214c7b0313824aa45a7044dbd2d12da819e6b5cc90c94fb8be54f6933f",
+    "data/styles/default/dark/symbols/cycling-arrow-solid-xs.svg": "c5c6821884acf038c9ae5f7ac91af15acf15f1db544b96aeb937d429ca6b51cd",
+    "data/styles/default/dark/symbols/cycling-arrow-solid-s.svg": "367955a5143f6957aed9188716653122dfdffdf2a2c83116c015d441509f8eab",
+    "data/styles/default/dark/symbols/cycling-arrow-solid-m.svg": "9bc70790c7befdf77db2c49b9583e7b7e2eaeb71ec605ec840d6246e6d8be09a"
+  },
+  "generated_assets_sha256": {
+    "data/symbols/6plus/dark/symbols.png": "11c793f005a01de1f2d3673611e3da4a201d2db39ec47e3311a03b0fc44e9e91",
+    "data/symbols/6plus/dark/symbols.xml": "8c1213a4d3c0e5c48d310a65503ef6f0be3b1652cd641bc65b9375a5c4a2e441",
+    "data/symbols/6plus/light/symbols.png": "2ccc179606d25bf44dfb3460b82ae93563592da1747d5ebc3adedbca88f8dd9d",
+    "data/symbols/6plus/light/symbols.xml": "8c1213a4d3c0e5c48d310a65503ef6f0be3b1652cd641bc65b9375a5c4a2e441",
+    "data/symbols/hdpi/dark/symbols.png": "18162268ce4524b113e124c85670e1f0b3b0cfd4728191ea787e53b23d3fdef1",
+    "data/symbols/hdpi/dark/symbols.xml": "780af5637eb80d375e8d93cc590f18a89ab342f65e0ba858d879bcdb5ae3d1dc",
+    "data/symbols/hdpi/light/symbols.png": "8c69976b02c019a514cd1ddc60895f0e57ed47b5a8e7039ff88531d9cfd03f05",
+    "data/symbols/hdpi/light/symbols.xml": "780af5637eb80d375e8d93cc590f18a89ab342f65e0ba858d879bcdb5ae3d1dc",
+    "data/symbols/mdpi/dark/symbols.png": "9fef504a7b343d8c569ec9a9d757fe931e3cb11808a67f118096cb42e1658d39",
+    "data/symbols/mdpi/dark/symbols.xml": "eafe260d539ea5fcd34d4c8a4309f55b7ab10096533a712da8cb7e18e9dfacb7",
+    "data/symbols/mdpi/light/symbols.png": "a616589d998f8b177022b93c1949d7bf8d9799de7f1dc8046ff6fbb2a5514c24",
+    "data/symbols/mdpi/light/symbols.xml": "eafe260d539ea5fcd34d4c8a4309f55b7ab10096533a712da8cb7e18e9dfacb7",
+    "data/symbols/xhdpi/dark/symbols.png": "8d3a91f7651fbfb147e1d6a270ebfb6c41f43154ae180b1875e6f1583dc23ff6",
+    "data/symbols/xhdpi/dark/symbols.xml": "2b30a3bd6a1f125531d1bf7835b1af0a3e7757b0511c7342b11b0532040b8d9e",
+    "data/symbols/xhdpi/light/symbols.png": "5fac78d8e5d3d59d85a6d9cb0916b97edf025a9ae448f3addf1e59362eb6c92d",
+    "data/symbols/xhdpi/light/symbols.xml": "2b30a3bd6a1f125531d1bf7835b1af0a3e7757b0511c7342b11b0532040b8d9e",
+    "data/symbols/xxhdpi/dark/symbols.png": "290a8a309c65822e90be8d2adc29d97567eb79b8205292180138594ba24819dd",
+    "data/symbols/xxhdpi/dark/symbols.xml": "1c58ddbbbd5be59b8dc04dcc571661900d5bb167a4d345a815da2b8cd56ce901",
+    "data/symbols/xxhdpi/light/symbols.png": "561ab9db058a657da5f526e30303d41759e702b0ee7e856a1f8f2478859eaba7",
+    "data/symbols/xxhdpi/light/symbols.xml": "1c58ddbbbd5be59b8dc04dcc571661900d5bb167a4d345a815da2b8cd56ce901",
+    "data/symbols/xxxhdpi/dark/symbols.png": "9361e0f6e4a0242975cdf30c74abd4ef0cd09c14e16cdfdcc2ae5423737c80e7",
+    "data/symbols/xxxhdpi/dark/symbols.xml": "0dc6fafc0a050fe111f8099049bdb8966caad2ed4f89386c7e680bd42dcf0f0f",
+    "data/symbols/xxxhdpi/light/symbols.png": "c57c9371a3f30dee298d07bd9c120501cb06ed99975f1c4d9dd9dfd0024af9e3",
+    "data/symbols/xxxhdpi/light/symbols.xml": "0dc6fafc0a050fe111f8099049bdb8966caad2ed4f89386c7e680bd42dcf0f0f"
+  },
+  "symbol_checks": {
+    "mdpi/light": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "mdpi/dark": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "hdpi/light": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "hdpi/dark": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "xhdpi/light": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "xhdpi/dark": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "6plus/light": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "6plus/dark": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "xxhdpi/light": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "xxhdpi/dark": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "xxxhdpi/light": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    },
+    "xxxhdpi/dark": {
+      "symbols_checked": 864,
+      "changed": [
+        "cycling-arrow-solid-m",
+        "cycling-arrow-solid-s",
+        "cycling-arrow-solid-xs"
+      ]
+    }
+  },
+  "unrelated_apk_contents_unchanged_except_signatures": true,
+  "package": "app.organicmaps.cyclingsides.debug",
+  "launch_status": "ok"
+}
