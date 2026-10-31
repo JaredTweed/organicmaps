@@ -6,12 +6,12 @@
 #include "drape_frontend/stylist.hpp"
 #include "drape_frontend/tile_key.hpp"
 
-#include "indexer/feature.hpp"
-#include "indexer/feature_algo.hpp"
-#include "indexer/feature_data.hpp"
 #include "indexer/classificator.hpp"
 #include "indexer/classificator_loader.hpp"
 #include "indexer/cycling_side_demo.hpp"
+#include "indexer/feature.hpp"
+#include "indexer/feature_algo.hpp"
+#include "indexer/feature_data.hpp"
 
 #include "geometry/clipping.hpp"
 
@@ -48,9 +48,8 @@ public:
 
   void SetSideDemo(cycling_demo::Kind left, cycling_demo::Kind right)
   {
-    m_metadata.Set(feature::Metadata::FMD_TEST_ID,
-                   cycling_demo::Encode({{left, cycling_demo::Direction::Unknown},
-                                         {right, cycling_demo::Direction::Unknown}}));
+    m_metadata.Set(feature::Metadata::FMD_TEST_ID, cycling_demo::Encode({{left, cycling_demo::Direction::Unknown},
+                                                                         {right, cycling_demo::Direction::Unknown}}));
   }
 };
 
@@ -95,11 +94,11 @@ UNIT_TEST(ClipSplinesBuilder_CyclingCoreWidths)
   classificator::Load();
   classificator::EnsureStyleLoaded(MapStyleDefaultLight);
   auto const & cl = classif(MapStyleDefaultLight);
-  for (auto const type : {cl.GetTypeByPath({"highway", "cycleway"}),
-                          cl.GetTypeByPath({"highway", "footway", "bicycle"})})
+  for (auto const type :
+       {cl.GetTypeByPath({"highway", "cycleway"}), cl.GetTypeByPath({"highway", "footway", "bicycle"})})
   {
-    for (auto const & styles : {std::pair{MapStyleDefaultLight, MapStyleCyclingLight},
-                              std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
+    for (auto const & styles :
+         {std::pair{MapStyleDefaultLight, MapStyleCyclingLight}, std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
     {
       for (uint8_t const zoom : {14, 16, 18})
       {
@@ -114,7 +113,10 @@ UNIT_TEST(ClipSplinesBuilder_CyclingCoreWidths)
           if (!rule->pathsym)
             cyclingLines.insert(rule);
         TEST(!cyclingLines.empty(), (type, zoom));
-        TEST(standardLines == cyclingLines, (type, zoom));
+        for (auto const rule : standardLines)
+          TEST_EQUAL(rule->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
+        for (auto const rule : cyclingLines)
+          TEST_EQUAL(rule->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
       }
     }
   }
@@ -127,14 +129,17 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
   auto const & cl = classif(MapStyleDefaultLight);
   auto const road = cl.GetTypeByPath({"highway", "secondary"});
   using Kind = cycling_demo::Kind;
-  struct Case { Kind left, right, summary; size_t sides; };
+  struct Case
+  {
+    Kind left, right, summary;
+    size_t sides;
+  };
   auto const lineSet = [](df::Stylist const & stylist)
   { return std::set<drule::LineRule const *>(stylist.m_lineRules.begin(), stylist.m_lineRules.end()); };
-  for (auto const & item : {Case{Kind::Lane, Kind::Shared, Kind::Shared, 1},
-                            Case{Kind::Shared, Kind::Shared, Kind::Shared, 0},
-                            Case{Kind::Shared, Kind::Track, Kind::Shared, 1},
-                            Case{Kind::Track, Kind::Lane, Kind::Lane, 2},
-                            Case{Kind::None, Kind::Track, Kind::Track, 1}})
+  for (auto const & item :
+       {Case{Kind::Lane, Kind::Shared, Kind::Shared, 2}, Case{Kind::Shared, Kind::Shared, Kind::Shared, 2},
+        Case{Kind::Shared, Kind::Track, Kind::Shared, 2}, Case{Kind::Track, Kind::Lane, Kind::Lane, 2},
+        Case{Kind::None, Kind::Track, Kind::Track, 1}})
   {
     auto const summary = cl.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(item.summary)});
     for (auto const style : {MapStyleDefaultLight, MapStyleCyclingLight, MapStyleDefaultDark, MapStyleCyclingDark})
@@ -145,25 +150,42 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
         feature.AddStyleType(summary);
         feature.SetSideDemo(item.left, item.right);
         df::Stylist result(feature, zoom, 0, style);
-        if (zoom < 17)
+        if (zoom < df::Stylist::kCyclewaySideMinZoom)
         {
           MockTestFeature expected({P(0, 0), P(10, 0)}, road);
           expected.AddStyleType(summary);
           df::Stylist summaryStyle(expected, zoom, 0, style);
           TEST(result.m_cyclewaySides.empty(), (zoom, style));
-          TEST(lineSet(result) == lineSet(summaryStyle), (zoom, style));
+          for (auto const rule : result.m_lineRules)
+            if (!rule->pathsym)
+              TEST_EQUAL(rule->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
         }
         else
         {
           MockTestFeature expected({P(0, 0), P(10, 0)}, road);
-          if (item.summary == Kind::Shared)
-            expected.AddStyleType(summary);
-          df::Stylist roadStyle(expected, zoom, 0, style);
+          auto const normalStyle = MapStyleIsDark(style) ? MapStyleDefaultDark : MapStyleDefaultLight;
+          df::Stylist roadStyle(expected, zoom, 0, normalStyle);
           TEST_EQUAL(result.m_cyclewaySides.size(), item.sides, (zoom, style));
           TEST(lineSet(result) == lineSet(roadStyle), (zoom, style));
           if (item.sides == 0)
             continue;
-          if (item.left == Kind::None || item.left == Kind::Shared)
+          for (auto const & side : result.m_cyclewaySides)
+          {
+            TEST_EQUAL(side.m_rules.size(), 1, ());
+            TEST_EQUAL(side.m_rules.front()->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
+            auto const kind = side.m_side < 0 ? item.left : item.right;
+            auto const rule = side.m_rules.front();
+            TEST_EQUAL(rule->dashdot.has_value(), kind != Kind::Track, ());
+            if (rule->dashdot)
+            {
+              TEST_EQUAL(rule->dashdot->dd.size(), 2, ());
+              if (kind == Kind::Shared)
+                TEST_LESS(rule->dashdot->dd.front(), rule->width * 1.1, ());
+              else
+                TEST_GREATER(rule->dashdot->dd.front(), rule->width * 3, ());
+            }
+          }
+          if (item.left == Kind::None)
             TEST_EQUAL(result.m_cyclewaySides.front().m_side, 1, ());
           else
           {
@@ -192,10 +214,9 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomSummaryWithoutAggregateType)
     expected.AddStyleType(lane);
     df::Stylist result(feature, 16, 0, style);
     df::Stylist summaryStyle(expected, 16, 0, style);
-    TEST(result.m_cyclewaySides.empty(), (style));
-    std::set<drule::LineRule const *> actual(result.m_lineRules.begin(), result.m_lineRules.end());
-    std::set<drule::LineRule const *> wanted(summaryStyle.m_lineRules.begin(), summaryStyle.m_lineRules.end());
-    TEST(actual == wanted, (style));
+    TEST_EQUAL(result.m_cyclewaySides.size(), 2, (style));
+    for (auto const & side : result.m_cyclewaySides)
+      TEST_EQUAL(side.m_rules.front()->width, df::Stylist::CyclewayIndicatorWidth(16), ());
   }
 }
 
@@ -212,10 +233,9 @@ UNIT_TEST(ClipSplinesBuilder_CyclingDirectionSymbols)
         result.insert(rule->pathsym->name);
     return result;
   };
-  for (auto const facility : {cl.GetTypeByPath({"highway", "cycleway"}),
-                              cl.GetTypeByPath({"cyclewaytag", "track"}),
-                              cl.GetTypeByPath({"cyclewaytag", "lane"}),
-                              cl.GetTypeByPath({"cyclewaytag", "shared_lane"})})
+  for (auto const facility :
+       {cl.GetTypeByPath({"highway", "cycleway"}), cl.GetTypeByPath({"cyclewaytag", "track"}),
+        cl.GetTypeByPath({"cyclewaytag", "lane"}), cl.GetTypeByPath({"cyclewaytag", "shared_lane"})})
   {
     for (auto const direction : {"oneway", "onedir_bicycle", "bidir_bicycle"})
     {
@@ -227,7 +247,7 @@ UNIT_TEST(ClipSplinesBuilder_CyclingDirectionSymbols)
         if (std::string(direction) == "bidir_bicycle")
           feature.AddStyleType(cl.GetTypeByPath({"hwtag", "oneway"}));
         for (auto const & styles : {std::pair{MapStyleDefaultLight, MapStyleCyclingLight},
-                                   std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
+                                    std::pair{MapStyleDefaultDark, MapStyleCyclingDark}})
         {
           df::Stylist reference(feature, zoom, 0, styles.second);
           auto const wanted = symbols(reference);

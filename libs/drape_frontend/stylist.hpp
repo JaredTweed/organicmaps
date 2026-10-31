@@ -7,6 +7,7 @@
 #include "base/buffer_vector.hpp"
 
 #include <cstdint>
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -101,7 +102,8 @@ private:
 class Stylist
 {
 public:
-  static constexpr uint8_t kCyclewaySideMinZoom = 17;
+  static constexpr uint8_t kCyclewaySideMinZoom = 14;
+  static double CyclewayIndicatorWidth(uint8_t zoom) { return zoom >= 17 ? 2.5 : 2.0; }
 
   drule::SymbolRule const * m_symbolRule = nullptr;
   drule::CaptionRule const * m_captionRule = nullptr;
@@ -131,6 +133,7 @@ private:
   void ProcessKey(FeatureType & f, drule::Key const & key);
 
   drule::RulesHolder const & m_rulesHolder;
+  std::deque<drule::LineRule> m_cyclewayIndicatorRules;
 };
 
 }  // namespace df

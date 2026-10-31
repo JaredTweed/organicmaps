@@ -1,8 +1,8 @@
 #include "drape_frontend/stylist.hpp"
 
 #include "indexer/classificator.hpp"
-#include "indexer/cycling_side_demo.hpp"
 #include "indexer/classificator_loader.hpp"
+#include "indexer/cycling_side_demo.hpp"
 #include "indexer/feature.hpp"
 #include "indexer/feature_utils.hpp"
 #include "indexer/feature_visibility.hpp"
@@ -239,12 +239,30 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
 
   auto const & hatchingChecker = IsHatchingTerritoryChecker::Instance();
   auto const geomType = types.GetGeomType();
-  auto const sideDemo = geomType == feature::GeomType::Line ?
-      cycling_demo::Decode(f.GetMetadata(feature::Metadata::FMD_TEST_ID)) : std::optional<cycling_demo::Sides>{};
+  auto const sideDemo = geomType == feature::GeomType::Line
+                          ? cycling_demo::Decode(f.GetMetadata(feature::Metadata::FMD_TEST_ID))
+                          : std::optional<cycling_demo::Sides>{};
   bool const useSideLines = sideDemo && zoomLevel >= kCyclewaySideMinZoom;
   MapStyle const cycleStyle = MapStyleIsDark(style) ? MapStyleCyclingDark : MapStyleCyclingLight;
   auto const & cycleClassif = classif(cycleStyle);
   auto const & cycleRules = drule::GetRules(cycleStyle);
+  auto const normalStyle = MapStyleIsDark(style) ? MapStyleDefaultDark : MapStyleDefaultLight;
+  auto const & normalClassif = classif(normalStyle);
+  auto const & normalRules = drule::GetRules(normalStyle);
+  auto const indicator = [&](drule::LineRule const * rule)
+  {
+    m_cyclewayIndicatorRules.push_back(*rule);
+    auto & copy = m_cyclewayIndicatorRules.back();
+    if (copy.dashdot && copy.width > 0)
+    {
+      auto const scale = CyclewayIndicatorWidth(zoomLevel) / copy.width;
+      for (auto & length : copy.dashdot->dd)
+        length *= scale;
+      copy.dashdot->offset *= scale;
+    }
+    copy.width = CyclewayIndicatorWidth(zoomLevel);
+    return &copy;
+  };
   auto const highwayRoot = cl.GetTypeByPath({"highway"});
   auto const cyclewayRoot = cl.GetTypeByPath({"cyclewaytag"});
   auto const dedicatedCycleway = cl.GetTypeByPath({"highway", "cycleway"});
@@ -267,45 +285,43 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       if (key.m_type == drule::line)
         cycleCoreKeys.push_back(key);
   };
-  if (sideDemo && !useSideLines && std::none_of(types.begin(), types.end(),
-      [&](uint32_t type) { return ftype::Trunc(type, 1) == cyclewayRoot; }))
+  if (sideDemo && !useSideLines &&
+      std::none_of(types.begin(), types.end(), [&](uint32_t type) { return ftype::Trunc(type, 1) == cyclewayRoot; }))
   {
     // Side metadata survives the classifier type cap. Do not lose overview
     // styling merely because the aggregate cycleway type was dropped.
     auto summary = cycling_demo::Kind::None;
     for (auto const kind : {sideDemo->m_left.m_kind, sideDemo->m_right.m_kind})
-    {
       if (kind == cycling_demo::Kind::Shared)
         summary = kind;
       else if (kind == cycling_demo::Kind::Lane && summary != cycling_demo::Kind::Shared)
         summary = kind;
       else if (kind == cycling_demo::Kind::Track && summary == cycling_demo::Kind::None)
         summary = kind;
-    }
     if (summary != cycling_demo::Kind::None)
       collectCore(cycleClassif.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(summary)}));
   }
   if (useSideLines)
   {
-    if (sideDemo->m_left.m_kind == cycling_demo::Kind::Shared ||
-        sideDemo->m_right.m_kind == cycling_demo::Kind::Shared)
-      collectCore(cycleClassif.GetTypeByPath({"cyclewaytag", "shared_lane"}));
     auto const collect = [&](cycling_demo::Side const & side, int sign)
     {
-      if (side.m_kind == cycling_demo::Kind::None || side.m_kind == cycling_demo::Kind::Shared)
+      if (side.m_kind == cycling_demo::Kind::None)
         return;
       auto const type = cycleClassif.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(side.m_kind)});
       drule::KeysT sideKeys;
       cycleClassif.GetObject(type)->GetSuitable(zoomLevel, geomType, sideKeys);
       SideRules rules{sign, {}};
+      drule::LineRule const * stroke = nullptr;
       for (auto const & key : sideKeys)
       {
         if (key.m_type != drule::line)
           continue;
         auto const rule = cycleRules.Find(key)->GetLine();
-        if (rule && !rule->pathsym)
-          rules.m_rules.push_back(rule);
+        if (rule && !rule->pathsym && (!stroke || rule->priority > stroke->priority))
+          stroke = rule;
       }
+      if (stroke)
+        rules.m_rules.push_back(indicator(stroke));
       if (!rules.m_rules.empty())
         m_cyclewaySides.push_back(std::move(rules));
     };
@@ -314,22 +330,34 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   }
 
   drule::KeysT keys;
+  LineRulesT normalRoadLines;
   for (uint32_t t : types)
   {
     if (useSideLines && ftype::Trunc(t, 1) == cyclewayRoot)
       continue;  // Draw attached facilities beside the primary road, not over it.
     drule::KeysT typeKeys;
     cl.GetObject(t)->GetSuitable(zoomLevel, geomType, typeKeys);
+    if (useSideLines && ftype::Trunc(t, 1) == highwayRoot)
+    {
+      drule::KeysT normalKeys;
+      normalClassif.GetObject(t)->GetSuitable(zoomLevel, geomType, normalKeys);
+      feature::FilterRulesByRuntimeSelector(f, zoomLevel, normalRules, normalKeys);
+      for (auto const & key : normalKeys)
+        if (key.m_type == drule::line && !normalRules.Find(key)->GetLine()->pathsym)
+          normalRoadLines.push_back(normalRules.Find(key)->GetLine());
+      typeKeys.erase(
+          std::remove_if(typeKeys.begin(), typeKeys.end(), [](auto const & key) { return key.m_type == drule::line; }),
+          typeKeys.end());
+    }
     bool const hasHatching = hatchingChecker(t);
-    bool const restoreSummary = geomType == feature::GeomType::Line && style != cycleStyle &&
-                                !useSideLines && ftype::Trunc(t, 1) == cyclewayRoot;
+    bool const restoreSummary = geomType == feature::GeomType::Line && style != cycleStyle && !useSideLines &&
+                                ftype::Trunc(t, 1) == cyclewayRoot;
     if ((restoreCore && isDedicated(t)) || restoreSummary)
       collectCore(t);
 
     for (auto & k : typeKeys)
     {
-      if (k.m_type == drule::line &&
-          ((restoreCore && ftype::Trunc(t, 1) == highwayRoot) || restoreSummary))
+      if (k.m_type == drule::line && ((restoreCore && ftype::Trunc(t, 1) == highwayRoot) || restoreSummary))
         continue;
       // Take overlay drules from the main type only.
       if (t == mainOverlayType || (k.m_type != drule::caption && k.m_type != drule::symbol &&
@@ -368,14 +396,13 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
     if (!arrows.empty())
     {
       keys.erase(std::remove_if(keys.begin(), keys.end(), [&](auto const & key)
-      {
-        return key.m_type == drule::line && m_rulesHolder.Find(key)->GetLine()->pathsym.has_value();
-      }), keys.end());
+      { return key.m_type == drule::line && m_rulesHolder.Find(key)->GetLine()->pathsym.has_value(); }),
+                 keys.end());
       cycleCoreKeys.insert(cycleCoreKeys.end(), arrows.begin(), arrows.end());
     }
   }
 
-  if (keys.empty() && cycleCoreKeys.empty())
+  if (keys.empty() && cycleCoreKeys.empty() && normalRoadLines.empty())
     return;
 
   // Leave only one area drule and an optional hatching drule.
@@ -383,9 +410,27 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
 
   for (auto const & key : keys)
     ProcessKey(f, key);
+  m_lineRules.insert(m_lineRules.end(), normalRoadLines.begin(), normalRoadLines.end());
   drule::MakeUnique(cycleCoreKeys);
   for (auto const & key : cycleCoreKeys)
     m_lineRules.push_back(cycleRules.Find(key)->GetLine());
+
+  if (!useSideLines && std::any_of(types.begin(), types.end(), [&](uint32_t type)
+  { return isDedicated(type) || ftype::Trunc(type, 1) == cyclewayRoot; }))
+  {
+    drule::LineRule const * stroke = nullptr;
+    for (auto const rule : m_lineRules)
+      if (!rule->pathsym && (!stroke || rule->priority > stroke->priority))
+        stroke = rule;
+    if (stroke)
+    {
+      auto const normalized = indicator(stroke);
+      m_lineRules.erase(
+          std::remove_if(m_lineRules.begin(), m_lineRules.end(), [](auto const rule) { return !rule->pathsym; }),
+          m_lineRules.end());
+      m_lineRules.push_back(normalized);
+    }
+  }
 
   if (m_captionRule || m_pathtextRule)
   {
