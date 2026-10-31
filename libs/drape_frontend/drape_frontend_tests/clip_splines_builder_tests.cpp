@@ -12,6 +12,7 @@
 #include "indexer/feature.hpp"
 #include "indexer/feature_algo.hpp"
 #include "indexer/feature_data.hpp"
+#include "indexer/map_style_reader.hpp"
 
 #include "geometry/clipping.hpp"
 
