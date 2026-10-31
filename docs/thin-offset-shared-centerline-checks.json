@@ -1,0 +1,14 @@
+{
+  "tested_source_commit": "cd0e6e2ac8face4602de5c454023348e4ef5aee7",
+  "native_test_filter": "ClipSplines|DashedLinePhase",
+  "native_tests_passed": 29,
+  "test_binary_sha256": "1b25098f367d9443056060dce18466861bb0238d01cdcebf930b460c987e8afd",
+  "native_log_sha256": "8e1c70910bd18e78bf37cdd0882181282cdf7b19237bb29493a59a980babbdf7",
+  "tool_tests_passed": 8,
+  "workers": 1,
+  "memory_limit_mib": 1800,
+  "swap_limit_bytes": 0,
+  "visual_verification_performed": false,
+  "android_apk_rebuilt_for_this_revision": false,
+  "phone_updated_for_this_revision": false
+}

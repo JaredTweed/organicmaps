@@ -55,3 +55,17 @@ The helper validates APK/map hashes and only updates the isolated demo. It
 keeps existing settings, including the current map-style selection. The APK
 and its manifest are under
 `build-visual-artifacts/side-offsets/thin-offsets/phone.apk` and `phone.json`.
+
+## Shared-centerline revision
+
+This branch is saved separately from the previously installed all-offset
+prototype. Its centered shared-lane change passes 29 focused native tests
+(`ClipSplines|DashedLinePhase`) and eight tooling tests. The regression cases
+cover both shared sides collapsing to one centered stroke, mixed facilities,
+equal stroke widths, and one-way direction agreement or suppression.
+See `thin-offset-shared-centerline-checks.json` for the tested source and hashes.
+
+The Android APK has not been rebuilt or installed for this revision. Existing
+ignored APK files may still contain the previous all-offset renderer; rebuild
+and repackage before using the installer to try this branch on a phone.
+No split PR or #12692 code was changed, and no PR is opened for this branch.
