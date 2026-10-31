@@ -417,6 +417,55 @@ UNIT_TEST(ClipSplinesBuilder_CyclingSideArrowGeometry)
   TEST_EQUAL(piece->GetPath().back(), P(10, 2), ());
 }
 
+UNIT_TEST(ClipSplinesBuilder_ScreenSpaceGap)
+{
+  for (float const density : {1.0f, 2.0f, 3.0f})
+    for (float const roadWidth : {3.2f, 9.4f, 15.0f})
+      for (int const side : {-1, 1})
+      {
+        float const road = roadWidth * density, line = 2.5f * density, gap = 2.0f * density;
+        float const offset = df::SideOffsetPixels(road, line, gap, side);
+        std::vector<P> const path{P(0, 0), P(10, 0)};
+        auto const extrusion = df::LinePixelOffset(path, 0, offset);
+        for (float const smoothZoom : {1.0f, 1.25f, 1.5f, 1.999f, 4.0f})
+        {
+          // The line shaders normalize the transformed normal and restore its
+          // pixel length, independently of the map/model-view zoom scale.
+          auto const transformed = extrusion * smoothZoom;
+          auto const pixels = glsl::normalize(transformed) * glsl::length(extrusion);
+          TEST_ALMOST_EQUAL_ABS(std::abs(pixels.y) - 0.5f * (road + line), gap, 1e-4, (smoothZoom));
+        }
+        TEST_EQUAL(df::SideOffsetPixels(road, line, gap, 0), 0.0f, ());
+      }
+}
+
+UNIT_TEST(ClipSplinesBuilder_ScreenSpaceMiter)
+{
+  std::vector<P> const corner{P(0, 0), P(10, 0), P(10, 10)};
+  auto const right = df::LinePixelOffset(corner, 1, 5);
+  auto const left = df::LinePixelOffset(corner, 1, -5);
+  TEST_ALMOST_EQUAL_ABS(right.x, 5.0f, 1e-5, ());
+  TEST_ALMOST_EQUAL_ABS(right.y, -5.0f, 1e-5, ());
+  TEST_ALMOST_EQUAL_ABS(glsl::length(left + right), 0.0f, 1e-5, ());
+  std::vector<P> const reverse{P(0, 0), P(10, 0), P(0, 0.01)};
+  auto const bounded = df::LinePixelOffset(reverse, 1, 5);
+  TEST(std::isfinite(bounded.x) && std::isfinite(bounded.y), ());
+  TEST_LESS_OR_EQUAL(glsl::length(bounded), 20.0f, ());
+  TEST_ALMOST_EQUAL_ABS(glsl::length(df::LinePixelOffset(corner, 1, 0)), 0.0f, 1e-5, ());
+}
+
+UNIT_TEST(ClipSplinesBuilder_ScreenSpaceArrowReversal)
+{
+  std::vector<P> const forward{P(0, 0), P(10, 0)};
+  std::vector<P> const backward{P(10, 0), P(0, 0)};
+  for (float const offset : {-10.0f, 10.0f})
+  {
+    auto const a = df::LinePixelOffset(forward, 0, offset);
+    auto const b = df::LinePixelOffset(backward, 0, -offset);
+    TEST_ALMOST_EQUAL_ABS(glsl::length(a - b), 0.0f, 1e-5, ());
+  }
+}
+
 UNIT_TEST(ClipSplinesBuilder_SideOffsetPadding)
 {
   auto params = MakeParams(kNoSimplifyZoom, kMinSqr);

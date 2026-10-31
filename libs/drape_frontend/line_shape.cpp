@@ -14,6 +14,7 @@
 #include "indexer/scales.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <vector>
 
 namespace df
@@ -188,28 +189,47 @@ public:
 
   uint32_t GetCapSize() override { return static_cast<uint32_t>(m_capGeometry.size()); }
 
-  void SubmitVertex(glsl::vec3 const & pivot, glsl::vec2 const & normal, bool isLeft)
+  void SubmitVertex(glsl::vec3 const & pivot, glsl::vec2 const & normal, bool isLeft, glsl::vec2 const & offset)
   {
     float const halfWidth = GetHalfWidth();
-    m_geometry.emplace_back(pivot, TNormal(halfWidth * normal, halfWidth * GetSide(isLeft)),
+    m_geometry.emplace_back(pivot, TNormal(offset + halfWidth * normal, halfWidth * GetSide(isLeft)),
                             isLeft ? m_colorCoordLeft : m_colorCoordRight);
   }
 
-  void SubmitJoin(glsl::vec2 const & pos)
+  void SubmitJoin(glsl::vec2 const & pos, glsl::vec2 const & offset)
   {
     if (m_params.m_join == dp::RoundJoin)
-      CreateRoundCap(pos);
+      CreateRoundCap(pos, offset);
   }
 
-  void SubmitCap(glsl::vec2 const & pos)
+  void SubmitCap(glsl::vec2 const & pos, glsl::vec2 const & offset)
   {
     if (m_params.m_cap != dp::ButtCap)
-      CreateRoundCap(pos);
+      CreateRoundCap(pos, offset);
   }
 
 private:
-  void CreateRoundCap(glsl::vec2 const & pos)
+  void CreateRoundCap(glsl::vec2 const & pos, glsl::vec2 const & offset)
   {
+    if (glsl::dot(offset, offset) > 0)
+    {
+      // Use the line shader's pixel extrusion for offset caps too. The usual
+      // cap shader's radius coordinates cannot also carry a displaced center.
+      int constexpr count = 24;
+      float constexpr circle = 6.28318530718f;
+      for (int i = 0; i < count; ++i)
+      {
+        float const a = circle * i / count, b = circle * (i + 1) / count;
+        auto const emit = [&](glsl::vec2 const & normal)
+        { m_geometry.emplace_back(glsl::vec3(pos, m_params.m_depth), TNormal(normal, 0), m_colorCoord); };
+        auto const next = offset + GetHalfWidth() * glsl::vec2(std::cos(b), std::sin(b));
+        emit(offset);
+        emit(offset + GetHalfWidth() * glsl::vec2(std::cos(a), std::sin(a)));
+        emit(next);
+        emit(next);  // Degenerate second triangle in the four-vertex strip.
+      }
+      return;
+    }
     // Here we use an equilateral triangle to render circle (incircle of a triangle).
     static float const kSqrt3 = sqrt(3.0f);
     float const radius = GetHalfWidth();
@@ -285,10 +305,11 @@ public:
     return state;
   }
 
-  void SubmitVertex(glsl::vec3 const & pivot, glsl::vec2 const & normal, bool isLeft, float offsetFromStart)
+  void SubmitVertex(glsl::vec3 const & pivot, glsl::vec2 const & normal, bool isLeft, float offsetFromStart,
+                    glsl::vec2 const & offset)
   {
     float const halfWidth = GetHalfWidth();
-    m_geometry.emplace_back(pivot, TNormal(halfWidth * normal, halfWidth * GetSide(isLeft)),
+    m_geometry.emplace_back(pivot, TNormal(offset + halfWidth * normal, halfWidth * GetSide(isLeft)),
                             isLeft ? m_colorCoordLeft : m_colorCoordRight,
                             m_texCoordGen.GetTexCoordsByDistance(offsetFromStart, isLeft));
   }
@@ -342,7 +363,9 @@ void LineShape::ForEachSplineSection(FnT && fn) const
     glsl::vec2 const tangent = glsl::ToVec2(tanlen.first);
 
     fn(ToShapeVertex2(path[i]), ToShapeVertex2(path[j]), tangent, tanlen.second, {-tangent.y, tangent.x},
-       {tangent.y, -tangent.x}, (i == 0 ? 0x1 : 0) + (j == sz ? 0x2 : 0));
+       {tangent.y, -tangent.x}, (i == 0 ? 0x1 : 0) + (j == sz ? 0x2 : 0),
+       LinePixelOffset(path, i, m_params.m_lateralOffsetPixels),
+       LinePixelOffset(path, j, m_params.m_lateralOffsetPixels));
 
     i = j;
   }
@@ -356,14 +379,17 @@ void LineShape::Construct<DashedLineBuilder>(DashedLineBuilder & builder) const
   // shaders), so each spline section is emitted as a single segment with a monotonically growing
   // offset. Splitting the geometry here would reset the phase and create visible seams.
   double offset = WrapDashPhase(m_params.m_dashPhaseOffset, builder.GetMaskLengthG());
-  ForEachSplineSection([&](glsl::vec2 const & p1, glsl::vec2 const & p2, glsl::vec2 const &, float toDraw,
-                           glsl::vec2 const & leftNormal, glsl::vec2 const & rightNormal, int)
+  ForEachSplineSection(
+      [&](glsl::vec2 const & p1, glsl::vec2 const & p2, glsl::vec2 const &, float toDraw, glsl::vec2 const & leftNormal,
+          glsl::vec2 const & rightNormal, int, glsl::vec2 const & offset1, glsl::vec2 const & offset2)
   {
     double const nextOffset = AdvanceDashPhase(offset, toDraw, m_params.m_dashPhaseReversed);
-    builder.SubmitVertex({p1, m_params.m_depth}, rightNormal, false /* isLeft */, static_cast<float>(offset));
-    builder.SubmitVertex({p1, m_params.m_depth}, leftNormal, true /* isLeft */, static_cast<float>(offset));
-    builder.SubmitVertex({p2, m_params.m_depth}, rightNormal, false /* isLeft */, static_cast<float>(nextOffset));
-    builder.SubmitVertex({p2, m_params.m_depth}, leftNormal, true /* isLeft */, static_cast<float>(nextOffset));
+    builder.SubmitVertex({p1, m_params.m_depth}, rightNormal, false /* isLeft */, static_cast<float>(offset), offset1);
+    builder.SubmitVertex({p1, m_params.m_depth}, leftNormal, true /* isLeft */, static_cast<float>(offset), offset1);
+    builder.SubmitVertex({p2, m_params.m_depth}, rightNormal, false /* isLeft */, static_cast<float>(nextOffset),
+                         offset2);
+    builder.SubmitVertex({p2, m_params.m_depth}, leftNormal, true /* isLeft */, static_cast<float>(nextOffset),
+                         offset2);
 
     offset = nextOffset;
   });
@@ -374,23 +400,24 @@ template <>
 void LineShape::Construct<SolidLineBuilder>(SolidLineBuilder & builder) const
 {
   // Skip joins generation for thin lines.
-  bool const generateJoins = builder.GetHalfWidth() > 2.5f;
+  bool const generateJoins = builder.GetHalfWidth() > 2.5f || m_params.m_lateralOffsetPixels != 0;
 
   ForEachSplineSection([&](glsl::vec2 const & p1, glsl::vec2 const & p2, glsl::vec2 const & tangent, double,
-                           glsl::vec2 const & leftNormal, glsl::vec2 const & rightNormal, int flag)
+                           glsl::vec2 const & leftNormal, glsl::vec2 const & rightNormal, int flag,
+                           glsl::vec2 const & offset1, glsl::vec2 const & offset2)
   {
-    builder.SubmitVertex({p1, m_params.m_depth}, rightNormal, false /* isLeft */);
-    builder.SubmitVertex({p1, m_params.m_depth}, leftNormal, true /* isLeft */);
-    builder.SubmitVertex({p2, m_params.m_depth}, rightNormal, false /* isLeft */);
-    builder.SubmitVertex({p2, m_params.m_depth}, leftNormal, true /* isLeft */);
+    builder.SubmitVertex({p1, m_params.m_depth}, rightNormal, false /* isLeft */, offset1);
+    builder.SubmitVertex({p1, m_params.m_depth}, leftNormal, true /* isLeft */, offset1);
+    builder.SubmitVertex({p2, m_params.m_depth}, rightNormal, false /* isLeft */, offset2);
+    builder.SubmitVertex({p2, m_params.m_depth}, leftNormal, true /* isLeft */, offset2);
 
     // Generate joins.
     if (flag & 0x1)  // p1 - first point
-      builder.SubmitCap(p1);
+      builder.SubmitCap(p1, offset1);
     if (flag & 0x2)  // p2 - last point
-      builder.SubmitCap(p2);
+      builder.SubmitCap(p2, offset2);
     else if (generateJoins)  // p2 - middle point
-      builder.SubmitJoin(p2);
+      builder.SubmitJoin(p2, offset2);
   });
 }
 
@@ -408,6 +435,8 @@ void LineShape::Construct<SimpleSolidLineBuilder>(SimpleSolidLineBuilder & build
 
 bool LineShape::CanBeSimplified(int & lineWidth) const
 {
+  if (m_params.m_lateralOffsetPixels != 0)
+    return false;
   // Disable simplification for world map.
   if (m_params.m_zoomLevel > 0 && m_params.m_zoomLevel <= scales::GetUpperCountryScale())
     return false;

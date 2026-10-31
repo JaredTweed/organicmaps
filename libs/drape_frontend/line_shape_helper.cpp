@@ -8,6 +8,36 @@
 
 namespace df
 {
+float SideOffsetPixels(float roadWidth, float lineWidth, float gap, int side)
+{
+  return side * (0.5f * (roadWidth + lineWidth) + gap);
+}
+
+glsl::vec2 LinePixelOffset(std::vector<m2::PointD> const & path, size_t index, float offset)
+{
+  if (offset == 0)
+    return {0.0f, 0.0f};
+  ASSERT_GREATER(path.size(), 1, ());
+  auto incoming = index == 0 ? path[1] - path[0] : path[index] - path[index - 1];
+  auto outgoing = index + 1 == path.size() ? incoming : path[index + 1] - path[index];
+  if (incoming.SquaredLength() == 0)
+    incoming = outgoing;
+  if (outgoing.SquaredLength() == 0)
+    outgoing = incoming;
+  if (incoming.SquaredLength() == 0)
+    return {0.0f, 0.0f};
+  incoming = incoming / incoming.Length();
+  outgoing = outgoing / outgoing.Length();
+  m2::PointD const a(incoming.y, -incoming.x), b(outgoing.y, -outgoing.x);
+  double const denominator = 1.0 + DotProduct(incoming, outgoing);
+  auto miter = denominator < 0.01 ? b : (a + b) / denominator;
+  // Bound near-reversals rather than producing arbitrarily long spikes.
+  double const length = miter.Length();
+  if (length > 4.0)
+    miter = miter * (4.0 / length);
+  return glsl::vec2(miter.x * offset, miter.y * offset);
+}
+
 namespace
 {
 void UpdateNormalBetweenSegments(LineSegment * segment1, LineSegment * segment2)

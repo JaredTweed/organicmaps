@@ -46,11 +46,13 @@ void PathSymbolShape::Draw(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::Bat
 
     glsl::vec2 const n = halfPxSize.y * glsl::normalize(glsl::vec2(-splineIter.m_dir.y, splineIter.m_dir.x));
     glsl::vec2 const d = halfPxSize.x * glsl::normalize(glsl::vec2(splineIter.m_dir.x, splineIter.m_dir.y));
+    glsl::vec2 const offset =
+        m_params.m_lateralOffsetPixels * glsl::normalize(glsl::vec2(splineIter.m_dir.y, -splineIter.m_dir.x));
 
-    buffer.emplace_back(pivot, -d - n, lt);
-    buffer.emplace_back(pivot, -d + n, lb);
-    buffer.emplace_back(pivot, d - n, rt);
-    buffer.emplace_back(pivot, d + n, rb);
+    buffer.emplace_back(pivot, offset - d - n, lt);
+    buffer.emplace_back(pivot, offset - d + n, lb);
+    buffer.emplace_back(pivot, offset + d - n, rt);
+    buffer.emplace_back(pivot, offset + d + n, rb);
     splineIter.Advance(step);
   }
 

@@ -81,6 +81,7 @@ struct LineViewParams : CommonViewParams
 {
   dp::Color m_color;
   float m_width = 0;
+  float m_lateralOffsetPixels = 0;  // Signed rightward displacement, independent of map zoom.
   /// @todo Consider set defaults like RoundCap, RoundJoin?
   dp::LineCap m_cap;
   dp::LineJoin m_join;
@@ -142,6 +143,7 @@ struct PathSymbolViewParams : CommonViewParams
   std::string m_symbolName;
   float m_offset = 0;
   float m_step = 0;
+  float m_lateralOffsetPixels = 0;
   double m_baseGtoPScale = 1.0;
 };
 

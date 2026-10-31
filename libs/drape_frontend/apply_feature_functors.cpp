@@ -6,6 +6,7 @@
 #include "drape_frontend/color_constants.hpp"
 #include "drape_frontend/colored_symbol_shape.hpp"
 #include "drape_frontend/line_shape.hpp"
+#include "drape_frontend/line_shape_helper.hpp"
 #include "drape_frontend/path_symbol_shape.hpp"
 #include "drape_frontend/path_text_shape.hpp"
 #include "drape_frontend/poi_symbol_shape.hpp"
@@ -751,8 +752,8 @@ void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & line
   bool const needSplineOffsets =
       m_relsInfo.HasColors() || std::any_of(lineRules.begin(), lineRules.end(),
                                             [](drule::LineRule const * rule) { return rule->dashdot.has_value(); });
-  // Offset the complete feature before clipping, so tile edges do not move
-  // endpoints or restart the side geometry independently in each tile.
+  // Keep the road axis in map coordinates; side displacement is pixel-sized
+  // extrusion, just like the road's own width, throughout smooth zooming.
   m2::SharedSpline const sideSource = sideRules.empty() ? m2::SharedSpline() : m2::SharedSpline(m_builder.GetPath());
   m_clippedSplines = m_builder.Release(isIsoline, needSplineOffsets);
 
@@ -780,15 +781,14 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
     double sideWidth = 0.0;
     for (auto const rule : side.m_rules)
       sideWidth = std::max(sideWidth, rule->width * strokeScale);
-    double const distance = (0.5 * (roadWidth + sideWidth) + 2.0 * visualScale) / m_params.m_currentScaleGtoP;
-    auto const shifted = side.m_side == 0 ? source : source.Equidistant(side.m_side * distance);
-    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, shifted);
+    float const lateralOffset = SideOffsetPixels(roadWidth, sideWidth, 2.0 * visualScale, side.m_side);
+    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, source);
     for (auto const & piece : pieces)
     {
       // Same source-distance projection used by ClipSplinesBuilder; preserve
       // each shifted feature's phase when it is split between tile readers.
       double clippedOffset = 0.0;
-      auto const & path = shifted->GetPath();
+      auto const & path = source->GetPath();
       auto const start = piece->GetPath().front();
       for (size_t i = 1; i < path.size(); ++i)
       {
@@ -810,6 +810,7 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
         LineViewParams params;
         params.m_tileCenter = m_params.m_tileRect.Center();
         ExtractLineParams(*rule, strokeScale, params);
+        params.m_lateralOffsetPixels = lateralOffset;
         params.m_depth = PriorityToDepth(rule->priority, drule::line, 0);
         params.m_rank = m_f.GetRank();
         params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
@@ -828,6 +829,7 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
         params.m_symbolName = symbol.name;
         params.m_offset = static_cast<float>(symbol.offset * visualScale);
         params.m_step = static_cast<float>(symbol.step * visualScale);
+        params.m_lateralOffsetPixels = side.m_reverseArrow ? -lateralOffset : lateralOffset;
         params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
         m_params.m_insertShape(make_unique_dp<PathSymbolShape>(side.GetArrowSpline(piece), params));
       }
