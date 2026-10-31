@@ -156,9 +156,18 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
           expected.AddStyleType(summary);
           df::Stylist summaryStyle(expected, zoom, 0, style);
           TEST(result.m_cyclewaySides.empty(), (zoom, style));
-          for (auto const rule : result.m_lineRules)
-            if (!rule->pathsym)
-              TEST_EQUAL(rule->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
+          if (item.summary == Kind::Track)
+          {
+            for (auto const rule : result.m_lineRules)
+              if (!rule->pathsym)
+                TEST_EQUAL(rule->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
+          }
+          else
+          {
+            MockTestFeature plainRoad({P(0, 0), P(10, 0)}, road);
+            df::Stylist plainStyle(plainRoad, zoom, 0, style);
+            TEST(lineSet(result) == lineSet(plainStyle), (zoom, style));
+          }
         }
         else
         {

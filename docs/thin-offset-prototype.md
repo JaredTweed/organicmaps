@@ -28,3 +28,15 @@ demo with `adb install -r`, without replacing the normal or centerline apps.
 See the `Side offset examples` bookmark category: Water Street (lane/shared),
 West 49th Avenue (lane/track), East 14th Avenue (shared/shared), Ash Street
 (lane/lane), West 1st Avenue (one-sided lane), East 5th Avenue (one-sided track).
+
+Once a phone is connected and USB debugging is authorized, install the prepared
+APK and matching fixture without clearing demo data:
+
+```sh
+python3 docs/cycling-tag-audit/install_thin_offsets.py
+```
+
+The helper validates APK/map hashes and only updates the isolated demo. It
+keeps existing settings, including the current map-style selection. The APK
+and its manifest are under
+`build-visual-artifacts/side-offsets/thin-offsets/phone.apk` and `phone.json`.

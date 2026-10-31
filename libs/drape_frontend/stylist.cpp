@@ -419,9 +419,22 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   { return isDedicated(type) || ftype::Trunc(type, 1) == cyclewayRoot; }))
   {
     drule::LineRule const * stroke = nullptr;
-    for (auto const rule : m_lineRules)
-      if (!rule->pathsym && (!stroke || rule->priority > stroke->priority))
-        stroke = rule;
+    for (auto const type : types)
+    {
+      if (!isDedicated(type) && ftype::Trunc(type, 1) != cyclewayRoot)
+        continue;
+      drule::KeysT candidates;
+      cycleClassif.GetObject(type)->GetSuitable(zoomLevel, geomType, candidates);
+      feature::FilterRulesByRuntimeSelector(f, zoomLevel, cycleRules, candidates);
+      for (auto const & key : candidates)
+      {
+        if (key.m_type != drule::line)
+          continue;
+        auto const rule = cycleRules.Find(key)->GetLine();
+        if (!rule->pathsym && rule->width > 0 && (!stroke || rule->priority > stroke->priority))
+          stroke = rule;
+      }
+    }
     if (stroke)
     {
       auto const normalized = indicator(stroke);
