@@ -442,7 +442,11 @@ UNIT_TEST(ClipSplinesBuilder_CyclingBridgeContinuity)
           TEST_EQUAL(onBridge.m_cyclewaySides.size(), 1, (name, zoom, style));
           auto const & a = before.m_cyclewaySides.front();
           auto const & b = onBridge.m_cyclewaySides.front();
-          TEST_GREATER(a.m_roadWidth, 0.0f, (name, zoom));
+          float ordinaryWidth = 0;
+          for (auto const rule : before.m_lineRules)
+            if (!rule->pathsym)
+              ordinaryWidth = std::max(ordinaryWidth, rule->width);
+          TEST_EQUAL(a.m_roadWidth, ordinaryWidth, (name, zoom));
           TEST_EQUAL(a.m_roadWidth, b.m_roadWidth, (name, zoom, style));
           TEST_EQUAL(a.m_side, b.m_side, ());
           TEST_EQUAL(a.m_rules.front()->width, b.m_rules.front()->width, ());
