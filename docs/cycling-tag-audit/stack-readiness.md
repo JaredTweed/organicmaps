@@ -30,14 +30,19 @@ and the exact style preview passes [295](code-quality-style-native-results.json)
 The seven codec tests now run in `indexer_tests`. Earlier exact-head and
 pixel-comparison records below retain their original source pins.
 
+**Merge preparation:** the later [readiness checklist](merge-readiness.md)
+records formatting-only CI fixes, generated-route evidence, real permissive-access
+examples, and the exact outstanding maintainer questions. The source changes are
+audited as [exact clang-format output](merge-readiness-format-audit.json).
+
 | # | Draft PR | Branch | Head |
 | - | --- | --- | --- |
 | 1 | https://github.com/organicmaps/organicmaps/pull/14040 | `prepare/cycling-selector` | `c24dc38dfe` |
 | prerequisite | https://github.com/organicmaps/organicmaps/pull/14054 | `prepare/motor-vehicle-permissive` | `6daf0d8755` |
-| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `33c33e44b0` |
-| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `d74a51b3cd` |
-| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `fdc131de53` |
-| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `34a0624d67` |
+| 2 | https://github.com/organicmaps/organicmaps/pull/14041 | `prepare/cycling-tag-data` | `750c72f062` |
+| 3 | https://github.com/organicmaps/organicmaps/pull/14048 | `prepare/cycling-metalines` | `1f4e588b3f` |
+| 4 | https://github.com/organicmaps/organicmaps/pull/14042 | `prepare/cycling-dash` | `c1f68d2aad` |
+| 5 | https://github.com/organicmaps/organicmaps/pull/14043 | `prepare/cycling-style` | `5eb0952ef3` |
 
 Titles are numbered `1/5` through `5/5`, and every body carries the same stack
 block with links to all five drafts.
@@ -52,16 +57,17 @@ checked against the script by the tests.
 | # | Branch on `JaredTweed/organicmaps` | Head | PR base | Target | Draft |
 | - | --- | --- | --- | --- | --- |
 | 1 | `prepare/cycling-selector` | `c24dc38dfe` | `master` | `organicmaps/organicmaps` | yes |
-| 2 | `prepare/cycling-tag-data` | `33c33e44b0` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 3 | `prepare/cycling-metalines` | `d74a51b3cd` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 4 | `prepare/cycling-dash` | `fdc131de53` | `master` | `organicmaps/organicmaps` | yes, cumulative |
-| 5 | `prepare/cycling-style` | `34a0624d67` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
+| 2 | `prepare/cycling-tag-data` | `750c72f062` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 3 | `prepare/cycling-metalines` | `1f4e588b3f` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 4 | `prepare/cycling-dash` | `c1f68d2aad` | `master` | `organicmaps/organicmaps` | yes, cumulative |
+| 5 | `prepare/cycling-style` | `5eb0952ef3` | `ab/cycling-style` | `organicmaps/organicmaps` | yes |
 
 `prepare/cycling-style-base` is a byte-for-byte mirror of upstream
 `ab/cycling-style` at `7af82a316a` and is kept for provenance.
 
 All five PRs are on the official repository. Parts 2-4 target `master` and are
-**cumulative** because the fork cannot host stack base branches: 2/5 contains
+**cumulative** because their upstream bases are `master`, not the predecessor
+preparation branches in the fork: 2/5 contains
 part 1, 3/5 contains parts 1-2, and 4/5 contains parts 1-3. Part 5 targets the
 existing `ab/cycling-style` branch. The earlier fork drafts are obsolete; the
 official PRs are the review units.
@@ -183,10 +189,10 @@ Local review ranges (not claims of isolated public GitHub diffs):
 | --- | --- |
 | Selector | `303ef27fbc..c24dc38dfe` |
 | Independent access | `303ef27fbc..6daf0d8755` |
-| Cycling types, after both prerequisites | `407057c693..33c33e44b0` |
-| Optional metaline data | `33c33e44b0..30ebe4827d` |
-| Renderer | `30ebe4827d..45b08c9aa7` |
-| Complete style preview, including dependencies | `7af82a316a..82b6f69887` |
+| Cycling types, after both prerequisites | `407057c693..750c72f062` |
+| Optional metaline data | `750c72f062..1f4e588b3f` |
+| Renderer | `1f4e588b3f..c1f68d2aad` |
+| Complete style preview, including dependencies | `7af82a316a..5eb0952ef3` |
 
 ## Known open questions for review
 
@@ -194,9 +200,10 @@ The revision rationale and explicit merge gates are in [design-review.md](design
 
 - Side-specific facilities: proposed deferral for this stack, not an approval
   from vng. The centerline summary still needs maintainer acceptance.
-- The eight-type limit: aggregate dumps matched on the Vancouver extract. This
-  does not establish per-feature or pixel equality. Measure displaced access,
-  direction and surface types before changing cycling retention priority.
+- The eight-type limit: the matched follow-up on the earlier map pair preserves
+  all types on 1,858 cycling features. The unarchived original build pins and
+  generated-roundabout identity differences prevent broader certification.
+  The general retention-priority decision still needs review before changing it.
 - `motor_vehicle=permissive`: the cycling style needs it for shared-space ways,
   but it also changes two pedestrian/sidewalk classifications in the test extract.
 - The candidate fixes whole-section v3 rejection by retaining a v1 main
@@ -216,22 +223,26 @@ The response is posted in
 - **Visuals:** one conservative centerline category per road. Per-side rendering
   and per-side directions are deferred. Preserving solid/dashed/dotted styling
   is the objective, not a verified pixel-equivalence result.
-- **Eight-type cap:** a local retention variant produced the same set of
-  `cyclewaytag` combinations on the Vancouver extract (209 type-dump lines).
-  Aggregate equality cannot rule out changes on individual roads. The current
-  ranking stays pending per-feature measurements; other regions are not measured.
+- **Eight-type cap:** the old aggregate observation is now supplemented by a
+  matched comparison preserving complete type lists on 1,858 cycling features.
+  See [the bounded result](retention-matched-features.json): generated-roundabout
+  identities still differ elsewhere and original build pins were not archived.
+  The current ranking stays pending review; other regions are not measured.
 - **Routing:** PR 2/5 refines access/direction flags as well as display types.
-  Style consumers, classifier retention and routing can interact. End-to-end
-  route-graph tests remain a gate. The independent `motor_vehicle=permissive`
-  change is now extracted locally; the final preview retains it, so extraction
+  Style consumers, classifier retention and routing can interact. Controlled
+  generated-route probes now pass on both integration heads and the standalone
+  access head. Country-specific/conflicting-tag policies still need review.
+  The independent access change remains in the complete preview, so extraction
   does not silently change shared-space appearance.
 - **Pedestrians:** a separate follow-up, not part of this stack.
 
 ## Publishing
 
-Do not publish while the primary-road discussion gate is open. These commands
-document the eventual workflow; the candidate kit currently rejects the old
-remote heads and cannot overwrite them automatically.
+The drafts are already published. The primary-road discussion remains a
+maintainer agreement gate, not a prohibition on author-authorized, tested
+preparation updates. These commands operate only on matching pinned drafts;
+the launcher cannot overwrite branch heads. Tested branch maintenance uses
+explicit remote leases separately from PR creation.
 
 ```bash
 cd docs/cycling-tag-audit
@@ -262,15 +273,28 @@ ROLLBACK_CYCLING_STACK=YES ./rollout.sh --rollback
 Rollback closes only the drafts recorded in the state file, only if they are
 still open drafts, and never deletes branches.
 
-## Remaining gates before any PR leaves draft
+## Remaining merge gates
 
-- Device screenshots for step 5 at several zoom levels in light and dark themes,
-  on the same roads used for #12692.
-- End-to-end bicycle route tests on generated graphs for step 2, not just unit
-  suites.
-- A decision on the `motor_vehicle=permissive` side effect.
-- Maintainer-approved upstream CI on the reviewed heads; local tests do not
-  substitute for GitHub workflow approval or maintainer review.
+These are per-PR gates; the selector does not need to wait for the final style
+integration's screenshots. Exact suggested questions and reviewer roles are in
+[the readiness checklist](merge-readiness.md).
+
+- Selector: agree the narrow membership-selector boundary with vng, then obtain
+  approved CI and review. Offset rendering is a separate proposal.
+- Access: biodranik/routing-data reviewers must accept the real use case and
+  intended eligibility semantics. The generated regression now demonstrates
+  the before/after routing effect, not just classifier flags.
+- Types: agree the centerline-summary and retention policy, and review the
+  bounded generated-route coverage and any additional country/conflicting-tag
+  fixtures required. Do not infer approval from passing synthetic tests.
+- Format/renderer: obtain format, compatibility and renderer/shader review,
+  along with approved CI. Historical-client coverage is format-level evidence,
+  not a universal old-app smoke-test claim.
+- Style: agree its final base, rebase/regenerate after dependencies land and
+  repeat matched data/appearance checks on that actual integration. Earlier
+  camera evidence remains archived with its repeat-variability limitations.
+- All: maintainer-approved CI and required reviews on the current heads.
+  Current account permissions cannot approve upstream workflow runs.
 
 ## Promotion path after review
 

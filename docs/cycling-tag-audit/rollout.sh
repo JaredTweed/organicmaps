@@ -54,11 +54,11 @@ readonly STYLE_BRANCH=prepare/cycling-style
 readonly SELECTOR_BASE=303ef27fbc99d238965d7ced471c8920944110e6
 readonly SELECTOR_HEAD=c24dc38dfe5e258837855cb84683c6ad0083adc7
 readonly ACCESS_HEAD=6daf0d87550ccfcf8ee199b3b8173a53245990cb
-readonly TAG_DATA_HEAD=33c33e44b03c448cdfa4380af27c04dc6af0430b
-readonly METALINES_HEAD=d74a51b3cd48b43f459f049106a5e268824fbed8
-readonly DASH_HEAD=fdc131de535a20c53e9bd219fa3a1cef4867b01a
+readonly TAG_DATA_HEAD=750c72f0623dd4b93b97f205e1269866c8282b48
+readonly METALINES_HEAD=1f4e588b3f1b02a905dcf23c6453457710ac12ed
+readonly DASH_HEAD=c1f68d2aadc5383a85ffc9aa9754a0c871ecd957
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=34a0624d6700cb7dd062be67abf7d5ac24224bcb
+readonly STYLE_HEAD=5eb0952ef3bada1fc66b195131afb385f0a62692
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/5)'
 readonly ACCESS_TITLE='[generator] Recognize permissive motor vehicle access'
@@ -228,6 +228,8 @@ Related: #12692 (read-only reference; this PR does not modify it).
 
 Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
+
 ## Stack
 
 Part 1 of 5, in review order:
@@ -259,10 +261,15 @@ It targets `master` directly and contains no selector, cycling classifier, rende
 
 ## Testing And Review
 
+- Concrete mapped use case: [Fairview Crescent, way 391455011](https://www.openstreetmap.org/way/391455011), checked at version 4, has `highway=pedestrian` and `motor_vehicle=permissive`. The access collector already recognizes permissive permission; the missing classifier flag can still exclude such a way from the car graph. This is a tag observation, not verification of signage or a recommendation to drive there.
 - Adds a dedicated regression covering path, footway, pedestrian and cycleway features; `yes`, `designated`, `permissive`, `no`, `private`, and more-specific `motorcar=no` in both tag orders.
 - The exact standalone branch `6daf0d8755` builds and passes the complete `OsmType` group with Debug assertions, one compiler worker and a 1800 MiB hard memory limit.
-- Generated-route behavior and the intended access interpretation still require routing review. Classification tests are not end-to-end routing proof.
+- A separate research probe on this exact standalone head passes 68 route checks through actual OSM-to-map/routing/access generation and the production router. The identical probe fails on the pre-change `303ef27fbc` baseline at the pedestrian/permissive shortcut case (it uses the detour); the runner is fail-fast, so this is not a claim that every baseline case was evaluated. Fixed-head checks cover both directions and the more-specific `motorcar=no` override in both tag orders.
+- The research probe is not hidden inside normal PR CI and does not reproduce the full real-world street network. The intended access interpretation still requires routing review. The cycling preview's solid/dotted policy is separate: permissive access does not establish physical protection or traffic volume.
+- Additional validation was prepared with Codex assistance; production code is unchanged from the reviewed standalone head.
 - Kept as a draft; do not infer approval from extraction or local tests.
+
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Related Cycling Stack
 
@@ -291,6 +298,7 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 - Bicycle direction and access flags are refined in the same classification pass.
 - Owns the lane/shared-lane `ftypes` checkers used by the renderer, so the format PR no longer introduces classifier APIs. Baseline generator grouping remains #12692's implementation.
 - Includes the generated classifier assets in the first commit consuming the new types, so intermediate commits do not depend on a later regeneration commit to load them.
+- Formatting-only CI preparation uses clang-format 23; classification and rendering behavior are unchanged. This preparation was assisted by Codex.
 
 ## Compatibility
 
@@ -308,16 +316,18 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 
 - The cycling style uses `hwtag=yescar` for shared-space treatment. The independent `prepare/motor-vehicle-permissive` prerequisite owns that access change and its dedicated tests, including pedestrian/sidewalk implications. The complete preview retains the behavior rather than silently removing it during extraction.
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
-- Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
+- Aggregate counts are not matched features. The separate research probe now exercises generated routing/access sections and the production router on controlled fixtures; this is not a broad country-specific routing audit.
 
 ## Review questions
 
 Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067):
 
 - The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
-- Eight-type cap: the Vancouver retention experiment produced identical aggregate type-combination dumps (209 lines containing `cyclewaytag`). This does not prove per-road equality or pixel equivalence. Keep the current ranking pending matched per-feature measurements, including any access/direction/surface type displaced by prioritizing cycling.
-- Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is now an independent prerequisite. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
+- Eight-type cap: a per-feature follow-up on the earlier retention-map pair finds unchanged complete type lists on all 1,858 cycling features. The whole maps are not certified equal (generated roundabout identities differ), and the earlier generator build pins were not archived. This is bounded evidence, not an all-regions or exact-current-head result; keep the current priority policy pending review.
+- Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is an independent prerequisite. Generated-map fixtures now cover bicycle access, ordinary/explicit/reversed one-way directions and contraflow; conflicting-tag and country-specific policy review remains. No general claim of routing/visual independence is made.
 - Pedestrian reuse is a follow-up, not part of this stack.
+
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Stack
 
@@ -373,6 +383,8 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 - Additive phase metadata preserves the authoritative legacy section. Emitted legacy records and resolved offsets are included in the matched-map audit; historical-client coverage is reported separately.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
+
 ## Stack
 
 Part 3 of 5, in review order:
@@ -411,7 +423,9 @@ This upstream PR is cumulative: it also contains parts 1-3.
 
 - Clean debug build of `drape_frontend_tests`.
 - Clip-splines and reversed-metaline phase tests pass.
-- Exact head `fdc131de53` passes 298 native tests: 65 classification/metalines, 18 clipping/phase, 188 indexer (including 7 codec tests) and 27 routing-common tests, all with Debug assertions.
+- Exact head `c1f68d2aad` passes 298 native tests: 65 classification/metalines, 18 clipping/phase, 188 indexer (including 7 codec tests) and 27 routing-common tests, all with Debug assertions.
+- A separate research probe on this exact head passes 88 actual route checks across 44 synthetic OSM networks, through map/routing/access generation and the production router. It covers motor-access overrides, bicycle direction/access and pedestrian access. This is not a downloaded-region routing audit or a claim that the probe is in normal PR CI.
+- Clang-format checks pass on all C++ files changed by this review unit. The final formatting-only revision changes no shader, classifier, phase calculation or style asset.
 - Complete style-preview Pixel audit covers 60 saved-camera views on OpenGL/Vulkan with repeated cold starts. Eleven pairs are exact; no pair stable in both builds differs. Maximum difference is 289/1,219,096 map pixels. Repeat variability prevents strict pixel certification; this is not an exact-head screenshot test of this master-based branch.
 - Earlier phone spot checks showed Cambie lane dashes, shared-lane dots, and solid tracks. This is not exhaustive visual-equivalence evidence; fixed-coordinate checks across zooms, themes, clipping, direction reversal and graphics backends remain required.
 
@@ -421,6 +435,8 @@ This upstream PR is cumulative: it also contains parts 1-3.
 - Continuous phase on the centerline; no per-side rendering or per-side arrows.
 - Uses the stored offsets; no color, width, or style change.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Stack
 
@@ -453,7 +469,8 @@ This upstream PR targets `ab/cycling-style` and also contains parts 1-4 plus the
 - The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
 - Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
 - Exact baseline/candidate Android native builds succeed. The complete tracked `data/` trees match. Separately generated Vancouver maps match all 82,785 features (including stored type order and metadata) and all 2,010 directed chains/offsets using isolated, explicitly verified classifiers. Aggregate type counts are not used as the proof.
-- On exact candidate `34a0624d67`, 295 native tests pass with Debug assertions: 62 classification/metalines tests, 18 clipping/phase tests, 188 indexer tests (including 7 codec tests) and 27 routing-common tests. This is not generated-route or pixel-equivalence evidence.
+- On exact candidate `5eb0952ef3`, 295 native tests pass with Debug assertions: 62 classification/metalines tests, 18 clipping/phase tests, 188 indexer tests (including 7 codec tests) and 27 routing-common tests. This is not pixel-equivalence evidence.
+- A separate research integration probe on this exact head passes 88 route checks across 44 generated synthetic OSM networks using the production router. It is bounded routing evidence, not a whole-region audit or a claim that this probe runs in normal PR CI.
 - The earlier Qt/OpenGL audit had a stable-pair discrepancy of 17 grayscale road-edge pixels; it remains archived, not erased by the new phone result.
 - Completed Pixel OpenGL/Vulkan audit: 60 saved-camera views, both themes and repeated cold starts. Eleven cross-build pairs are exact; the reference repeats exactly in 10 views and the candidate in 11. No pair stable in both builds differs cross-build. Maximum difference is 289/1,219,096 map pixels (about 0.024%). Strict pixel equivalence remains unverified; no tolerance was introduced. One volume-panel-contaminated case was recaptured in full with identical settings and explicit provenance, preserving the raw evidence.
 - Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
@@ -471,8 +488,10 @@ Do not merge as-is: the base is the maintainer's `ab/cycling-style` branch, depe
 - Centerline style only; side-specific facilities are deferred.
 - Conflicting-tag order and collision-free chain grouping are separate behavioral follow-ups, excluded to preserve #12692's classification and grouping logic.
 - This old-base preview does not certify the eventual merged-master integration. Rebase/regenerate and repeat the comparison on that actual integration before claiming final equivalence; do not silently revert unrelated upstream work to match an older baseline.
-- The type-cap experiment produced equal aggregate type-combination dumps on the Vancouver extract, not a per-road or pixel-equivalence proof. The current ranking stays pending matched-feature measurements.
+- A per-feature follow-up on the earlier retention-map pair finds unchanged complete type lists on all 1,858 cycling features. The maps are not globally certified equal (generated roundabout identities differ), and those earlier generator build pins were not archived. The current ranking stays pending review; no all-regions or exact-current-head retention claim is made.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Stack
 

@@ -3,7 +3,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from visual_equivalence import compare_exports, digest, highway_profile, pixel_metrics, verify_capture_binding
+from visual_equivalence import (compare_cycling_retention, compare_exports, digest, highway_profile,
+                                pixel_metrics, verify_capture_binding)
 from visual_phone import stabilize_camera, unlocked_foreground
 
 
@@ -72,6 +73,26 @@ class VisualEquivalenceTests(unittest.TestCase):
         result = compare_exports(a, b)
         self.assertFalse(result["exact_matched_data_equal"])
         self.assertEqual(result["changed_feature_groups"], 2)
+        self.assertEqual(compare_cycling_retention(a, b)["changed_cycling_type_groups"], 2)
+
+    def test_retention_detects_displaced_access_even_with_same_cycleway(self):
+        old = feature(1, 100, "lane", 0)
+        old["types"].append(["hwtag", "nocar"])
+        new = {**old, "types": [["cyclewaytag", "lane"], ["hwtag", "yescar"]]}
+        a = self.export("a", [old], (0,))
+        b = self.export("b", [new], (0,))
+        self.assertFalse(compare_cycling_retention(a, b)["cycling_types_preserved"])
+
+    def test_retention_does_not_hide_unrelated_identity_changes(self):
+        cycling = feature(1, 100, "lane", 0)
+        other = {**feature(2, 200, "track", 2), "types": [["junction", "roundabout"]]}
+        renamed = {**other, "osm_ids": [300]}
+        a = self.export("a", [cycling, other])
+        b = self.export("b", [cycling, renamed])
+        result = compare_cycling_retention(a, b)
+        self.assertTrue(result["cycling_types_preserved"])
+        self.assertEqual(result["changed_other_feature_groups"], 2)
+        self.assertFalse(compare_exports(a, b)["exact_matched_data_equal"])
 
     def test_offset_change_is_detected(self):
         features = [feature(1, 100, "lane", 0), feature(2, 200, "track", 2)]

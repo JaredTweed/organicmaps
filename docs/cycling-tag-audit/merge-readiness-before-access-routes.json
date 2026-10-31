@@ -1,0 +1,42 @@
+{
+  "source_commit": "303ef27fbc99d238965d7ced471c8920944110e6",
+  "tracked_source_clean": true,
+  "probe_source_sha256": "dd86ba67b7d56f8fc5e767e2445c34a8d39d1a32445cf7e349115cc14c00f1ab",
+  "probe_binary_sha256": "61b941431dc5c1232b8cb3c202c58621c3e8f2ddd1a0344b29bfb6d8d5d88319",
+  "command": [
+    "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/cycling_readiness_probe",
+    "--filter=CyclingReadiness_PermissiveMotorAccess|CyclingReadiness_PedestrianStillAllowed",
+    "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+    "--data_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+    "--writable_path=/tmp/cycling-readiness-routes-before-access/writable"
+  ],
+  "exit_code": 1,
+  "expected_exit_code": 1,
+  "passed_tests": 1,
+  "successful_route_checks": 8,
+  "all_passed": false,
+  "log_sha256": "e34008ef1266faca4ce9bb3c456e16d0bf138154f21787b3dcd5b774e81b29a8",
+  "scope": "Synthetic OSM -> generated routing/access sections -> production IndexRouter; no downloaded maps",
+  "expected_regression": {
+    "group": "CyclingReadiness_PermissiveMotorAccess",
+    "case": "highway=pedestrian + motor_vehicle=permissive",
+    "observed_way_ids": [
+      10,
+      30,
+      40
+    ],
+    "expected_shortcut_way_id": 20,
+    "diagnostic": "cycling-tag-audit/routing_readiness_probe.cpp:79 TEST(used.count(20) != 0 == expected) 0 1 [3: (highway, pedestrian) (surface, asphalt) (motor_vehicle, permissive) ] Car 0 [3: 10 30 40 ]",
+    "fail_fast": true
+  },
+  "verified_routes": [
+    "READINESS_ROUTE vehicle=2 reverse=0 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=2 reverse=1 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=2 reverse=0 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=2 reverse=1 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=0 reverse=0 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=0 reverse=1 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=0 reverse=0 shortcut=1 ways=10,20,30,",
+    "READINESS_ROUTE vehicle=0 reverse=1 shortcut=1 ways=10,20,30,"
+  ]
+}

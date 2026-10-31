@@ -1,0 +1,159 @@
+{
+  "scope": "Per-feature retained type order in the earlier Vancouver retention-map pair",
+  "caveat": "Earlier generator build pins were not archived; this is not an exact-head regeneration or an all-regions claim",
+  "baseline": {
+    "features": 82785,
+    "cycling_features": 1858,
+    "unidentified_features": 0,
+    "map_sha256": "b77e9ccf4d1f60a67440b15130aa870f43207cc8bde0a7db8c68138f71a6c61e",
+    "osm2ft_sha256": "f2b3883ca75435b82817a1cc3fb5432dfd27c674a4f7964b7a8f8acac893f487",
+    "export_sha256": "d2f1d88e7b093d8c67ca6e56a83ba702574eba4517d2eca5cad27496bda0e77c"
+  },
+  "retention_variant": {
+    "features": 82785,
+    "cycling_features": 1858,
+    "unidentified_features": 0,
+    "map_sha256": "a82911d5a9e50a6afe361397a432c8cc79eb84ec44619ffcb057f56a3d9e4d37",
+    "osm2ft_sha256": "d469b9f137adc0710463dff4d82a473b6463ac56f757a0c25329ffc9a16ab1f0",
+    "export_sha256": "4ae08dbe2b651d9376761379d80b68c7aeccf8c601a7ecf25d4b37946b3669db"
+  },
+  "changed_type_groups": 16,
+  "changed_type_sets": 16,
+  "type_order_only_changes": 0,
+  "changed_cycling_type_sets": 0,
+  "matched_identity_type_changes": 0,
+  "unmatched_identity_groups": 16,
+  "unmatched_have_generated_roundabout_signature": true,
+  "changed_examples": [
+    {
+      "identity": "[[9223512774343131126],\"7cf9ee1f69ebeacb269f874630ac1fcf1ade0c4d3ad8b6d2cce61d1e59a8129e\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131126],\"cf9124593613dedf681ac9e0ed8feba9bb8c3950c231164892de9e784c0b7303\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"living_street\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131127],\"7cf9ee1f69ebeacb269f874630ac1fcf1ade0c4d3ad8b6d2cce61d1e59a8129e\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131127],\"cf9124593613dedf681ac9e0ed8feba9bb8c3950c231164892de9e784c0b7303\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"living_street\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131131],\"146c9e7c8de7ec10e056f9e517dd55e268f6eb4b6c18898c2ba04ad3b521c984\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131131],\"361b0bddbf9d7660a08320daf22e374e06f2331639ea90dc31cbc4ca087f1502\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131132],\"0271c98bc7ae62aa3627e6fb608d36c3ec5562c6da66b6b243e0e293e18daaf9\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131132],\"f2f6fe9002a0716e3e880641fc95ef51b43e84ba704270f6ae8a5c7e17e203df\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"service\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131133],\"1359b4615ee4ac9f3b201478ddaa8d5abcfb5f1ea7c6d4cfbfe6e5418064a0f6\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"service\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131133],\"99daecdbf3753108dc8eeb29eb5a5bcb2e10a8431e34cb0db59638c3c30ee4ce\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"living_street\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131134],\"1359b4615ee4ac9f3b201478ddaa8d5abcfb5f1ea7c6d4cfbfe6e5418064a0f6\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"service\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131134],\"99daecdbf3753108dc8eeb29eb5a5bcb2e10a8431e34cb0db59638c3c30ee4ce\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"living_street\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131135],\"146c9e7c8de7ec10e056f9e517dd55e268f6eb4b6c18898c2ba04ad3b521c984\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    },
+    {
+      "identity": "[[9223512774343131135],\"361b0bddbf9d7660a08320daf22e374e06f2331639ea90dc31cbc4ca087f1502\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131136],\"0271c98bc7ae62aa3627e6fb608d36c3ec5562c6da66b6b243e0e293e18daaf9\"]",
+      "baseline_types": {},
+      "variant_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"residential\"],[\"hwtag\",\"oneway\"]]": 1
+      }
+    },
+    {
+      "identity": "[[9223512774343131136],\"f2f6fe9002a0716e3e880641fc95ef51b43e84ba704270f6ae8a5c7e17e203df\"]",
+      "baseline_types": {
+        "[[\"junction\",\"roundabout\"],[\"highway\",\"service\"],[\"hwtag\",\"oneway\"]]": 1
+      },
+      "variant_types": {}
+    }
+  ],
+  "ambiguous_groups": 0,
+  "exporter_classifier_source": "5eb0952ef3bada1fc66b195131afb385f0a62692",
+  "classifier_sha256": {
+    "types.txt": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95",
+    "classificator.txt": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d"
+  },
+  "exporter_sha256": "e19e08c5609331c7f6554a6c74b9dbddd0898151c91c0d60e1e6fd336f980873",
+  "types_match_by_osm_identity_and_exact_geometry": false,
+  "bounded_cycling_comparison": {
+    "scope": "All retained types and their order on matched cycling features; not whole-map equivalence",
+    "baseline_cycling_features": 1858,
+    "candidate_cycling_features": 1858,
+    "changed_cycling_type_groups": 0,
+    "changed_other_feature_groups": 16,
+    "ambiguous_cycling_groups": 0,
+    "unidentified_cycling_features": 0,
+    "cycling_types_preserved": true
+  }
+}

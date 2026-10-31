@@ -1,0 +1,37 @@
+{
+  "checked_at_utc": "2026-10-31T00:05:13.168045+00:00",
+  "source": "OpenStreetMap API 0.6",
+  "scope": "Real tag examples, not verification of access signage or whole-road routes",
+  "examples": [
+    {
+      "id": 391455011,
+      "url": "https://www.openstreetmap.org/way/391455011",
+      "version": 4,
+      "osm_timestamp": "2019-04-21T22:44:50Z",
+      "tags": {
+        "bicycle": "yes",
+        "foot": "yes",
+        "highway": "pedestrian",
+        "horse": "yes",
+        "motor_vehicle": "permissive",
+        "name": "Fairview Crescent",
+        "surface": "paved"
+      }
+    },
+    {
+      "id": 960925913,
+      "url": "https://www.openstreetmap.org/way/960925913",
+      "version": 5,
+      "osm_timestamp": "2023-08-28T22:05:32Z",
+      "tags": {
+        "covered": "no",
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "motor_vehicle": "permissive",
+        "smoothness": "excellent",
+        "surface": "asphalt"
+      }
+    }
+  ]
+}

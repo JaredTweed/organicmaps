@@ -130,6 +130,40 @@ def compare_exports(baseline, candidate):
     }
 
 
+def compare_cycling_retention(baseline, candidate):
+    """Measure all retained types on cycling features, without certifying the whole map."""
+    old, _, _ = load_export(baseline)
+    new, _, _ = load_export(candidate)
+
+    def index(features):
+        groups = defaultdict(Counter)
+        cycling = set()
+        missing = count = 0
+        for feature in features.values():
+            identity = feature_identity(feature)
+            groups[identity][canonical(feature["types"])] += 1
+            if any(path[0] == "cyclewaytag" for path in feature["types"]):
+                cycling.add(identity)
+                count += 1
+                missing += not feature["osm_ids"]
+        return groups, cycling, missing, count
+
+    old_groups, old_cycling, old_missing, old_count = index(old)
+    new_groups, new_cycling, new_missing, new_count = index(new)
+    cycling = old_cycling | new_cycling
+    if not cycling:
+        raise ValueError("No cycling features in retention comparison")
+    keys = set(old_groups) | set(new_groups)
+    changed = [key for key in keys if old_groups[key] != new_groups[key]]
+    cycling_changes = sum(key in cycling for key in changed)
+    ambiguous = sum(sum(old_groups[key].values()) > 1 or sum(new_groups[key].values()) > 1 for key in cycling)
+    return {"scope": "All retained types and their order on matched cycling features; not whole-map equivalence",
+            "baseline_cycling_features": old_count, "candidate_cycling_features": new_count,
+            "changed_cycling_type_groups": cycling_changes, "changed_other_feature_groups": len(changed)-cycling_changes,
+            "ambiguous_cycling_groups": ambiguous, "unidentified_cycling_features": old_missing+new_missing,
+            "cycling_types_preserved": not cycling_changes and not ambiguous and not old_missing and not new_missing}
+
+
 def pixel_metrics(baseline, candidate, roi):
     import numpy as np
     from PIL import Image

@@ -1,0 +1,32 @@
+[
+  {
+    "head": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+    "checked": 4,
+    "format_failures": []
+  },
+  {
+    "head": "6daf0d87550ccfcf8ee199b3b8173a53245990cb",
+    "checked": 2,
+    "format_failures": []
+  },
+  {
+    "head": "750c72f0623dd4b93b97f205e1269866c8282b48",
+    "checked": 6,
+    "format_failures": []
+  },
+  {
+    "head": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+    "checked": 11,
+    "format_failures": []
+  },
+  {
+    "head": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+    "checked": 10,
+    "format_failures": []
+  },
+  {
+    "head": "5eb0952ef3bada1fc66b195131afb385f0a62692",
+    "checked": 30,
+    "format_failures": []
+  }
+]

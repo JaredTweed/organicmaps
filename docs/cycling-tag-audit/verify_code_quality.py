@@ -73,6 +73,22 @@ def main():
     for item in record["comparisons"]:
         verify(item["previous"], item["candidate"], args.clang_format)
         print("PASS", item["previous"][:10], "->", item["candidate"][:10])
+    formatting = Path(__file__).with_name("merge-readiness-format-audit.json")
+    if formatting.exists():
+        for item in json.loads(formatting.read_text())["comparisons"]:
+            previous, candidate = item["previous"], item["candidate"]
+            changed = git("diff", "--name-only", previous, candidate, "--").splitlines()
+            if changed != item["changed_paths"]:
+                raise ValueError("Formatting audit path list changed")
+            for path in changed:
+                if not path.endswith((".cpp", ".hpp")):
+                    raise ValueError("Non-C++ changes in formatting revision")
+                expected = subprocess.check_output(
+                    [args.clang_format, "--assume-filename=" + str(ROOT / path)],
+                    input=read(previous, path), text=True)
+                if expected != read(candidate, path):
+                    raise ValueError("Change is not exact formatter output: " + path)
+            print("PASS formatting", previous[:10], "->", candidate[:10])
 
 
 if __name__ == "__main__":

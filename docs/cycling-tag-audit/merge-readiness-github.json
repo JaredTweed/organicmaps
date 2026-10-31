@@ -1,0 +1,526 @@
+{
+  "checked_at_utc": "2026-10-31T00:50:24.805800+00:00",
+  "upstream_permissions": {
+    "admin": false,
+    "maintain": false,
+    "push": false,
+    "triage": false,
+    "pull": true
+  },
+  "protected_original": {
+    "headRefOid": "955cd49403ed025c24beec09f5551e8d274a38ff",
+    "number": 12692
+  },
+  "pull_requests": [
+    {
+      "baseRefName": "master",
+      "headRefName": "prepare/cycling-selector",
+      "headRefOid": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+      "isDraft": true,
+      "mergeStateStatus": "BLOCKED",
+      "mergeable": "MERGEABLE",
+      "number": 14040,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [],
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-29T18:56:22Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://probot.github.io/apps/dco/",
+          "name": "DCO",
+          "startedAt": "2026-10-29T18:56:22Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "requested_reviewers": [],
+      "requested_teams": [],
+      "current_head_workflows": [
+        {
+          "conclusion": "action_required",
+          "databaseId": 40935479343,
+          "headSha": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+          "name": "Validate translation strings",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/40935479343"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 40935479392,
+          "headSha": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+          "name": "Code style check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/40935479392"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 40935479452,
+          "headSha": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/40935479452"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 40935479584,
+          "headSha": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/40935479584"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 40935479570,
+          "headSha": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/40935479570"
+        }
+      ],
+      "maintainer_comments": [
+        {
+          "author": "vng",
+          "body": "Before going further, let's discuss and agree with some constraints:\r\n\r\nhighway=* - is the primary type for the roads in our classifier. I don't see a reason why we will have several highway=* types for one Feature, probably except the case: highway=footway + highway=cycleway, like here https://wiki.openstreetmap.org/wiki/File:Radweg_Schee_Silschede_cut.jpg\r\n\r\nSo my vision was like having _main_ type highway=* and other types define bicycle(footway) infra like: cyclewaytag=* or footwaytag=*. Again, I'm ok with the footway + cycleway exception at the same time.\r\n\r\nAgree here? So, I'm probably ok with ```extra_tag``` selector, but lets keep it as reasonable as possible.\r\n\r\nAnd rendering example:\r\n- highway=cycleway is rendered like _core_ line.\r\n- cyclewaytag=* is rendered with an _offset_ line. E.g highway=seconday + cyclewaytag=* (left, right, both) can be nicely rendered even in the generic style.",
+          "url": "https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420"
+        }
+      ]
+    },
+    {
+      "baseRefName": "master",
+      "headRefName": "prepare/motor-vehicle-permissive",
+      "headRefOid": "6daf0d87550ccfcf8ee199b3b8173a53245990cb",
+      "isDraft": true,
+      "mergeStateStatus": "BLOCKED",
+      "mergeable": "MERGEABLE",
+      "number": 14054,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [],
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:29:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279348",
+          "name": "ubuntu-26.04 clang-19 Debug No Unity",
+          "startedAt": "2026-10-30T15:25:31Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:26:42Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215684/job/124148294090",
+          "name": "code-style-check",
+          "startedAt": "2026-10-30T15:25:33Z",
+          "status": "COMPLETED",
+          "workflowName": "Code style check"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:35:10Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279282",
+          "name": "ubuntu-26.04-arm clang-22 Debug",
+          "startedAt": "2026-10-30T15:25:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:37:18Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279228",
+          "name": "ubuntu-26.04 gcc-15 Debug",
+          "startedAt": "2026-10-30T15:25:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:34:57Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279176",
+          "name": "ubuntu-26.04-arm gcc-14 Debug",
+          "startedAt": "2026-10-30T15:25:33Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:37:27Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279034",
+          "name": "macos-26 clang Debug",
+          "startedAt": "2026-10-30T15:25:35Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:39:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279194",
+          "name": "windows-2025-vs2026 cl.exe Debug",
+          "startedAt": "2026-10-30T15:25:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:32:58Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279108",
+          "name": "ubuntu-26.04-arm clang-22 Release",
+          "startedAt": "2026-10-30T15:25:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:33:30Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279166",
+          "name": "ubuntu-26.04 gcc-15 Release",
+          "startedAt": "2026-10-30T15:25:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:31:55Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279832",
+          "name": "ubuntu-26.04-arm gcc-14 Release",
+          "startedAt": "2026-10-30T15:25:34Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:39:52Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279217",
+          "name": "macos-26 clang Release",
+          "startedAt": "2026-10-30T15:25:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:35:56Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148279431",
+          "name": "windows-2025-vs2026 cl.exe Release",
+          "startedAt": "2026-10-30T15:25:32Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T15:34:17Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672/job/124148278640",
+          "name": "Linux without optional sandbox dependencies",
+          "startedAt": "2026-10-30T15:25:31Z",
+          "status": "COMPLETED",
+          "workflowName": "CMake"
+        },
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-30T14:57:14Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://probot.github.io/apps/dco/",
+          "name": "DCO",
+          "startedAt": "2026-10-30T14:57:13Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "requested_reviewers": [],
+      "requested_teams": [],
+      "current_head_workflows": [
+        {
+          "conclusion": "success",
+          "databaseId": 41076215672,
+          "headSha": "6daf0d87550ccfcf8ee199b3b8173a53245990cb",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41076215672"
+        },
+        {
+          "conclusion": "success",
+          "databaseId": 41076215684,
+          "headSha": "6daf0d87550ccfcf8ee199b3b8173a53245990cb",
+          "name": "Code style check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41076215684"
+        }
+      ],
+      "maintainer_comments": [
+        {
+          "author": "biodranik",
+          "body": "What's the use case in OM for permissive? Why/when is it needed?",
+          "url": "https://github.com/organicmaps/organicmaps/pull/14054#issuecomment-6526440788"
+        }
+      ]
+    },
+    {
+      "baseRefName": "master",
+      "headRefName": "prepare/cycling-tag-data",
+      "headRefOid": "750c72f0623dd4b93b97f205e1269866c8282b48",
+      "isDraft": true,
+      "mergeStateStatus": "BLOCKED",
+      "mergeable": "MERGEABLE",
+      "number": 14041,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [],
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-31T00:47:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://probot.github.io/apps/dco/",
+          "name": "DCO",
+          "startedAt": "2026-10-31T00:47:39Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "requested_reviewers": [],
+      "requested_teams": [],
+      "current_head_workflows": [
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084851,
+          "headSha": "750c72f0623dd4b93b97f205e1269866c8282b48",
+          "name": "Validate translation strings",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084851"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084903,
+          "headSha": "750c72f0623dd4b93b97f205e1269866c8282b48",
+          "name": "Code style check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084903"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084880,
+          "headSha": "750c72f0623dd4b93b97f205e1269866c8282b48",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084880"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084904,
+          "headSha": "750c72f0623dd4b93b97f205e1269866c8282b48",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084904"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084854,
+          "headSha": "750c72f0623dd4b93b97f205e1269866c8282b48",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084854"
+        }
+      ],
+      "maintainer_comments": []
+    },
+    {
+      "baseRefName": "master",
+      "headRefName": "prepare/cycling-metalines",
+      "headRefOid": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+      "isDraft": true,
+      "mergeStateStatus": "BLOCKED",
+      "mergeable": "MERGEABLE",
+      "number": 14048,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [],
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-31T00:47:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://probot.github.io/apps/dco/",
+          "name": "DCO",
+          "startedAt": "2026-10-31T00:47:39Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "requested_reviewers": [],
+      "requested_teams": [],
+      "current_head_workflows": [
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083172,
+          "headSha": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+          "name": "Code style check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083172"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083177,
+          "headSha": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+          "name": "Validate translation strings",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083177"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083220,
+          "headSha": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083220"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083166,
+          "headSha": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083166"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083216,
+          "headSha": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083216"
+        }
+      ],
+      "maintainer_comments": []
+    },
+    {
+      "baseRefName": "master",
+      "headRefName": "prepare/cycling-dash",
+      "headRefOid": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+      "isDraft": true,
+      "mergeStateStatus": "BLOCKED",
+      "mergeable": "MERGEABLE",
+      "number": 14042,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [],
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-31T00:47:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://probot.github.io/apps/dco/",
+          "name": "DCO",
+          "startedAt": "2026-10-31T00:47:39Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "requested_reviewers": [],
+      "requested_teams": [],
+      "current_head_workflows": [
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084157,
+          "headSha": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084157"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084132,
+          "headSha": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084132"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084123,
+          "headSha": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+          "name": "Code style check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084123"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084184,
+          "headSha": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+          "name": "Validate translation strings",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084184"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152084078,
+          "headSha": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152084078"
+        }
+      ],
+      "maintainer_comments": []
+    },
+    {
+      "baseRefName": "ab/cycling-style",
+      "headRefName": "prepare/cycling-style",
+      "headRefOid": "5eb0952ef3bada1fc66b195131afb385f0a62692",
+      "isDraft": true,
+      "mergeStateStatus": "UNSTABLE",
+      "mergeable": "MERGEABLE",
+      "number": 14043,
+      "reviewDecision": "",
+      "reviews": [],
+      "statusCheckRollup": [
+        {
+          "__typename": "CheckRun",
+          "completedAt": "2026-10-31T00:47:40Z",
+          "conclusion": "SUCCESS",
+          "detailsUrl": "https://probot.github.io/apps/dco/",
+          "name": "DCO",
+          "startedAt": "2026-10-31T00:47:39Z",
+          "status": "COMPLETED",
+          "workflowName": ""
+        }
+      ],
+      "requested_reviewers": [],
+      "requested_teams": [],
+      "current_head_workflows": [
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083162,
+          "headSha": "5eb0952ef3bada1fc66b195131afb385f0a62692",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083162"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083225,
+          "headSha": "5eb0952ef3bada1fc66b195131afb385f0a62692",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083225"
+        },
+        {
+          "conclusion": "action_required",
+          "databaseId": 41152083135,
+          "headSha": "5eb0952ef3bada1fc66b195131afb385f0a62692",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41152083135"
+        }
+      ],
+      "maintainer_comments": []
+    }
+  ]
+}

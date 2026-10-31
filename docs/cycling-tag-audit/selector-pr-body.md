@@ -30,6 +30,8 @@ Related: #12692 (read-only reference; this PR does not modify it).
 
 Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
+
 ## Stack
 
 Part 1 of 5, in review order:

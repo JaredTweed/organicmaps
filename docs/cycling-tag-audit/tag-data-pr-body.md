@@ -13,6 +13,7 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 - Bicycle direction and access flags are refined in the same classification pass.
 - Owns the lane/shared-lane `ftypes` checkers used by the renderer, so the format PR no longer introduces classifier APIs. Baseline generator grouping remains #12692's implementation.
 - Includes the generated classifier assets in the first commit consuming the new types, so intermediate commits do not depend on a later regeneration commit to load them.
+- Formatting-only CI preparation uses clang-format 23; classification and rendering behavior are unchanged. This preparation was assisted by Codex.
 
 ## Compatibility
 
@@ -30,16 +31,18 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 
 - The cycling style uses `hwtag=yescar` for shared-space treatment. The independent `prepare/motor-vehicle-permissive` prerequisite owns that access change and its dedicated tests, including pedestrian/sidewalk implications. The complete preview retains the behavior rather than silently removing it during extraction.
 - `cyclewaytag` is registered in `UselessTypesChecker`, so it can be dropped when a feature exceeds the eight-type limit. That ordering decides whether a type-heavy road keeps its lane rendering and should be reviewed deliberately.
-- Aggregate counts are not matched features; individual routing correctness still needs route-graph tests.
+- Aggregate counts are not matched features. The separate research probe now exercises generated routing/access sections and the production router on controlled fixtures; this is not a broad country-specific routing audit.
 
 ## Review questions
 
 Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067):
 
 - The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
-- Eight-type cap: the Vancouver retention experiment produced identical aggregate type-combination dumps (209 lines containing `cyclewaytag`). This does not prove per-road equality or pixel equivalence. Keep the current ranking pending matched per-feature measurements, including any access/direction/surface type displaced by prioritizing cycling.
-- Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is now an independent prerequisite. End-to-end route-graph tests are still needed; no general claim of routing/visual independence is made.
+- Eight-type cap: a per-feature follow-up on the earlier retention-map pair finds unchanged complete type lists on all 1,858 cycling features. The whole maps are not certified equal (generated roundabout identities differ), and the earlier generator build pins were not archived. This is bounded evidence, not an all-regions or exact-current-head result; keep the current priority policy pending review.
+- Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is an independent prerequisite. Generated-map fixtures now cover bicycle access, ordinary/explicit/reversed one-way directions and contraflow; conflicting-tag and country-specific policy review remains. No general claim of routing/visual independence is made.
 - Pedestrian reuse is a follow-up, not part of this stack.
+
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Stack
 

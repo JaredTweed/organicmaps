@@ -13,10 +13,15 @@ It targets `master` directly and contains no selector, cycling classifier, rende
 
 ## Testing And Review
 
+- Concrete mapped use case: [Fairview Crescent, way 391455011](https://www.openstreetmap.org/way/391455011), checked at version 4, has `highway=pedestrian` and `motor_vehicle=permissive`. The access collector already recognizes permissive permission; the missing classifier flag can still exclude such a way from the car graph. This is a tag observation, not verification of signage or a recommendation to drive there.
 - Adds a dedicated regression covering path, footway, pedestrian and cycleway features; `yes`, `designated`, `permissive`, `no`, `private`, and more-specific `motorcar=no` in both tag orders.
 - The exact standalone branch `6daf0d8755` builds and passes the complete `OsmType` group with Debug assertions, one compiler worker and a 1800 MiB hard memory limit.
-- Generated-route behavior and the intended access interpretation still require routing review. Classification tests are not end-to-end routing proof.
+- A separate research probe on this exact standalone head passes 68 route checks through actual OSM-to-map/routing/access generation and the production router. The identical probe fails on the pre-change `303ef27fbc` baseline at the pedestrian/permissive shortcut case (it uses the detour); the runner is fail-fast, so this is not a claim that every baseline case was evaluated. Fixed-head checks cover both directions and the more-specific `motorcar=no` override in both tag orders.
+- The research probe is not hidden inside normal PR CI and does not reproduce the full real-world street network. The intended access interpretation still requires routing review. The cycling preview's solid/dotted policy is separate: permissive access does not establish physical protection or traffic volume.
+- Additional validation was prepared with Codex assistance; production code is unchanged from the reviewed standalone head.
 - Kept as a draft; do not infer approval from extraction or local tests.
+
+Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Related Cycling Stack
 

@@ -1,6 +1,10 @@
 #include "coding/files_container.hpp"
 #include "defines.hpp"
+#if __has_include("indexer/metaline_data.hpp")
+#include "indexer/metaline_data.hpp"
+#else
 #include "drape_frontend/metaline_data.hpp"
+#endif
 #include "generator/utils.hpp"
 #include "indexer/classificator.hpp"
 #include "indexer/classificator_loader.hpp"
@@ -16,6 +20,12 @@
 #include <map>
 #include <string>
 #include <vector>
+
+#if __has_include("indexer/metaline_data.hpp")
+namespace audit_metalines = feature::metalines;
+#else
+namespace audit_metalines = df::detail;
+#endif
 
 struct AuditFeature
 {
@@ -99,21 +109,21 @@ int main(int argc, char ** argv)
   for (auto const * name : {"classificator.txt", "types.txt"})
     metadata.classifier_paths[name] = GetPlatform().ReadPathForFile(name);
   container.ForEachTagInfo([&](auto const & info) { metadata.sections[info.m_tag] = info.m_size; });
-  std::vector<df::detail::MetalineData> chains;
+  std::vector<audit_metalines::MetalineData> chains;
   if (container.IsExist(METALINES_FILE_TAG))
   {
     auto reader = container.GetReader(METALINES_FILE_TAG);
     ReaderSource version(reader);
     metadata.metalines_version = ReadPrimitiveFromSource<uint8_t>(version);
     ReaderSource src(reader);
-    chains = df::detail::ReadMetalines(src, MwmSet::MwmId{});
+    chains = audit_metalines::ReadMetalines(src, MwmSet::MwmId{});
     CHECK_EQUAL(src.Size(), 0, ());
   }
   metadata.offsets_present = container.IsExist(METALINES_OFFSETS_FILE_TAG);
   if (metadata.offsets_present)
   {
     ReaderSource offsets(container.GetReader(METALINES_OFFSETS_FILE_TAG));
-    metadata.offsets_applied = df::detail::TryReadMetalineOffsets(offsets, MwmSet::MwmId{}, chains);
+    metadata.offsets_applied = audit_metalines::TryReadMetalineOffsets(offsets, MwmSet::MwmId{}, chains);
     CHECK(metadata.offsets_applied, ("Mismatched optional phase data"));
   }
   Emit(metadata);
