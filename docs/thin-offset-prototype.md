@@ -1,15 +1,19 @@
 # Thin offset prototype
 
-Local branch: `prototype/cycling-thin-offsets`. This is independent of the
+Branch: `prototype/cycling-thin-offsets-shared-centerline`, based on
+`prototype/cycling-thin-offsets`. This is independent of the
 split PRs and does not modify #12692 or the previous full-width prototype.
 
 Normal roads keep Standard-mode highway strokes, including their casing.
-Explicit attached cycling facilities are drawn just outside that casing,
+Explicit attached tracks and lanes are drawn just outside that casing,
 with a two-logical-pixel gap. Track is solid, lane dashed and shared lane
-dotted. All three have exactly the same stroke width at each zoom:
+dotted. Shared-lane dots always use one centerline treatment, including when
+both sides are shared. Mixed roads combine centered dots with the relevant
+offset track or lane. All three have exactly the same stroke width at each zoom:
 2 logical pixels through zoom 16 and 2.5 from zoom 17 onward. Dash lengths
 scale with the stroke so shared-lane dots do not become long rectangles.
-There is no extra cycling casing or duplicate blue centerline on these roads.
+There is no extra cycling casing. Only shared lanes keep a cycling centerline
+when separate side data is rendered.
 
 Side rendering starts at zoom 14, subject to each existing pattern's visibility
 threshold. Dedicated cycleways remain core lines, with the same width schedule
@@ -21,6 +25,10 @@ have no one-way arrows. Where a side's direction is unknown, the existing
 road-wide bicycle one-way flags supply the fallback. The original arrow zoom
 threshold (15) is retained. Dedicated/core cycling arrows remain on their core
 lines; the three stroke widths and patterns do not change.
+Shared-lane arrows follow their centered dots. If several shared sides are
+combined, an arrow is shown only when every represented side resolves to the
+same one-way direction. Opposing directions, explicit two-way access and
+unresolved disagreements never become a misleading single one-way arrow.
 Unqualified facilities without recorded sides retain a single thin centerline;
 the prototype does not fabricate which side has a facility. Below the side-line
 threshold, the conservative summary uses that same thin width schedule.

@@ -158,7 +158,7 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
   auto const lineSet = [](df::Stylist const & stylist)
   { return std::set<drule::LineRule const *>(stylist.m_lineRules.begin(), stylist.m_lineRules.end()); };
   for (auto const & item :
-       {Case{Kind::Lane, Kind::Shared, Kind::Shared, 2}, Case{Kind::Shared, Kind::Shared, Kind::Shared, 2},
+       {Case{Kind::Lane, Kind::Shared, Kind::Shared, 2}, Case{Kind::Shared, Kind::Shared, Kind::Shared, 1},
         Case{Kind::Shared, Kind::Track, Kind::Shared, 2}, Case{Kind::Track, Kind::Lane, Kind::Lane, 2},
         Case{Kind::None, Kind::Track, Kind::Track, 1}})
   {
@@ -203,7 +203,7 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
           {
             TEST_EQUAL(side.m_rules.size(), 1, ());
             TEST_EQUAL(side.m_rules.front()->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
-            auto const kind = side.m_side < 0 ? item.left : item.right;
+            auto const kind = side.m_side == 0 ? Kind::Shared : (side.m_side < 0 ? item.left : item.right);
             auto const rule = side.m_rules.front();
             TEST_EQUAL(rule->dashdot.has_value(), kind != Kind::Track, ());
             if (rule->dashdot)
@@ -215,14 +215,15 @@ UNIT_TEST(ClipSplinesBuilder_CyclingZoomTransition)
                 TEST_GREATER(rule->dashdot->dd.front(), rule->width * 3, ());
             }
           }
-          if (item.left == Kind::None)
-            TEST_EQUAL(result.m_cyclewaySides.front().m_side, 1, ());
-          else
-          {
-            TEST_EQUAL(result.m_cyclewaySides.front().m_side, -1, ());
-            if (item.sides == 2)
-              TEST_EQUAL(result.m_cyclewaySides.back().m_side, 1, ());
-          }
+          std::vector<int> expectedSides;
+          if (item.left != Kind::None && item.left != Kind::Shared)
+            expectedSides.push_back(-1);
+          if (item.right != Kind::None && item.right != Kind::Shared)
+            expectedSides.push_back(1);
+          if (item.left == Kind::Shared || item.right == Kind::Shared)
+            expectedSides.push_back(0);
+          for (size_t i = 0; i < expectedSides.size(); ++i)
+            TEST_EQUAL(result.m_cyclewaySides[i].m_side, expectedSides[i], ());
         }
       }
     }
@@ -298,7 +299,7 @@ UNIT_TEST(ClipSplinesBuilder_CyclingSideDirectionSymbols)
   using Kind = cycling_demo::Kind;
   using Direction = cycling_demo::Direction;
   auto const & cl = classif();
-  for (auto const kind : {Kind::Track, Kind::Lane, Kind::Shared})
+  for (auto const kind : {Kind::Track, Kind::Lane})
     for (auto const direction : {Direction::Unknown, Direction::Forward, Direction::Backward, Direction::Both})
       for (int flags = 0; flags != 4; ++flags)
         for (uint8_t const zoom : {14, 15, 18})
@@ -334,6 +335,72 @@ UNIT_TEST(ClipSplinesBuilder_CyclingSideDirectionSymbols)
             for (auto const rule : result.m_lineRules)
               TEST(!rule->pathsym || !rule->pathsym->name.starts_with("cycling-arrow-"), ());
           }
+}
+
+UNIT_TEST(ClipSplinesBuilder_SharedCenterlineDirections)
+{
+  classificator::Load();
+  using Kind = cycling_demo::Kind;
+  using Direction = cycling_demo::Direction;
+  auto const & cl = classif();
+  for (auto const left : {Direction::Unknown, Direction::Forward, Direction::Backward, Direction::Both})
+    for (auto const right : {Direction::Unknown, Direction::Forward, Direction::Backward, Direction::Both})
+      for (bool const roadOneWay : {false, true})
+        for (uint8_t const zoom : {14, 18})
+          for (auto const style :
+               {MapStyleDefaultLight, MapStyleDefaultDark, MapStyleCyclingLight, MapStyleCyclingDark})
+          {
+            MockTestFeature feature({P(0, 0), P(10, 0)}, cl.GetTypeByPath({"highway", "secondary"}));
+            feature.AddStyleType(cl.GetTypeByPath({"cyclewaytag", "shared_lane"}));
+            if (roadOneWay)
+              feature.AddStyleType(cl.GetTypeByPath({"hwtag", "onedir_bicycle"}));
+            feature.SetSideDemo(Kind::Shared, Kind::Shared, left, right);
+            df::Stylist result(feature, zoom, 0, style);
+            TEST_EQUAL(result.m_cyclewaySides.size(), 1, ());
+            auto const & center = result.m_cyclewaySides.front();
+            TEST_EQUAL(center.m_side, 0, ());
+            TEST_EQUAL(center.m_rules.size(), 1, ());
+            TEST_EQUAL(center.m_rules.front()->width, df::Stylist::CyclewayIndicatorWidth(zoom), ());
+            auto const resolve = [roadOneWay](Direction direction)
+            { return direction == Direction::Unknown && roadOneWay ? Direction::Forward : direction; };
+            auto const direction = resolve(left);
+            bool const expected = zoom >= 15 && direction == resolve(right) &&
+                                  (direction == Direction::Forward || direction == Direction::Backward);
+            TEST_EQUAL(center.m_arrowRule != nullptr, expected,
+                       (static_cast<char>(left), static_cast<char>(right), roadOneWay, zoom, style));
+            if (expected)
+              TEST_EQUAL(center.m_reverseArrow, direction == Direction::Backward, ());
+            for (auto const rule : result.m_lineRules)
+              TEST(!rule->pathsym || !rule->pathsym->name.starts_with("cycling-arrow-"), ());
+          }
+}
+
+UNIT_TEST(ClipSplinesBuilder_MixedSharedCenterlineArrows)
+{
+  classificator::Load();
+  using Kind = cycling_demo::Kind;
+  using Direction = cycling_demo::Direction;
+  auto const & cl = classif();
+  for (auto const separate : {Kind::Track, Kind::Lane})
+    for (bool const sharedOnLeft : {false, true})
+      for (auto const style : {MapStyleDefaultLight, MapStyleDefaultDark, MapStyleCyclingLight, MapStyleCyclingDark})
+      {
+        MockTestFeature feature({P(0, 0), P(10, 0)}, cl.GetTypeByPath({"highway", "secondary"}));
+        feature.AddStyleType(cl.GetTypeByPath({"cyclewaytag", "shared_lane"}));
+        feature.SetSideDemo(sharedOnLeft ? Kind::Shared : separate, sharedOnLeft ? separate : Kind::Shared,
+                            sharedOnLeft ? Direction::Backward : Direction::Forward,
+                            sharedOnLeft ? Direction::Forward : Direction::Backward);
+        df::Stylist result(feature, 18, 0, style);
+        TEST_EQUAL(result.m_cyclewaySides.size(), 2, ());
+        auto const & offset = result.m_cyclewaySides[0];
+        auto const & center = result.m_cyclewaySides[1];
+        TEST_EQUAL(offset.m_side, sharedOnLeft ? 1 : -1, ());
+        TEST_EQUAL(center.m_side, 0, ());
+        TEST(offset.m_arrowRule && center.m_arrowRule, ());
+        TEST(!offset.m_reverseArrow && center.m_reverseArrow, ());
+        TEST_EQUAL(offset.m_rules.front()->width, center.m_rules.front()->width, ());
+        TEST(center.m_rules.front()->dashdot.has_value(), ());
+      }
 }
 
 UNIT_TEST(ClipSplinesBuilder_CyclingSideArrowGeometry)

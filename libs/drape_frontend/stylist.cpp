@@ -320,6 +320,11 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       return std::find(types.begin(), types.end(), type) != types.end();
     };
     bool const roadOneWayForBikes = hasType("onedir_bicycle") || (hasType("oneway") && !hasType("bidir_bicycle"));
+    auto const resolveDirection = [&](cycling_demo::Direction direction)
+    {
+      return direction == cycling_demo::Direction::Unknown && roadOneWayForBikes ? cycling_demo::Direction::Forward
+                                                                                 : direction;
+    };
     drule::KeysT arrowKeys;
     cycleClassif.GetObject(cycleClassif.GetTypeByPath({"hwtag", "onedir_bicycle"}))
         ->GetSuitable(zoomLevel, geomType, arrowKeys);
@@ -342,9 +347,7 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       }
       if (stroke)
         rules.m_rules.push_back(indicator(stroke));
-      auto direction = side.m_direction;
-      if (direction == cycling_demo::Direction::Unknown && roadOneWayForBikes)
-        direction = cycling_demo::Direction::Forward;
+      auto const direction = resolveDirection(side.m_direction);
       if (stroke && (direction == cycling_demo::Direction::Forward || direction == cycling_demo::Direction::Backward))
       {
         // Side metadata is authoritative even when the aggregate road type is bidirectional.
@@ -367,8 +370,26 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       if (!rules.m_rules.empty())
         m_cyclewaySides.push_back(std::move(rules));
     };
-    collect(sideDemo->m_left, -1);
-    collect(sideDemo->m_right, 1);
+    if (sideDemo->m_left.m_kind != cycling_demo::Kind::Shared)
+      collect(sideDemo->m_left, -1);
+    if (sideDemo->m_right.m_kind != cycling_demo::Kind::Shared)
+      collect(sideDemo->m_right, 1);
+
+    std::optional<cycling_demo::Side> shared;
+    for (auto const & side : {sideDemo->m_left, sideDemo->m_right})
+    {
+      if (side.m_kind != cycling_demo::Kind::Shared)
+        continue;
+      auto const direction = resolveDirection(side.m_direction);
+      if (!shared)
+        shared = cycling_demo::Side{cycling_demo::Kind::Shared, direction};
+      else if (shared->m_direction != direction)
+        shared->m_direction = cycling_demo::Direction::Both;
+    }
+    // A single centerline summarizes shared sides. Only unanimous one-way
+    // directions can safely supply an arrow for that combined treatment.
+    if (shared)
+      collect(*shared, 0);
   }
 
   drule::KeysT keys;

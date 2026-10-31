@@ -122,7 +122,7 @@ public:
 
   struct SideRules
   {
-    int m_side;  // -1 left, +1 right, relative to stored feature geometry.
+    int m_side;  // -1 left, +1 right, 0 shared centerline, relative to stored geometry.
     LineRulesT m_rules;
     drule::LineRule const * m_arrowRule = nullptr;
     bool m_reverseArrow = false;

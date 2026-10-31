@@ -781,7 +781,7 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
     for (auto const rule : side.m_rules)
       sideWidth = std::max(sideWidth, rule->width * strokeScale);
     double const distance = (0.5 * (roadWidth + sideWidth) + 2.0 * visualScale) / m_params.m_currentScaleGtoP;
-    auto const shifted = source.Equidistant(side.m_side * distance);
+    auto const shifted = side.m_side == 0 ? source : source.Equidistant(side.m_side * distance);
     auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, shifted);
     for (auto const & piece : pieces)
     {
