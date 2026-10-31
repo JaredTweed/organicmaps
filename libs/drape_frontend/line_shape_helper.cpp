@@ -4,10 +4,35 @@
 
 #include "base/assert.hpp"
 
+#include <algorithm>
 #include <cmath>
 
 namespace df
 {
+double PathSymbolOffsetForClip(double first, double step, double sourceDistance)
+{
+  ASSERT_GREATER(step, 0.0, ());
+  sourceDistance = std::max(0.0, sourceDistance);
+  if (sourceDistance <= first)
+    return first - sourceDistance;
+  double result = std::fmod(first - sourceDistance, step);
+  return result < 0 ? result + step : result;
+}
+
+glsl::vec2 LinePixelOffsetOnSegment(std::vector<m2::PointD> const & path, size_t segment, m2::PointD const & point,
+                                    float offset)
+{
+  if (point.EqualDxDy(path[segment], 1e-12))
+    return LinePixelOffset(path, segment, offset);
+  if (point.EqualDxDy(path[segment + 1], 1e-12))
+    return LinePixelOffset(path, segment + 1, offset);
+  auto const delta = path[segment + 1] - path[segment];
+  double const length = delta.Length();
+  if (length == 0)
+    return {0.0f, 0.0f};
+  return glsl::vec2(delta.y * offset / length, -delta.x * offset / length);
+}
+
 float SideOffsetPixels(float roadWidth, float lineWidth, float gap, int side)
 {
   return side * (0.5f * (roadWidth + lineWidth) + gap);

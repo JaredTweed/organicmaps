@@ -14,6 +14,7 @@
 #include "geometry/point2d.hpp"
 
 #include <limits>
+#include <optional>
 #include <string>
 
 namespace df
@@ -82,6 +83,7 @@ struct LineViewParams : CommonViewParams
   dp::Color m_color;
   float m_width = 0;
   float m_lateralOffsetPixels = 0;  // Signed rightward displacement, independent of map zoom.
+  std::optional<m2::PointF> m_startOffsetPixels, m_endOffsetPixels;
   /// @todo Consider set defaults like RoundCap, RoundJoin?
   dp::LineCap m_cap;
   dp::LineJoin m_join;

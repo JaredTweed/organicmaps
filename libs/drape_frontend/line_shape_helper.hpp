@@ -74,4 +74,7 @@ double WrapDashPhase(double phase, double maskLength);
 double AdvanceDashPhase(double phase, double distance, bool reversed);
 float SideOffsetPixels(float roadWidth, float lineWidth, float gap, int side);
 glsl::vec2 LinePixelOffset(std::vector<m2::PointD> const & path, size_t index, float offset);
+glsl::vec2 LinePixelOffsetOnSegment(std::vector<m2::PointD> const & path, size_t segment, m2::PointD const & point,
+                                    float offset);
+double PathSymbolOffsetForClip(double first, double step, double sourceDistance);
 }  // namespace df

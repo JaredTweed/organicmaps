@@ -385,4 +385,36 @@ UNIT_TEST(ForEachSection_ExactMultiple)
     TEST_ALMOST_EQUAL_ABS(p1.Length(p2), 3.0, kSplitEps, ());
 }
 
+UNIT_TEST(ClipSplineSourceRanges_RepeatedSegments)
+{
+  m2::SharedSpline source(vector<m2::PointD>{{-2, 0}, {2, 0}, {-2, 0}, {2, 0}});
+  m2::RectD const rect(-1, -1, 1, 1);
+  vector<m2::SplineClipInfo> ranges;
+  auto const pieces = m2::ClipSplineByRect(rect, source, &ranges);
+  TEST_EQUAL(pieces.size(), 3, ());
+  TEST_EQUAL(ranges.size(), pieces.size(), ());
+  for (size_t i = 0; i < pieces.size(); ++i)
+  {
+    TEST_ALMOST_EQUAL_ABS(ranges[i].m_startDistance, 1.0 + 4.0 * i, 1e-9, ());
+    TEST_ALMOST_EQUAL_ABS(ranges[i].m_endDistance, 3.0 + 4.0 * i, 1e-9, ());
+    TEST_EQUAL(ranges[i].m_startSegment, i, ());
+    TEST_EQUAL(ranges[i].m_endSegment, i, ());
+  }
+  TEST(CompareSplineLists(pieces, m2::ClipSplineByRect(rect, source)), ());
+}
+
+UNIT_TEST(ClipSplineSourceRanges_InsideOutside)
+{
+  m2::SharedSpline source(vector<m2::PointD>{{0, 0}, {2, 0}, {2, 3}});
+  vector<m2::SplineClipInfo> ranges;
+  auto const inside = m2::ClipSplineByRect(m2::RectD(-1, -1, 4, 4), source, &ranges);
+  TEST_EQUAL(inside.size(), 1, ());
+  TEST_EQUAL(ranges.size(), 1, ());
+  TEST_EQUAL(ranges[0].m_startDistance, 0.0, ());
+  TEST_EQUAL(ranges[0].m_endDistance, 5.0, ());
+  TEST_EQUAL(ranges[0].m_endSegment, 1, ());
+  TEST(m2::ClipSplineByRect(m2::RectD(10, 10, 11, 11), source, &ranges).empty(), ());
+  TEST(ranges.empty(), ());
+}
+
 }  // namespace clipping_test

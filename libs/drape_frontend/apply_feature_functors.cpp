@@ -738,7 +738,7 @@ void ApplyLineFeatureGeometry::BuildGeometry(int zoomLevel, bool isIsoline)
 void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & lineRules, bool isIsoline,
                                                 std::vector<Stylist::SideRules> const & sideRules)
 {
-  ASSERT(!lineRules.empty(), ());
+  ASSERT(!lineRules.empty() || !sideRules.empty(), ());
   ASSERT(HasGeometry(), ());
   ASSERT(!isIsoline || lineRules.size() == 1, ());
 
@@ -750,8 +750,8 @@ void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & line
   // Directions/lengths are computed only on the splines actually returned —
   // see ClipSplinesBuilder::Release.
   bool const needSplineOffsets =
-      m_relsInfo.HasColors() || std::any_of(lineRules.begin(), lineRules.end(),
-                                            [](drule::LineRule const * rule) { return rule->dashdot.has_value(); });
+      m_relsInfo.HasColors() || std::any_of(lineRules.begin(), lineRules.end(), [](drule::LineRule const * rule)
+  { return rule->dashdot.has_value() || (rule->pathsym && rule->pathsym->name.starts_with("cycling-arrow-")); });
   // Keep the road axis in map coordinates; side displacement is pixel-sized
   // extrusion, just like the road's own width, throughout smooth zooming.
   m2::SharedSpline const sideSource = sideRules.empty() ? m2::SharedSpline() : m2::SharedSpline(m_builder.GetPath());
@@ -772,6 +772,8 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
 {
   double const visualScale = m_params.m_vparams.GetVisualScale();
   double const strokeScale = visualScale;
+  std::vector<m2::SplineClipInfo> ranges;
+  auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, source, &ranges);
   for (auto const & side : sideRules)
   {
     double sideWidth = 0.0;
@@ -779,35 +781,23 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
       sideWidth = std::max(sideWidth, rule->width * strokeScale);
     float const lateralOffset =
         SideOffsetPixels(side.m_roadWidth * visualScale, sideWidth, 2.0 * visualScale, side.m_side);
-    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, source);
-    for (auto const & piece : pieces)
+    for (size_t index = 0; index < pieces.size(); ++index)
     {
-      // Same source-distance projection used by ClipSplinesBuilder; preserve
-      // each shifted feature's phase when it is split between tile readers.
-      double clippedOffset = 0.0;
+      auto const & piece = pieces[index];
+      auto const & range = ranges[index];
+      double const clippedOffset = range.m_startDistance;
       auto const & path = source->GetPath();
-      auto const start = piece->GetPath().front();
-      for (size_t i = 1; i < path.size(); ++i)
-      {
-        auto const segment = path[i] - path[i - 1];
-        double const lengthSquared = segment.SquaredLength();
-        if (lengthSquared == 0.0)
-          continue;
-        double const t = DotProduct(start - path[i - 1], segment) / lengthSquared;
-        double const length = std::sqrt(lengthSquared);
-        if (t >= 0.0 && t <= 1.0 && (path[i - 1] + segment * t).EqualDxDy(start, 1e-12))
-        {
-          clippedOffset += length * t;
-          break;
-        }
-        clippedOffset += length;
-      }
+      auto const startOffset =
+          LinePixelOffsetOnSegment(path, range.m_startSegment, piece->GetPath().front(), lateralOffset);
+      auto const endOffset = LinePixelOffsetOnSegment(path, range.m_endSegment, piece->GetPath().back(), lateralOffset);
       for (auto const rule : side.m_rules)
       {
         LineViewParams params;
         params.m_tileCenter = m_params.m_tileRect.Center();
         ExtractLineParams(*rule, strokeScale, params);
         params.m_lateralOffsetPixels = lateralOffset;
+        params.m_startOffsetPixels = m2::PointF(startOffset.x, startOffset.y);
+        params.m_endOffsetPixels = m2::PointF(endOffset.x, endOffset.y);
         params.m_depth = PriorityToDepth(rule->priority, drule::line, 0);
         params.m_rank = m_f.GetRank();
         params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
@@ -824,8 +814,10 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
         params.m_depth = PriorityToDepth(side.m_arrowRule->priority, drule::line, 0);
         params.m_rank = m_f.GetRank();
         params.m_symbolName = symbol.name;
-        params.m_offset = static_cast<float>(symbol.offset * visualScale);
         params.m_step = static_cast<float>(symbol.step * visualScale);
+        double const orientedStart = side.m_reverseArrow ? source->GetLength() - range.m_endDistance : clippedOffset;
+        params.m_offset = PathSymbolOffsetForClip(symbol.offset * visualScale, params.m_step,
+                                                  orientedStart * m_params.m_currentScaleGtoP);
         params.m_lateralOffsetPixels = side.m_reverseArrow ? -lateralOffset : lateralOffset;
         params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
         m_params.m_insertShape(make_unique_dp<PathSymbolShape>(side.GetArrowSpline(piece), params));
@@ -851,8 +843,14 @@ void ApplyLineFeatureGeometry::ProcessRule(drule::LineRule const & lineRule)
     params.m_step = static_cast<float>(symRule.step * visScale);
     params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
 
-    for (auto const & spline : m_clippedSplines)
-      m_params.m_insertShape(make_unique_dp<PathSymbolShape>(spline, params));
+    auto const & offsets = m_builder.GetSplineOffsets();
+    for (size_t i = 0; i < m_clippedSplines.size(); ++i)
+    {
+      if (symRule.name.starts_with("cycling-arrow-") && i < offsets.size())
+        params.m_offset =
+            PathSymbolOffsetForClip(symRule.offset * visScale, params.m_step, offsets[i] * m_params.m_currentScaleGtoP);
+      m_params.m_insertShape(make_unique_dp<PathSymbolShape>(m_clippedSplines[i], params));
+    }
   }
   else
   {

@@ -126,11 +126,12 @@ public:
     LineRulesT m_rules;
     drule::LineRule const * m_arrowRule = nullptr;
     bool m_reverseArrow = false;
-    float m_roadWidth = 0;  // Style pixels, excluding bridge decoration.
+    float m_roadWidth = 0;  // Style pixels, excluding bridge/tunnel decoration.
 
     m2::SharedSpline GetArrowSpline(m2::SharedSpline const & piece) const;
   };
   std::vector<SideRules> m_cyclewaySides;
+  bool HasLineRules() const { return !m_lineRules.empty() || !m_cyclewaySides.empty(); }
 
   ftypes::RoadShieldsSetT m_roadShields;
 

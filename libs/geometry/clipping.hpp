@@ -21,7 +21,14 @@ void ClipTriangleByRect(m2::RectD const & rect, m2::PointD const & p1, m2::Point
 /// underlying implementation is still correct for Inside/Outside paths
 /// (just redundant), so passing such paths is safe but wasteful.
 void ClipPathByRect(m2::RectD const & rect, std::vector<m2::PointD> const & path, std::vector<m2::SharedSpline> & out);
-std::vector<m2::SharedSpline> ClipSplineByRect(m2::RectD const & rect, m2::SharedSpline const & spline);
+struct SplineClipInfo
+{
+  double m_startDistance = 0, m_endDistance = 0;
+  size_t m_startSegment = 0, m_endSegment = 0;
+};
+// Optional source ranges disambiguate repeated points and preserve phase/context across tile cuts.
+std::vector<m2::SharedSpline> ClipSplineByRect(m2::RectD const & rect, m2::SharedSpline const & spline,
+                                               std::vector<SplineClipInfo> * sourceRanges = nullptr);
 
 using GuidePointsForSmooth = std::vector<std::pair<m2::PointD, m2::PointD>>;
 void ClipPathByRectBeforeSmooth(m2::RectD const & rect, std::vector<m2::PointD> const & path,

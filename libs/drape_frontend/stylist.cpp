@@ -411,10 +411,11 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
           normalRoadLines.push_back(normalRules.Find(key)->GetLine());
 
       auto widthKeys = normalKeys;
-      if (ftype::GetLevel(t) >= 3 && normalClassif.GetObject(ftype::Trunc(t, 3))->GetName() == "bridge")
+      auto const structure = ftype::GetLevel(t) >= 3 ? normalClassif.GetObject(ftype::Trunc(t, 3))->GetName() : "";
+      if (structure == "bridge" || structure == "tunnel")
       {
         // Only dimension the cycling displacement from the ordinary road.
-        // The complete bridge rules above remain part of the rendered road.
+        // The complete structural rules above remain part of the rendered road.
         widthKeys.clear();
         normalClassif.GetObject(ftype::Trunc(t, 2))->GetSuitable(zoomLevel, geomType, widthKeys);
         feature::FilterRulesByRuntimeSelector(f, zoomLevel, normalRules, widthKeys);
@@ -499,7 +500,7 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
                         cycleCoreKeys.end());
   }
 
-  if (keys.empty() && cycleCoreKeys.empty() && normalRoadLines.empty())
+  if (keys.empty() && cycleCoreKeys.empty() && normalRoadLines.empty() && m_cyclewaySides.empty())
     return;
 
   // Leave only one area drule and an optional hatching drule.

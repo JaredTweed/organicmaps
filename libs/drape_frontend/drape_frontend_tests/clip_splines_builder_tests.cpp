@@ -476,6 +476,88 @@ UNIT_TEST(ClipSplinesBuilder_CyclingBridgeContinuity)
   TEST(sawDecoration, ());
 }
 
+UNIT_TEST(ClipSplinesBuilder_CyclingTunnelContinuity)
+{
+  classificator::Load();
+  auto const & cl = classif();
+  for (auto const name : {"motorway", "primary", "secondary", "residential"})
+    for (uint8_t const zoom : {14, 17, 19})
+      for (auto const style : {MapStyleDefaultLight, MapStyleDefaultDark, MapStyleCyclingLight, MapStyleCyclingDark})
+      {
+        MockTestFeature plain({P(0, 0), P(10, 0)}, cl.GetTypeByPath({"highway", name}));
+        MockTestFeature tunnel({P(0, 0), P(10, 0)}, cl.GetTypeByPath({"highway", name, "tunnel"}));
+        for (auto * feature : {&plain, &tunnel})
+          feature->SetSideDemo(cycling_demo::Kind::Lane, cycling_demo::Kind::None);
+        df::Stylist a(plain, zoom, 0, style), b(tunnel, zoom, 0, style);
+        TEST_EQUAL(a.m_cyclewaySides.size(), 1, ());
+        TEST_EQUAL(b.m_cyclewaySides.size(), 1, ());
+        TEST_EQUAL(a.m_cyclewaySides.front().m_roadWidth, b.m_cyclewaySides.front().m_roadWidth, (name, zoom, style));
+      }
+}
+
+UNIT_TEST(ClipSplinesBuilder_OnlyCyclingIndicator)
+{
+  classificator::Load();
+  auto const road = classif().GetTypeByPath({"highway", "service"});
+  for (auto const style : {MapStyleDefaultLight, MapStyleDefaultDark, MapStyleCyclingLight, MapStyleCyclingDark})
+  {
+    MockTestFeature feature({P(0, 0), P(10, 0)}, road);
+    feature.SetSideDemo(cycling_demo::Kind::Lane, cycling_demo::Kind::None);
+    df::Stylist result(feature, 14, 0, style);
+    TEST(result.m_lineRules.empty(), ());
+    TEST(result.HasLineRules(), ());
+    TEST_EQUAL(result.m_cyclewaySides.size(), 1, ());
+    TEST(!result.m_cyclewaySides.front().m_rules.empty(), ());
+  }
+}
+
+UNIT_TEST(ClipSplinesBuilder_RepeatedSourceOffsets)
+{
+  auto params = MakeParams(kNoSimplifyZoom, 0);
+  params.m_tileRect = m2::RectD(-1, -1, 1, 1);
+  MockTestFeature feature({P(-2, 0), P(2, 0), P(-2, 0), P(2, 0)});
+  df::ClipSplinesBuilder builder(params);
+  builder.Build(feature, kNoSimplifyZoom);
+  auto const pieces = builder.Release(false, true);
+  TEST_EQUAL(pieces.size(), 3, ());
+  for (size_t i = 0; i < pieces.size(); ++i)
+    TEST_ALMOST_EQUAL_ABS(builder.GetSplineOffsets()[i], 1.0 + 4.0 * i, 1e-9, ());
+}
+
+UNIT_TEST(ClipSplinesBuilder_ArrowPhaseAcrossCuts)
+{
+  for (bool const reverse : {false, true})
+    for (auto const range : {std::pair{0.0, 100.0}, std::pair{100.0, 200.0}, std::pair{200.0, 300.0}})
+    {
+      double const start = reverse ? 300.0 - range.second : range.first;
+      auto const first = df::PathSymbolOffsetForClip(90.0, 74.0, start);
+      for (double local = first; local <= range.second - range.first; local += 74.0)
+      {
+        double const oriented = start + local;
+        TEST_GREATER_OR_EQUAL(oriented, 90.0, ());
+        TEST_ALMOST_EQUAL_ABS(std::fmod(oriented - 90.0, 74.0), 0.0, 1e-9, ());
+      }
+    }
+  TEST_EQUAL(df::PathSymbolOffsetForClip(90, 74, 0), 90.0, ());
+  TEST_EQUAL(df::PathSymbolOffsetForClip(90, 74, 100), 64.0, ());
+}
+
+UNIT_TEST(ClipSplinesBuilder_CornerContextAcrossCuts)
+{
+  m2::SharedSpline source(std::vector<P>{P(0, 0), P(10, 0), P(10, 10)});
+  std::vector<m2::SplineClipInfo> a, b;
+  auto const left = m2::ClipSplineByRect(m2::RectD(0, -1, 10, 0), source, &a);
+  auto const right = m2::ClipSplineByRect(m2::RectD(10, 0, 11, 10), source, &b);
+  TEST_EQUAL(left.size(), 1, ());
+  TEST_EQUAL(right.size(), 1, ());
+  auto const end = df::LinePixelOffsetOnSegment(source->GetPath(), a[0].m_endSegment, left[0]->GetPath().back(), 5);
+  auto const start =
+      df::LinePixelOffsetOnSegment(source->GetPath(), b[0].m_startSegment, right[0]->GetPath().front(), 5);
+  TEST_ALMOST_EQUAL_ABS(glsl::length(end - start), 0.0f, 1e-5f, ());
+  TEST_ALMOST_EQUAL_ABS(end.x, 5.0f, 1e-5f, ());
+  TEST_ALMOST_EQUAL_ABS(end.y, -5.0f, 1e-5f, ());
+}
+
 UNIT_TEST(ClipSplinesBuilder_ScreenSpaceGap)
 {
   for (float const density : {1.0f, 2.0f, 3.0f})

@@ -361,11 +361,15 @@ void LineShape::ForEachSplineSection(FnT && fn) const
     }
 
     glsl::vec2 const tangent = glsl::ToVec2(tanlen.first);
+    auto offset1 = LinePixelOffset(path, i, m_params.m_lateralOffsetPixels);
+    auto offset2 = LinePixelOffset(path, j, m_params.m_lateralOffsetPixels);
+    if (i == 0 && m_params.m_startOffsetPixels)
+      offset1 = glsl::ToVec2(*m_params.m_startOffsetPixels);
+    if (j == sz && m_params.m_endOffsetPixels)
+      offset2 = glsl::ToVec2(*m_params.m_endOffsetPixels);
 
     fn(ToShapeVertex2(path[i]), ToShapeVertex2(path[j]), tangent, tanlen.second, {-tangent.y, tangent.x},
-       {tangent.y, -tangent.x}, (i == 0 ? 0x1 : 0) + (j == sz ? 0x2 : 0),
-       LinePixelOffset(path, i, m_params.m_lateralOffsetPixels),
-       LinePixelOffset(path, j, m_params.m_lateralOffsetPixels));
+       {tangent.y, -tangent.x}, (i == 0 ? 0x1 : 0) + (j == sz ? 0x2 : 0), offset1, offset2);
 
     i = j;
   }

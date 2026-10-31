@@ -33,6 +33,12 @@ class SideOffsetToolConfigTest(unittest.TestCase):
                 patch("visual_phone.command", return_value=paths):
             validate_map_reuse(native, {"source_commit": "1" * 40})
 
+    def test_clip_context_preview_can_reuse_the_demo_map(self):
+        native = {"commit": "2" * 40, "map_source_commit": "1" * 40, "source_root": "unused"}
+        with patch("visual_phone.PACKAGE", "app.organicmaps.cyclingsides.debug"), \
+                patch("visual_phone.command", return_value=b"libs/geometry/clipping.cpp\nlibs/geometry/clipping.hpp\n"):
+            validate_map_reuse(native, {"source_commit": "1" * 40})
+
     def test_equivalence_app_cannot_use_prototype_map_reuse(self):
         native = {"commit": "2" * 40, "map_source_commit": "1" * 40, "source_root": "unused"}
         with patch("visual_phone.PACKAGE", "app.organicmaps.cyclingfinal.debug"), self.assertRaises(ValueError):
