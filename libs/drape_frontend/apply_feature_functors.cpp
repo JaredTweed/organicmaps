@@ -774,17 +774,20 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
   double const strokeScale = visualScale;
   for (auto const & side : sideRules)
   {
-    auto const rect = mercator::RectByCenterXYAndSizeInMeters(source->GetPath().front(), 8.0);
-    double const span = rect.SizeX() / 2;
-    auto const taper = MakeJunctionTaper(source, side.m_junctions, span, span / 8);
-    auto const & taperedSource = taper.m_spline;
-    std::vector<m2::SplineClipInfo> ranges;
-    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, taperedSource, &ranges);
     double sideWidth = 0.0;
     for (auto const rule : side.m_rules)
       sideWidth = std::max(sideWidth, rule->width * strokeScale);
     float const lateralOffset =
         SideOffsetPixels(side.m_roadWidth * visualScale, sideWidth, 2.0 * visualScale, side.m_side);
+    auto const rect = mercator::RectByCenterXYAndSizeInMeters(source->GetPath().front(), 8.0);
+    double const geographicSpan = rect.SizeX() / 2;
+    // Avoid a sharp sideways kink at lower zooms. Matching tolerance remains
+    // one metre; a longer visual taper must never authorize a more distant node.
+    double const span = std::max(geographicSpan, 4.0 * std::abs(lateralOffset) / m_params.m_currentScaleGtoP);
+    auto const taper = MakeJunctionTaper(source, side.m_junctions, span, geographicSpan / 8);
+    auto const & taperedSource = taper.m_spline;
+    std::vector<m2::SplineClipInfo> ranges;
+    auto const pieces = m2::ClipSplineByRect(m_params.m_tileRect, taperedSource, &ranges);
     for (size_t index = 0; index < pieces.size(); ++index)
     {
       auto const & piece = pieces[index];

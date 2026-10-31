@@ -9,7 +9,9 @@ rejects mismatched levels/layers, restrictions, barriers, and ambiguous
 collinear approaches. Equal coordinates without a shared ID do not connect.
 
 At an authorized point the existing side indicator smoothly reduces its
-screen-space offset to zero over eight metres on each side. Its width, color,
+screen-space offset to zero over at least eight metres on each side, with a
+minimum screen-space taper length to avoid sharp kinks at lower zooms. The
+one-metre junction matching tolerance never increases with zoom. Its width, color,
 pattern, and direction remain unchanged. Arrows use the same interpolated
 offsets, including reversed arrows. Shared-lane dots remain centered. The
 connector itself and routing geometry are not modified. This indicates
