@@ -709,8 +709,8 @@ void ApplyAreaFeature::ProcessRule(drule::AreaRule const & areaRule, double area
 }
 
 ApplyLineFeatureGeometry::ApplyLineFeatureGeometry(Params const & params, FeatureType & f,
-                                                   RelationsDrawSettings const & relsSettings,
-                                                   double dashPhaseOffset, bool dashPhaseReversed)
+                                                   RelationsDrawSettings const & relsSettings, double dashPhaseOffset,
+                                                   bool dashPhaseReversed)
   : TBase(params, f, {})
   , m_relsInfo(relsSettings)
   , m_builder(params)
@@ -728,8 +728,9 @@ void ApplyLineFeatureGeometry::BuildGeometry(int zoomLevel, bool isIsoline)
 #endif
 
   auto const demo = cycling_demo::Decode(m_f.GetMetadata(feature::Metadata::FMD_TEST_ID));
-  double const padding = demo && zoomLevel >= Stylist::kCyclewaySideMinZoom ?
-      64.0 * m_params.m_vparams.GetVisualScale() / m_params.m_currentScaleGtoP : 0.0;
+  double const padding = demo && zoomLevel >= Stylist::kCyclewaySideMinZoom
+                           ? 64.0 * m_params.m_vparams.GetVisualScale() / m_params.m_currentScaleGtoP
+                           : 0.0;
   m_builder.Build(m_f, zoomLevel, isIsoline, padding);
 }
 
@@ -749,7 +750,7 @@ void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & line
   // see ClipSplinesBuilder::Release.
   bool const needSplineOffsets =
       m_relsInfo.HasColors() || std::any_of(lineRules.begin(), lineRules.end(),
-                                           [](drule::LineRule const * rule) { return rule->dashdot.has_value(); });
+                                            [](drule::LineRule const * rule) { return rule->dashdot.has_value(); });
   // Offset the complete feature before clipping, so tile edges do not move
   // endpoints or restart the side geometry independently in each tile.
   m2::SharedSpline const sideSource = sideRules.empty() ? m2::SharedSpline() : m2::SharedSpline(m_builder.GetPath());
@@ -765,8 +766,7 @@ void ApplyLineFeatureGeometry::ProcessLineRules(Stylist::LineRulesT const & line
 #endif
 }
 
-void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
-                                                Stylist::LineRulesT const & roadRules,
+void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source, Stylist::LineRulesT const & roadRules,
                                                 std::vector<Stylist::SideRules> const & sideRules)
 {
   double const visualScale = m_params.m_vparams.GetVisualScale();
@@ -817,6 +817,19 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
         params.m_dashPhaseReversed = m_dashPhaseReversed;
         params.m_dashPhaseOffset = m_dashPhaseOffset + (m_dashPhaseReversed ? -clippedOffset : clippedOffset);
         m_params.m_insertShape(make_unique_dp<LineShape>(piece, params));
+      }
+      if (side.m_arrowRule)
+      {
+        auto const & symbol = *side.m_arrowRule->pathsym;
+        PathSymbolViewParams params;
+        params.m_tileCenter = m_params.m_tileRect.Center();
+        params.m_depth = PriorityToDepth(side.m_arrowRule->priority, drule::line, 0);
+        params.m_rank = m_f.GetRank();
+        params.m_symbolName = symbol.name;
+        params.m_offset = static_cast<float>(symbol.offset * visualScale);
+        params.m_step = static_cast<float>(symbol.step * visualScale);
+        params.m_baseGtoPScale = m_params.m_currentScaleGtoP;
+        m_params.m_insertShape(make_unique_dp<PathSymbolShape>(side.GetArrowSpline(piece), params));
       }
     }
   }

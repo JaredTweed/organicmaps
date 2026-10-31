@@ -12,6 +12,10 @@
 #include <vector>
 
 class FeatureType;
+namespace m2
+{
+class SharedSpline;
+}
 
 namespace df
 {
@@ -120,6 +124,10 @@ public:
   {
     int m_side;  // -1 left, +1 right, relative to stored feature geometry.
     LineRulesT m_rules;
+    drule::LineRule const * m_arrowRule = nullptr;
+    bool m_reverseArrow = false;
+
+    m2::SharedSpline GetArrowSpline(m2::SharedSpline const & piece) const;
   };
   std::vector<SideRules> m_cyclewaySides;
 

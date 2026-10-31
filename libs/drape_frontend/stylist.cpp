@@ -11,11 +11,22 @@
 
 #include "drape/hatching_decl.hpp"
 
+#include "geometry/spline.hpp"
+
 #include <algorithm>
 #include <limits>
 
 namespace df
 {
+m2::SharedSpline Stylist::SideRules::GetArrowSpline(m2::SharedSpline const & piece) const
+{
+  if (!m_reverseArrow)
+    return piece;
+  auto path = piece->GetPath();
+  std::reverse(path.begin(), path.end());
+  return m2::SharedSpline(std::move(path));
+}
+
 IsHatchingTerritoryChecker::TwoLevel45::TwoLevel45()
   : ftypes::BaseCheckerEx({{"amenity", "prison"},
                            {"boundary", "aboriginal_lands"},
@@ -303,6 +314,15 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   }
   if (useSideLines)
   {
+    auto const hasType = [&](char const * name)
+    {
+      auto const type = cl.GetTypeByPath({"hwtag", name});
+      return std::find(types.begin(), types.end(), type) != types.end();
+    };
+    bool const roadOneWayForBikes = hasType("onedir_bicycle") || (hasType("oneway") && !hasType("bidir_bicycle"));
+    drule::KeysT arrowKeys;
+    cycleClassif.GetObject(cycleClassif.GetTypeByPath({"hwtag", "onedir_bicycle"}))
+        ->GetSuitable(zoomLevel, geomType, arrowKeys);
     auto const collect = [&](cycling_demo::Side const & side, int sign)
     {
       if (side.m_kind == cycling_demo::Kind::None)
@@ -322,6 +342,28 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
       }
       if (stroke)
         rules.m_rules.push_back(indicator(stroke));
+      auto direction = side.m_direction;
+      if (direction == cycling_demo::Direction::Unknown && roadOneWayForBikes)
+        direction = cycling_demo::Direction::Forward;
+      if (stroke && (direction == cycling_demo::Direction::Forward || direction == cycling_demo::Direction::Backward))
+      {
+        // Side metadata is authoritative even when the aggregate road type is bidirectional.
+        // Reuse the existing zoom-dependent symbol for this side's own pattern.
+        std::string const prefix =
+            side.m_kind == cycling_demo::Kind::Track ? "cycling-arrow-solid-" : "cycling-arrow-patterned-";
+        for (auto const & key : arrowKeys)
+        {
+          if (key.m_type != drule::line)
+            continue;
+          auto const rule = cycleRules.Find(key)->GetLine();
+          if (rule->pathsym && rule->pathsym->name.starts_with(prefix))
+          {
+            rules.m_arrowRule = rule;
+            rules.m_reverseArrow = direction == cycling_demo::Direction::Backward;
+            break;
+          }
+        }
+      }
       if (!rules.m_rules.empty())
         m_cyclewaySides.push_back(std::move(rules));
     };
@@ -376,7 +418,7 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
   // Cycling direction symbols belong to hwtag types, not the facility stroke.
   // Borrow them in generic modes too, retaining the original runtime selectors
   // (notably the bicycle contraflow exception to a car one-way restriction).
-  if (geomType == feature::GeomType::Line && style != cycleStyle)
+  if (geomType == feature::GeomType::Line && style != cycleStyle && !useSideLines)
   {
     drule::KeysT arrows;
     for (uint32_t type : types)
@@ -400,6 +442,18 @@ Stylist::Stylist(FeatureType & f, uint8_t zoomLevel, int8_t deviceLang, MapStyle
                  keys.end());
       cycleCoreKeys.insert(cycleCoreKeys.end(), arrows.begin(), arrows.end());
     }
+  }
+
+  if (useSideLines)
+  {
+    auto const isBikeArrow = [](drule::LineRule const * rule)
+    { return rule->pathsym && rule->pathsym->name.starts_with("cycling-arrow-"); };
+    keys.erase(std::remove_if(keys.begin(), keys.end(), [&](auto const & key)
+    { return key.m_type == drule::line && isBikeArrow(m_rulesHolder.Find(key)->GetLine()); }),
+               keys.end());
+    cycleCoreKeys.erase(std::remove_if(cycleCoreKeys.begin(), cycleCoreKeys.end(), [&](auto const & key)
+    { return key.m_type == drule::line && isBikeArrow(cycleRules.Find(key)->GetLine()); }),
+                        cycleCoreKeys.end());
   }
 
   if (keys.empty() && cycleCoreKeys.empty() && normalRoadLines.empty())

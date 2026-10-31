@@ -14,6 +14,13 @@ There is no extra cycling casing or duplicate blue centerline on these roads.
 Side rendering starts at zoom 14, subject to each existing pattern's visibility
 threshold. Dedicated cycleways remain core lines, with the same width schedule
 as the three indicators. Existing bicycle direction symbols are retained.
+For offset facilities, one-way bicycle arrows follow the same offset geometry,
+not the road centerline. Explicit side direction overrides the road-wide
+direction: backward sides reverse only their arrow geometry, and two-way sides
+have no one-way arrows. Where a side's direction is unknown, the existing
+road-wide bicycle one-way flags supply the fallback. The original arrow zoom
+threshold (15) is retained. Dedicated/core cycling arrows remain on their core
+lines; the three stroke widths and patterns do not change.
 Unqualified facilities without recorded sides retain a single thin centerline;
 the prototype does not fabricate which side has a facility. Below the side-line
 threshold, the conservative summary uses that same thin width schedule.

@@ -47,10 +47,12 @@ public:
     m_header = (m_header & ~feature::HEADER_MASK_TYPE) | count;
   }
 
-  void SetSideDemo(cycling_demo::Kind left, cycling_demo::Kind right)
+  void SetSideDemo(cycling_demo::Kind left, cycling_demo::Kind right,
+                   cycling_demo::Direction leftDirection = cycling_demo::Direction::Unknown,
+                   cycling_demo::Direction rightDirection = cycling_demo::Direction::Unknown)
   {
-    m_metadata.Set(feature::Metadata::FMD_TEST_ID, cycling_demo::Encode({{left, cycling_demo::Direction::Unknown},
-                                                                         {right, cycling_demo::Direction::Unknown}}));
+    m_metadata.Set(feature::Metadata::FMD_TEST_ID,
+                   cycling_demo::Encode({{left, leftDirection}, {right, rightDirection}}));
   }
 };
 
@@ -280,7 +282,6 @@ UNIT_TEST(ClipSplinesBuilder_CyclingDirectionSymbols)
           df::Stylist reference(feature, zoom, 0, styles.second);
           auto const wanted = symbols(reference);
           TEST_EQUAL(wanted.empty(), zoom < 15 || std::string(direction) == "bidir_bicycle", (zoom, direction));
-          feature.SetSideDemo(cycling_demo::Kind::Lane, cycling_demo::Kind::Shared);
           df::Stylist standard(feature, zoom, 0, styles.first);
           df::Stylist cycling(feature, zoom, 0, styles.second);
           TEST(symbols(standard) == wanted, (zoom, direction, facility));
@@ -289,6 +290,63 @@ UNIT_TEST(ClipSplinesBuilder_CyclingDirectionSymbols)
       }
     }
   }
+}
+
+UNIT_TEST(ClipSplinesBuilder_CyclingSideDirectionSymbols)
+{
+  classificator::Load();
+  using Kind = cycling_demo::Kind;
+  using Direction = cycling_demo::Direction;
+  auto const & cl = classif();
+  for (auto const kind : {Kind::Track, Kind::Lane, Kind::Shared})
+    for (auto const direction : {Direction::Unknown, Direction::Forward, Direction::Backward, Direction::Both})
+      for (int flags = 0; flags != 4; ++flags)
+        for (uint8_t const zoom : {14, 15, 18})
+          for (auto const style :
+               {MapStyleDefaultLight, MapStyleDefaultDark, MapStyleCyclingLight, MapStyleCyclingDark})
+          {
+            MockTestFeature feature({P(0, 0), P(10, 0)}, cl.GetTypeByPath({"highway", "secondary"}));
+            feature.AddStyleType(cl.GetTypeByPath({"cyclewaytag", cycling_demo::TypeName(kind)}));
+            if (flags == 1 || flags == 2)
+              feature.AddStyleType(cl.GetTypeByPath({"hwtag", "oneway"}));
+            if (flags == 2)
+              feature.AddStyleType(cl.GetTypeByPath({"hwtag", "bidir_bicycle"}));
+            if (flags == 3)
+              feature.AddStyleType(cl.GetTypeByPath({"hwtag", "onedir_bicycle"}));
+            feature.SetSideDemo(kind, kind, direction, Direction::Both);
+            df::Stylist result(feature, zoom, 0, style);
+            TEST_EQUAL(result.m_cyclewaySides.size(), 2, ());
+            auto const & left = result.m_cyclewaySides[0];
+            auto const & right = result.m_cyclewaySides[1];
+            bool const expected = zoom >= 15 && (direction == Direction::Forward || direction == Direction::Backward ||
+                                                 (direction == Direction::Unknown && (flags == 1 || flags == 3)));
+            TEST_EQUAL(left.m_arrowRule != nullptr, expected, (kind, direction, flags, zoom, style));
+            TEST(right.m_arrowRule == nullptr, ());
+            TEST_EQUAL(left.m_side, -1, ());
+            TEST_EQUAL(right.m_side, 1, ());
+            if (expected)
+            {
+              TEST_EQUAL(left.m_reverseArrow, direction == Direction::Backward, ());
+              auto const prefix = kind == Kind::Track ? "cycling-arrow-solid-" : "cycling-arrow-patterned-";
+              TEST(left.m_arrowRule->pathsym->name.starts_with(prefix), ());
+            }
+            for (auto const rule : result.m_lineRules)
+              TEST(!rule->pathsym || !rule->pathsym->name.starts_with("cycling-arrow-"), ());
+          }
+}
+
+UNIT_TEST(ClipSplinesBuilder_CyclingSideArrowGeometry)
+{
+  m2::SharedSpline const piece(std::vector<P>{P(0, 2), P(5, 2), P(10, 2)});
+  df::Stylist::SideRules side{-1, {}};
+  auto const forward = side.GetArrowSpline(piece);
+  TEST(forward->GetPath() == piece->GetPath(), ());
+  side.m_reverseArrow = true;
+  auto const backward = side.GetArrowSpline(piece);
+  TEST_EQUAL(backward->GetPath().front(), P(10, 2), ());
+  TEST_EQUAL(backward->GetPath().back(), P(0, 2), ());
+  TEST_EQUAL(piece->GetPath().front(), P(0, 2), ());
+  TEST_EQUAL(piece->GetPath().back(), P(10, 2), ());
 }
 
 UNIT_TEST(ClipSplinesBuilder_SideOffsetPadding)
