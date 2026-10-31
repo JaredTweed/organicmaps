@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import shlex
 from pathlib import Path
 import subprocess
 import zipfile
@@ -51,9 +52,10 @@ def main():
         (ROOT / "docs/side-offset-examples.kml", "files/bookmarks/side-offset-examples.kml"),
     ):
         with source.open("rb") as stream:
-            run("shell", "-T", f"run-as {PACKAGE} sh -c 'cat > {destination}'", stdin=stream)
+            command = "cat > " + shlex.quote(destination)
+            run("shell", "-T", f"run-as {PACKAGE} sh -c {shlex.quote(command)}", stdin=stream)
     actual = subprocess.check_output(
-        adb + ["shell", "run-as", PACKAGE, "sha256sum", f"files/{version}/{map_path.name}"], text=True
+        adb + ["shell", f"run-as {PACKAGE} sha256sum {shlex.quote(f'files/{version}/{map_path.name}')}"], text=True
     ).split()[0]
     if actual != manifest["map_sha256"]:
         raise SystemExit("Installed map verification failed")
