@@ -320,7 +320,8 @@ UNIT_TEST(ClipSplinesBuilder_CyclingSideDirectionSymbols)
             auto const & right = result.m_cyclewaySides[1];
             bool const expected = zoom >= 15 && (direction == Direction::Forward || direction == Direction::Backward ||
                                                  (direction == Direction::Unknown && (flags == 1 || flags == 3)));
-            TEST_EQUAL(left.m_arrowRule != nullptr, expected, (kind, direction, flags, zoom, style));
+            TEST_EQUAL(left.m_arrowRule != nullptr, expected,
+                       (static_cast<char>(kind), static_cast<char>(direction), flags, zoom, style));
             TEST(right.m_arrowRule == nullptr, ());
             TEST_EQUAL(left.m_side, -1, ());
             TEST_EQUAL(right.m_side, 1, ());
