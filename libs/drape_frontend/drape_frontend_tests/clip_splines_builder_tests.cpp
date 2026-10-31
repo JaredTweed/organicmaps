@@ -89,6 +89,24 @@ void TestPath(df::ClipSplinesBuilder const & builder, std::vector<P> const & exp
     TEST_EQUAL(got[i], expected[i], (i, got, expected));
 }
 
+UNIT_TEST(ClipSplinesBuilder_CyclingColdStart)
+{
+  auto & reader = GetStyleReader();
+  auto const previous = reader.GetCurrentStyle();
+  reader.SetCurrentStyle(MapStyleCyclingDark);
+  classificator::Load();
+  TEST(classificator::IsStyleLoaded(MapStyleDefaultLight), ());
+  TEST(classificator::IsStyleLoaded(MapStyleDefaultDark), ());
+  auto const road = classif().GetTypeByPath({"highway", "secondary"});
+  MockTestFeature feature({P(0, 0), P(10, 0)}, road);
+  feature.SetSideDemo(cycling_demo::Kind::Lane, cycling_demo::Kind::Shared);
+  df::Stylist result(feature, 18, 0, MapStyleCyclingDark);
+  TEST_EQUAL(result.m_cyclewaySides.size(), 2, ());
+  TEST(!result.m_lineRules.empty(), ());
+  reader.SetCurrentStyle(previous);
+  classificator::Load();
+}
+
 UNIT_TEST(ClipSplinesBuilder_CyclingCoreWidths)
 {
   classificator::Load();

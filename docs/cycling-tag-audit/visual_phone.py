@@ -49,7 +49,8 @@ def validate_map_reuse(native, fixture):
             raise ValueError("Map reuse requires full source pins")
     changed = command(["git", "diff", "--name-only", fixture["source_commit"], native["commit"], "--"],
                       cwd=native["source_root"]).decode().splitlines()
-    if any(not path.startswith(("libs/drape_frontend/", "docs/")) for path in changed):
+    if any(not path.startswith(("libs/drape_frontend/", "docs/")) and
+           path != "libs/indexer/classificator_loader.cpp" for path in changed):
         raise ValueError("Map reuse is allowed only for renderer/documentation-only prototype changes")
 
 

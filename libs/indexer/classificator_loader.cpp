@@ -109,6 +109,8 @@ void Load()
   EnsureStyleLoaded(MapStyleOutdoorsLight);
   // The local offset prototype reuses cycling strokes over generic roads too.
   EnsureStyleLoaded(MapStyleCyclingLight);
+  // Thin side indicators use the unchanged Standard highway strokes in every mode.
+  EnsureStyleLoaded(MapStyleDefaultLight);
 
   LOG(LDEBUG, ("Reading of classificator finished"));
 }
