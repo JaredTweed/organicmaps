@@ -1,7 +1,7 @@
 # Rendering polish preview
 
-Local branch: `demo/cycling-rendering-polish`, based on the saved bridge
-continuity prototype. This trial is not pushed to GitHub. Neither the split
+Branch: `demo/cycling-rendering-polish`, based on the saved bridge-continuity
+prototype. This is an archived phone prototype, not a PR. Neither the split
 PRs nor #12692 are changed.
 
 Focused fixes:
@@ -32,3 +32,17 @@ This is not a complete intersection/offset renderer redesign. Country-wide
 coverage, exact pixel equality across devices, perfect acute-angle joins and
 global arrow spacing across distinct OSM ways are not claimed. Arrows exactly
 on a shared clipping endpoint can still be emitted by both neighboring tiles.
+
+## Installed revision and verification
+
+Revision `b63c410edc4ae8322a4e06a862cc99d013f79801` was built, installed and
+launched in the isolated `OM Side Offsets` app. All 38 focused rendering tests,
+204 geometry tests (the full geometry suite), and 10 tooling tests pass.
+The fixture map checksum was verified on the phone. No automated screenshot
+verification was performed; local tests do not constitute upstream approval.
+
+`rendering-polish-checks.json` records source, test, APK, native-library and map
+hashes. Heavy jobs ran sequentially with a 1800 MiB memory cap and no swap
+allowance. The local APK and packaging manifest are under
+`build-visual-artifacts/rendering-polish/phone.apk` and `phone.json`.
+Binaries and fixture maps are not committed.

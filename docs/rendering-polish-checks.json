@@ -1,0 +1,28 @@
+{
+  "source_commit": "b63c410edc4ae8322a4e06a862cc99d013f79801",
+  "native_checks": {
+    "rendering": {
+      "passed": 38,
+      "log_sha256": "fd900f789ac28d65264ef3c96acb9466d53ac96fef050433da9a22a3ce84ba74",
+      "binary_sha256": "576a6dccd8298bef1302b5c0b92e1302eabe57fed5175248a7d22f152193ffc1"
+    },
+    "geometry": {
+      "passed": 204,
+      "log_sha256": "dc00a2415cfa07bb36014b137b7b5db8e2535c111b49e097669a5c23b0ab078a",
+      "binary_sha256": "a73f383672c04c2d564a92cb0496f6e0cc9fc9d9b81a887a40d1bbb4407ed4f2"
+    }
+  },
+  "tool_tests_passed": 10,
+  "workers": 1,
+  "memory_limit_mib": 1800,
+  "swap_limit_bytes": 0,
+  "visual_verification_performed": false,
+  "installed_apk_sha256": "c5db186c401e453f038172e6ba9b8ecfca83ae982711c35c6a2b90baa8d1c1ab",
+  "installed_utc": "2026-10-31T16:31:49.695838+00:00",
+  "map_checksum_verified_on_phone": true,
+  "launch_status": "ok",
+  "native_sha256": "d97682ddd2d2c8ff040541342f0bce809d8fafc62f456b96ca782cadfd369fc6",
+  "map_sha256": "250c8def5d5828bcfa504e51fc44689677dc9096175d66e6efb7da3cee0841ec",
+  "shell_apk_sha256": "ebea5444cd2c693fdf295437c0a3e5f8ff27b558de84c1a273c5057e11738e3e",
+  "package": "app.organicmaps.cyclingsides.debug"
+}
