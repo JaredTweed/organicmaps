@@ -774,7 +774,7 @@ void ApplyLineFeatureGeometry::ProcessSideRules(m2::SharedSpline const & source,
   double const strokeScale = visualScale;
   for (auto const & side : sideRules)
   {
-    auto const rect = mercator::RectByCenterXYAndSizeInMeters(source->GetPath().front(), 16.0);
+    auto const rect = mercator::RectByCenterXYAndSizeInMeters(source->GetPath().front(), 8.0);
     double const span = rect.SizeX() / 2;
     auto const taper = MakeJunctionTaper(source, side.m_junctions, span, span / 8);
     auto const & taperedSource = taper.m_spline;

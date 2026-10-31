@@ -33,7 +33,7 @@ struct Side
 {
   Kind m_kind = Kind::None;
   Direction m_direction = Direction::Unknown;
-  std::vector<m2::PointD> m_junctions;
+  std::vector<m2::PointD> m_junctions = {};
 };
 struct Sides
 {
