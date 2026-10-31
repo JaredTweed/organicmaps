@@ -22,8 +22,11 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--serial")
+    parser.add_argument("--apk", type=Path,
+                        default=ROOT / "build-visual-artifacts/side-offsets/thin-offsets/phone.apk")
+    parser.add_argument("--bookmarks", type=Path, default=ROOT / "docs/side-offset-examples.kml")
     args = parser.parse_args()
-    apk = ROOT / "build-visual-artifacts/side-offsets/thin-offsets/phone.apk"
+    apk = args.apk.resolve()
     manifest = json.loads(apk.with_suffix(".json").read_text())
     map_path = Path(manifest["map"])
     if not map_path.is_absolute():
@@ -44,12 +47,12 @@ def main():
 
     with zipfile.ZipFile(apk) as archive:
         version = str(int(json.loads(archive.read("assets/countries.json"))["v"]))
-    run("install", "-r", str(apk))
+    run("install", "--no-incremental", "-r", str(apk))
     run("shell", "am", "force-stop", PACKAGE)
     run("shell", "run-as", PACKAGE, "mkdir", "-p", f"files/{version}", "files/bookmarks")
     for source, destination in (
         (map_path, f"files/{version}/{map_path.name}"),
-        (ROOT / "docs/side-offset-examples.kml", "files/bookmarks/side-offset-examples.kml"),
+        (args.bookmarks, "files/bookmarks/" + args.bookmarks.name),
     ):
         with source.open("rb") as stream:
             command = "cat > " + shlex.quote(destination)

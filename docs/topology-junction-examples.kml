@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Cycling Junction Examples</name>
+    <Placemark>
+      <name>Causeway junction - south</name>
+      <description>Shared OSM node 3678186235. Inspect at street-level zoom.</description>
+      <Point><coordinates>-123.1367221,49.2944968,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Causeway junction - middle</name>
+      <description>Shared OSM node 3678420979. Inspect at street-level zoom.</description>
+      <Point><coordinates>-123.1363777,49.2964147,0</coordinates></Point>
+    </Placemark>
+    <Placemark>
+      <name>Causeway junction - north</name>
+      <description>Shared OSM node 6304203443. Inspect at street-level zoom.</description>
+      <Point><coordinates>-123.1378396,49.2980391,0</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>
