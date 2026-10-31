@@ -1,0 +1,20 @@
+{
+  "source_commit": "23b50207355c2756bddf50dc7776c499b6d521cb",
+  "native_tests_passed": 32,
+  "tool_tests_passed": 9,
+  "test_binary_sha256": "82b1a6ca575c38f7827694042fe515b2ac2b3a58e3124e779369876bf98bd833",
+  "native_test_log_sha256": "84bace44b6b1a7cf50ce30a5593cfda30b9518aed6cec3e4b983db78b6f44dc0",
+  "workers": 1,
+  "memory_limit_mib": 1800,
+  "swap_limit_bytes": 0,
+  "visual_verification_performed": false,
+  "installed_apk_sha256": "b388e93b09bff2f1c9444912b21adeea960b7e3b7522c1c524b47b47bc459210",
+  "installed_utc": "2026-10-31T15:41:21.518938+00:00",
+  "map_checksum_verified_on_phone": true,
+  "launch_status": "ok",
+  "native_sha256": "797fbd9c9d2830abf89ce122443520aedb1b40071c3881843355cc08eebb975d",
+  "map_sha256": "250c8def5d5828bcfa504e51fc44689677dc9096175d66e6efb7da3cee0841ec",
+  "shell_apk_sha256": "c696907abe25f3227eaea0a869c092ad3e2ac2fe578600beb058845f0da5d636",
+  "package": "app.organicmaps.cyclingsides.debug",
+  "user_accepted_phone_appearance": true
+}
