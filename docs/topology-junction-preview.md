@@ -62,3 +62,9 @@ python3 docs/cycling-tag-audit/install_thin_offsets.py \
 
 This preserves existing app data and verifies the installed map hash. Open
 Bookmarks, then Cycling Junction Examples, and inspect at street-level zoom.
+
+Installed and cold-launched successfully on the attached phone. The map hash
+and bookmark presence were checked, and the app remained running. The installed
+runtime source is `f3d173f12daf698a0a9a02011197b407f1dfc79f`; subsequent
+documentation-only commits do not change that binary. See
+`topology-junction-checks.json` for artifact hashes and verification results.

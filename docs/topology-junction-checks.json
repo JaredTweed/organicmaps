@@ -1,0 +1,25 @@
+{
+  "runtime_source_commit": "f3d173f12daf698a0a9a02011197b407f1dfc79f",
+  "map_source_commit": "0da3c9e2bb79192b68b9606f3c09bc9b555635d8",
+  "apk_sha256": "d7706bd310bce8023d8cf17c28a27f395ce5c0fd190b69a7620f0ded02fb936c",
+  "native_sha256": "47a0c952a50be1bc1b7176cc27e3858040ffda68e6beabaa9557187d9f3afefb",
+  "map_sha256": "78703b720fcfa61a14633521c32e953266734970d2ef044af633cc791d5af8de",
+  "native_tests_passed": 43,
+  "tooling_tests_passed": 19,
+  "exported_features_unchanged_except_junction_coordinates": 82785,
+  "active_track_lane_junction_annotations": 173,
+  "causeway_junction_annotations": 3,
+  "workers": 1,
+  "memory_limit_mib": 1800,
+  "swap_limit_bytes": 0,
+  "installation": {
+    "package": "app.organicmaps.cyclingsides.debug",
+    "streamed_install_success": true,
+    "installed_map_hash_verified": true,
+    "cold_launch_success": true,
+    "process_alive_after_launch": true,
+    "example_bookmarks_present": true
+  },
+  "screenshot_comparison_performed": false,
+  "scope": "Isolated local prototype and road fixture; no routing-graph or production-format validation"
+}
