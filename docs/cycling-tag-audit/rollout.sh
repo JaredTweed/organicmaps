@@ -63,11 +63,11 @@ readonly ACCESS_HEAD=6daf0d87550ccfcf8ee199b3b8173a53245990cb
 readonly TAG_DATA_HEAD=750c72f0623dd4b93b97f205e1269866c8282b48
 readonly METALINES_HEAD=1f4e588b3f1b02a905dcf23c6453457710ac12ed
 readonly DASH_HEAD=c1f68d2aadc5383a85ffc9aa9754a0c871ecd957
-readonly SIDE_DATA_HEAD=7f2a5a44809757d02c657ecf5249d6f13982b1f0
-readonly JUNCTIONS_HEAD=ae47242a881326bcc6cdf275e802bf0aa1789f78
-readonly OFFSETS_HEAD=a73a9b1995e07c78139b368ce474848acd20d127
+readonly SIDE_DATA_HEAD=ac284a82895ae7e05d438d766ab351d0af15c14d
+readonly JUNCTIONS_HEAD=b2526bd7de3d09b6698ff2fc9961cebeed91c123
+readonly OFFSETS_HEAD=6aefec7e5a1ccafb3ba5eefb32003eb6c7135ea9
 readonly STYLE_BASE_HEAD=7af82a316aeeacfc304e9f5c2610d20d563b21ae
-readonly STYLE_HEAD=badbc0753b7e2a1b73ebb802fc5c9bf75d37cb7a
+readonly STYLE_HEAD=ef743e813409c7b907ca5fe7b98aae2e7ac4157c
 
 readonly SELECTOR_TITLE='[indexer] Support drawing rules matching feature types (1/8)'
 readonly ACCESS_TITLE='[generator] Recognize permissive motor vehicle access'
@@ -234,15 +234,16 @@ Store side-aware cycling rendering attributes in an optional `cycling_infra` MWM
 
 ## Topic boundary
 
-- Exact topic range: `prepare/cycling-dash..prepare/cycling-side-data`.
-- Sparse feature-ID index, versioned binary payload, bounded coordinates/counts/lengths, and lazy positional reads. Absent, unsupported, or invalid attributes fall back to the existing feature rendering.
+- Exact topic range: [phase renderer to side data](https://github.com/JaredTweed/organicmaps/compare/c1f68d2aadc5383a85ffc9aa9754a0c871ecd957...ac284a82895ae7e05d438d766ab351d0af15c14d).
+- Sparse feature-ID index, versioned binary payload, bounded coordinates/counts/lengths, and lazy positional reads. Absent sections and unsupported versions retain the existing rendering fallback; invalid section-index bounds and failed reads follow the repository's fail-fast policy rather than silently losing attributes. The bounded payload decoder still rejects malformed payloads.
+- OSM-tag policy and its tests live in generator, not the runtime indexer header. Release section reads do not decode/allocate side vectors only to discard them before the consumer's decode; Debug assertions still check writer invariants.
 - Generator-only raw-feature transport; no `FMD_TEST_ID` or debug OSM preprocessing.
 - Left/right kind and direction follow stored geometry reversal. Junction lists are empty until part 6.
 - No new presentation is enabled in this part. Parts 6-8 consume these attributes.
 
 ## Testing
 
-The original side-data tree `d71ce8c593` passes 193 full indexer tests and 68 OsmType/FBuilder tests, including ordinary/MaxAccuracy raw round trips, legacy transport, malformed payloads, optional-section lookup, and side reversal. Subsequent shared-decoder hardening checks raw IEEE exponent bits before floating-point decoding, with explicit infinity/NaN regression coverage under `-ffast-math`. Current consuming-head results are recorded in the final integration report.
+The original side-data tree `d71ce8c593` passes 193 full indexer tests and 68 OsmType/FBuilder tests. Current final integration `ef743e8134` passes 556 native checks, including ordinary/MaxAccuracy raw round trips, legacy transport, bounded malformed-payload decoding, optional-section lookup, side reversal, and generator-owned tag-policy tests. Non-finite wire values are rejected under `-ffast-math`. The tag-policy body and payload codec are unchanged; see the [nonvisual preparation report](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/nonvisual-merge-readiness.md). These are exact final-integration results, not a claim that every intermediate head was freshly rebuilt.
 
 This PR is cumulative against master because the preceding fork branch cannot be an upstream base ref. Review the exact topic range above. All parts remain drafts pending maintainer review and CI.
 BODY
@@ -257,7 +258,7 @@ Collect topology-backed cycling junction hints through the normal country genera
 
 ## Topic boundary
 
-- Exact topic range: `prepare/cycling-side-data..prepare/cycling-junction-data`.
+- Exact topic range: [side data to junction data](https://github.com/JaredTweed/organicmaps/compare/ac284a82895ae7e05d438d766ab351d0af15c14d...b2526bd7de3d09b6698ff2fc9961cebeed91c123).
 - Shared OSM node IDs authorize a join; coordinate proximity alone does not.
 - Match accessible dedicated cycling connectors to the approached road side at equal layer/level. Reject barriers, restrictions, collinear approaches, and contradictory duplicates.
 - Preserve the prototype's explicit-side junction opt-in (`cycleway:left/right/both`). Modifier-only facilities still render as lanes, but do not acquire additional inferred tapers in this revision; the normal-generator fixture covers this boundary.
@@ -282,16 +283,17 @@ Add fixed-screen-pixel side-line geometry, matching arrow displacement, clipping
 
 ## Topic boundary
 
-- Own topic commit [fa72babb6a](https://github.com/JaredTweed/organicmaps/commit/fa72babb6a573f178bf736d57fb69bbfd6fa8e97) extends `prepare/cycling-junction-data`; the branch also merges current upstream to preserve its triangle-clipping fix. Do not mistake upstream merge contents for this feature's source delta.
+- Own topic commits [fa72babb6a](https://github.com/JaredTweed/organicmaps/commit/fa72babb6a573f178bf736d57fb69bbfd6fa8e97) and [6aefec7e5a](https://github.com/JaredTweed/organicmaps/commit/6aefec7e5a1ccafb3ba5eefb32003eb6c7135ea9) extend the junction data. The branch also merges upstream to preserve its triangle-clipping fix. Do not mistake upstream merge contents for this feature's source delta.
 - Keep the gap fixed through fractional zoom; retain neighboring segment context and bound sharp-corner miters.
 - Keep line and one-way-arrow displacement consistent, including reversed geometry and junction tapers.
 - Never join by proximity or extrapolate ambiguous self-crossings. Tapers use an eight-meter minimum with a minimum screen length at low zoom.
 - Preserve existing symbol-placement controls, cancellation, and ordinary non-offset rendering. Shared metaline serialization stays owned by indexer.
+- Geometry padding is supplied by selected style rules, not another metadata read/decode in the geometry builder. Part 8 supplies exactly the previous padding predicate; no width, gap, taper, arrow or category policy changes.
 - No new cycling category or routing access change.
 
 ## Testing
 
-On `398c4ed223`, all 26 offset/clipping tests, 214 geometry tests, 194 indexer tests, and 82 focused generator tests pass with Debug assertions. The final style integration has separate validation; these results are not screenshot equivalence.
+Exact current master-based head `6aefec7e5a` builds and passes 542 native checks with Debug assertions: 25 rendering, 213 geometry, 193 indexer, 84 focused generator, and 27 routing-common. Current final integration `ef743e8134` separately passes 556 native checks, including the added style-padding equivalence matrix. See the [nonvisual preparation report and exact-head results](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/nonvisual-merge-readiness.md). These results are not screenshot equivalence or a fresh build of every intermediate topic.
 
 This is a cumulative upstream draft. Maintainer agreement on the rendering boundary, CI, and eventual master integration remain required.
 BODY
@@ -385,6 +387,8 @@ Draft: the access and direction changes in this PR affect bicycle routing and ne
 
 This upstream PR is cumulative: it contains part 1 (the selector) and an independent motor-access prerequisite. The prerequisite is merged as its own exact commit before the incremental cycling-classification commits; it is not hidden inside the display-type diff.
 
+Review the [classification-only range after both prerequisites](https://github.com/JaredTweed/organicmaps/compare/407057c693bea50626c2fa8182987b6c4ecf451f...750c72f0623dd4b93b97f205e1269866c8282b48). This does not make the upstream PR's cumulative Files Changed tab isolated.
+
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.
@@ -432,6 +436,8 @@ body_metalines() {
 
 Stores optional dash-phase offsets while retaining the legacy version-1 metalines section. This is the data-format half; the renderer use is part 4.
 
+Review the [format-only topic range](https://github.com/JaredTweed/organicmaps/compare/750c72f0623dd4b93b97f205e1269866c8282b48...1f4e588b3f1b02a905dcf23c6453457710ac12ed), excluding earlier cumulative dependencies.
+
 This upstream PR is cumulative: it also contains parts 1-2 and the independent motor-access prerequisite. The lane checkers now belong to the classifier/types PR, not this format PR.
 
 ## Changes
@@ -478,6 +484,8 @@ body_dash() {
 Keeps the dash phase continuous across adjacent road features instead of restarting it per feature. This is the renderer half; part 3 stores the offsets.
 
 This upstream PR is cumulative: it also contains parts 1-3.
+
+Review the [phase-renderer-only topic range](https://github.com/JaredTweed/organicmaps/compare/1f4e588b3f1b02a905dcf23c6453457710ac12ed...c1f68d2aadc5383a85ffc9aa9754a0c871ecd957), excluding earlier cumulative dependencies.
 
 ## Changes
 
@@ -537,7 +545,9 @@ The pre-hardening master-based part-7 head `398c4ed223` passes 26 offset/clippin
 
 Fresh normal generation from the original Vancouver OSM input matches all 82,785 complete features, side categories/directions, 2,010 directed phase chains, and 173 active junction hints against the installed prototype. Hint-coordinate differences are within the repository's 1e-7-degree projected node-cache precision; this is not a pixel tolerance. Style/rule/symbol assets match the prototype byte-for-byte. See [matched-data results](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/production-offset-data-comparison.json) and [generation provenance](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/production-offset-map-manifest.json). The sparse side section is 192,973 bytes; net map growth is about 5.1% on this road-only fixture, not a whole-region estimate.
 
-Published head `badbc0753b` has the exact same Git tree (`f1b7712f9e3f53a747e7dc6afb08b1961d72f181`) as tested source `1a3b3df8f6`, archived on `validation/cycling-offsets-1a3b3df8f6`. Only commit organization changed: generated atlases now have their own `[styles] Regenerated` commit, as the PR guide requires. The native/generation reports retain their actual tested source pin rather than relabeling it.
+The previous published head `badbc0753b` has the exact same Git tree as tested source `1a3b3df8f6`, archived on `validation/cycling-offsets-1a3b3df8f6`; generated atlases have their own `[styles] Regenerated` commit. Current head `ef743e8134` adds nonvisual ownership/error-policy cleanup and passes 556 native checks: 46 rendering, 209 geometry, 193 indexer, 81 focused generator, and 27 routing-common. OSM policy moved verbatim to generator, the payload codec is unchanged, geometry receives the same style padding without a second decode, and all data/style/shader assets are byte-identical. See the [current preparation and merge gates](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/nonvisual-merge-readiness.md). Historical reports retain their actual tested source pins.
+
+Fresh normal generation on `ef743e8134` produces a byte-identical complete map to the installed production baseline. The new production-reader export is also byte-identical (82,785 features, 2,010 directed phase chains, and the same 173 active hints). See [the exact comparison](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/nonvisual-data-comparison.json). The research suite passes 77 tests. This is valid-data/source evidence, not a new pixel-exact GPU test or full-region performance certification.
 
 Earlier #12692 comparisons apply to the superseded centerline candidate, not this revision. They remain archived in the research branch rather than being relabeled as proof of side-offset equivalence. Classifier mappings remain branch-relative; generate maps using this branch's matching classifier, not the master-based part-2 resources.
 
@@ -664,8 +674,8 @@ check_local() {
     "$GIT" diff --check "${pair%%:*}" "${pair##*:}" >/dev/null || die "whitespace error in ${pair}"
   done
 
-  # The style preview may include unrelated upstream churn, but the three
-  # stackable branches must never overlap current master in source files.
+  # The style preview uses its maintainer base. Master-based topics must not
+  # silently overlap later upstream source changes without rebase/retest.
   check_no_overlap "$SELECTOR_BASE" "$SELECTOR_HEAD"
   check_no_overlap "$SELECTOR_BASE" "$ACCESS_HEAD"
   check_no_overlap "$SELECTOR_HEAD" "$TAG_DATA_HEAD"

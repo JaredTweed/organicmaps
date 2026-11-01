@@ -1,6 +1,6 @@
 # Cycling PR stack readiness
 
-## Current Integration Target (2026-10-31)
+## Current Integration Target (2026-11-01)
 
 The author has now authorized incorporating the installed side-offset/junction
 prototype into the split drafts, with separate side-data, topology-data, and
@@ -15,9 +15,11 @@ stack and its historical evidence; they do not certify the new offset target.
 
 Current publication: eight cycling drafts plus independent #14054. No PR was
 marked ready. Data/rendering topic updates were fast-forwards. The prepared
-style draft alone received a lease-guarded history-only split so generated
-atlases have a separate commit; its Git tree exactly matches tested source
-`1a3b3df8f6`, preserved on `validation/cycling-offsets-1a3b3df8f6`.
+style draft previously received a lease-guarded history-only split so generated
+atlases have a separate commit. That tree remains preserved on
+`validation/cycling-offsets-1a3b3df8f6`. The subsequent
+[nonvisual ownership revision and remaining merge gates](nonvisual-merge-readiness.md)
+preserve its rendering inputs without relabeling historical reports.
 
 | Part | PR | Head |
 | --- | --- | --- |
@@ -25,21 +27,26 @@ atlases have a separate commit; its Git tree exactly matches tested source
 | 2 Types | [#14041](https://github.com/organicmaps/organicmaps/pull/14041) | `750c72f062` |
 | 3 Phase format | [#14048](https://github.com/organicmaps/organicmaps/pull/14048) | `1f4e588b3f` |
 | 4 Phase renderer | [#14042](https://github.com/organicmaps/organicmaps/pull/14042) | `c1f68d2aad` |
-| 5 Side data | [#14074](https://github.com/organicmaps/organicmaps/pull/14074) | `7f2a5a4480` |
-| 6 Junction data | [#14075](https://github.com/organicmaps/organicmaps/pull/14075) | `ae47242a88` |
-| 7 Offset geometry | [#14076](https://github.com/organicmaps/organicmaps/pull/14076) | `a73a9b1995` |
-| 8 Style integration | [#14043](https://github.com/organicmaps/organicmaps/pull/14043) | `badbc0753b` |
+| 5 Side data | [#14074](https://github.com/organicmaps/organicmaps/pull/14074) | `ac284a8289` |
+| 6 Junction data | [#14075](https://github.com/organicmaps/organicmaps/pull/14075) | `b2526bd7de` |
+| 7 Offset geometry | [#14076](https://github.com/organicmaps/organicmaps/pull/14076) | `6aefec7e5a` |
+| 8 Style integration | [#14043](https://github.com/organicmaps/organicmaps/pull/14043) | `ef743e8134` |
 
 Independent access remains `6daf0d8755`; original #12692 remains
 `955cd49403ed025c24beec09f5551e8d274a38ff` on `JaredTweed:master`.
 
-The final style builds and passes [553 native checks](production-offset-native-results.json).
+The current final style builds and passes [556 native checks](nonvisual-native-results.json).
+Its [source audit](nonvisual-source-audit.json) confirms unchanged assets,
+payload codec and moved-verbatim OSM policy. Earlier source `1a3b3df8f6`
+passes [553 native checks](production-offset-native-results.json).
 The [matched-map comparison](production-offset-data-comparison.json) agrees on
 all 82,785 features, categories/directions, 2,010 chains and 173 active hints.
 [Source/asset proof](production-offset-source-audit.json) and
 [generation provenance](production-offset-map-manifest.json) distinguish these
 results from pixel equality, upstream CI and eventual master integration.
-The research suite passes 75 tests, including 22 launcher safety tests.
+The current research suite passes 77 tests, including 22 launcher safety tests.
+Fresh nonvisual-revision generation and its production-reader export are
+[byte-identical to the installed production baseline](nonvisual-data-comparison.json).
 
 ## Historical Centerline Preparation
 

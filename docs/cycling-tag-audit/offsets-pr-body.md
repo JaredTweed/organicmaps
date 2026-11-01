@@ -4,16 +4,17 @@ Add fixed-screen-pixel side-line geometry, matching arrow displacement, clipping
 
 ## Topic boundary
 
-- Own topic commit [fa72babb6a](https://github.com/JaredTweed/organicmaps/commit/fa72babb6a573f178bf736d57fb69bbfd6fa8e97) extends `prepare/cycling-junction-data`; the branch also merges current upstream to preserve its triangle-clipping fix. Do not mistake upstream merge contents for this feature's source delta.
+- Own topic commits [fa72babb6a](https://github.com/JaredTweed/organicmaps/commit/fa72babb6a573f178bf736d57fb69bbfd6fa8e97) and [6aefec7e5a](https://github.com/JaredTweed/organicmaps/commit/6aefec7e5a1ccafb3ba5eefb32003eb6c7135ea9) extend the junction data. The branch also merges upstream to preserve its triangle-clipping fix. Do not mistake upstream merge contents for this feature's source delta.
 - Keep the gap fixed through fractional zoom; retain neighboring segment context and bound sharp-corner miters.
 - Keep line and one-way-arrow displacement consistent, including reversed geometry and junction tapers.
 - Never join by proximity or extrapolate ambiguous self-crossings. Tapers use an eight-meter minimum with a minimum screen length at low zoom.
 - Preserve existing symbol-placement controls, cancellation, and ordinary non-offset rendering. Shared metaline serialization stays owned by indexer.
+- Geometry padding is supplied by selected style rules, not another metadata read/decode in the geometry builder. Part 8 supplies exactly the previous padding predicate; no width, gap, taper, arrow or category policy changes.
 - No new cycling category or routing access change.
 
 ## Testing
 
-On `398c4ed223`, all 26 offset/clipping tests, 214 geometry tests, 194 indexer tests, and 82 focused generator tests pass with Debug assertions. The final style integration has separate validation; these results are not screenshot equivalence.
+Exact current master-based head `6aefec7e5a` builds and passes 542 native checks with Debug assertions: 25 rendering, 213 geometry, 193 indexer, 84 focused generator, and 27 routing-common. Current final integration `ef743e8134` separately passes 556 native checks, including the added style-padding equivalence matrix. See the [nonvisual preparation report and exact-head results](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/nonvisual-merge-readiness.md). These results are not screenshot equivalence or a fresh build of every intermediate topic.
 
 This is a cumulative upstream draft. Maintainer agreement on the rendering boundary, CI, and eventual master integration remain required.
 

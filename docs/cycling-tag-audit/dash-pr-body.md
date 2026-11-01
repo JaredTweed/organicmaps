@@ -4,6 +4,8 @@ Keeps the dash phase continuous across adjacent road features instead of restart
 
 This upstream PR is cumulative: it also contains parts 1-3.
 
+Review the [phase-renderer-only topic range](https://github.com/JaredTweed/organicmaps/compare/1f4e588b3f1b02a905dcf23c6453457710ac12ed...c1f68d2aadc5383a85ffc9aa9754a0c871ecd957), excluding earlier cumulative dependencies.
+
 ## Changes
 
 - Uses the stored metaline offset and geometry direction to advance the dash phase.

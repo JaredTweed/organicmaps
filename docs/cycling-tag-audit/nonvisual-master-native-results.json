@@ -1,0 +1,83 @@
+{
+  "source_commit": "6aefec7e5a1ccafb3ba5eefb32003eb6c7135ea9",
+  "debug_assertions": true,
+  "tests": [
+    {
+      "target": "drape_frontend_tests",
+      "filter": "CyclingOffset|ClipSplines|DashedLinePhase",
+      "tests": 25,
+      "command": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/drape_frontend_tests",
+        "--data_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/tmp/cycling-production-side-tests",
+        "--filter=CyclingOffset|ClipSplines|DashedLinePhase"
+      ],
+      "binary_sha256": "1c7142856791b8239fbc44c682c9c34ae756b8a2eb553fe586a86e991a06ee65",
+      "log": "/tmp/cycling-nonvisual-master-rendering-tests.log",
+      "log_sha256": "a6b6139daaaf39957680009bb895bba3b6efa61c30fb83588e2178adf9948d78"
+    },
+    {
+      "target": "geometry_tests",
+      "filter": null,
+      "tests": 213,
+      "command": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/geometry_tests",
+        "--data_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/tmp/cycling-production-side-tests"
+      ],
+      "binary_sha256": "a9391f5c0e1faa717b154844ee637e77c8b753cda6396df0942a31a8fc05002a",
+      "log": "/tmp/cycling-nonvisual-master-geometry-tests.log",
+      "log_sha256": "5af42a9c0aa85235132e3e07da32efed347cc545185068792da314d8539274aa"
+    },
+    {
+      "target": "indexer_tests",
+      "filter": null,
+      "tests": 193,
+      "command": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/indexer_tests",
+        "--data_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/tmp/cycling-production-side-tests"
+      ],
+      "binary_sha256": "e02019afed2adb5a78acd4093e77e642d7474dd9c65bc36fd3109bc942e3abba",
+      "log": "/tmp/cycling-nonvisual-master-indexer-tests.log",
+      "log_sha256": "c71357dde4eb8154a8fc0a8ee1f5848fc8dcc2cc05fc2f93af0df8430258ceca"
+    },
+    {
+      "target": "generator_tests",
+      "filter": "CyclingInfrastructure|CyclingJunctions|OsmType|FBuilder|Metalines",
+      "tests": 84,
+      "command": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/generator_tests",
+        "--data_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/tmp/cycling-production-side-tests",
+        "--filter=CyclingInfrastructure|CyclingJunctions|OsmType|FBuilder|Metalines"
+      ],
+      "binary_sha256": "2654dd1f5de425adc5329aad244437274c50bc5f8b792334392d0808b407ce17",
+      "log": "/tmp/cycling-nonvisual-master-generator-tests.log",
+      "log_sha256": "38720f721a4ca7516496ba350fe0b0d65ff94a9b1f0341abcbdc79991628dfd8"
+    },
+    {
+      "target": "routing_common_tests",
+      "filter": null,
+      "tests": 27,
+      "command": [
+        "/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/build-tag-check/routing_common_tests",
+        "--data_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--user_resource_path=/home/jared/Repos/organicmaps/organicmaps-cycling-tag-data-prep/data",
+        "--writable_path=/tmp/cycling-production-side-tests"
+      ],
+      "binary_sha256": "076107b1f3162a97fd729aded39040115305afdef4ff11d56c4607a5297c3b3e",
+      "log": "/tmp/cycling-nonvisual-master-routing-common-tests.log",
+      "log_sha256": "eba05a45681dc96502775131ff6330cfd05a803c6dca0adc0f4205668a0f013e"
+    }
+  ],
+  "total": 542,
+  "workers": 1,
+  "memory_limit_mib": 1800,
+  "swap_limit_bytes": 0,
+  "scope": "Native regression groups, not screenshots or a generated routing graph"
+}

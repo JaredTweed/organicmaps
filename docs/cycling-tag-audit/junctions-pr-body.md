@@ -4,7 +4,7 @@ Collect topology-backed cycling junction hints through the normal country genera
 
 ## Topic boundary
 
-- Exact topic range: `prepare/cycling-side-data..prepare/cycling-junction-data`.
+- Exact topic range: [side data to junction data](https://github.com/JaredTweed/organicmaps/compare/ac284a82895ae7e05d438d766ab351d0af15c14d...b2526bd7de3d09b6698ff2fc9961cebeed91c123).
 - Shared OSM node IDs authorize a join; coordinate proximity alone does not.
 - Match accessible dedicated cycling connectors to the approached road side at equal layer/level. Reject barriers, restrictions, collinear approaches, and contradictory duplicates.
 - Preserve the prototype's explicit-side junction opt-in (`cycleway:left/right/both`). Modifier-only facilities still render as lanes, but do not acquire additional inferred tapers in this revision; the normal-generator fixture covers this boundary.

@@ -2,6 +2,8 @@
 
 Stores optional dash-phase offsets while retaining the legacy version-1 metalines section. This is the data-format half; the renderer use is part 4.
 
+Review the [format-only topic range](https://github.com/JaredTweed/organicmaps/compare/750c72f0623dd4b93b97f205e1269866c8282b48...1f4e588b3f1b02a905dcf23c6453457710ac12ed), excluding earlier cumulative dependencies.
+
 This upstream PR is cumulative: it also contains parts 1-2 and the independent motor-access prerequisite. The lane checkers now belong to the classifier/types PR, not this format PR.
 
 ## Changes

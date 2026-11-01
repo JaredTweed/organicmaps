@@ -6,6 +6,8 @@ Draft: the access and direction changes in this PR affect bicycle routing and ne
 
 This upstream PR is cumulative: it contains part 1 (the selector) and an independent motor-access prerequisite. The prerequisite is merged as its own exact commit before the incremental cycling-classification commits; it is not hidden inside the display-type diff.
 
+Review the [classification-only range after both prerequisites](https://github.com/JaredTweed/organicmaps/compare/407057c693bea50626c2fa8182987b6c4ecf451f...750c72f0623dd4b93b97f205e1269866c8282b48). This does not make the upstream PR's cumulative Files Changed tab isolated.
+
 ## What changes
 
 - The generator classifies `cycleway*` tags into one additional centerline type. Where explicitly tagged sides/directions differ, the least-protected category wins: `shared_lane`, then `lane`, then `track`. Side-specific information is not retained.

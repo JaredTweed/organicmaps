@@ -38,8 +38,10 @@ merge-as-is master integration.
 
 `cycling_infra` is an optional MWM section, independent of POI metadata and the
 eight classifier-type slots. Old readers ignore the unknown section; new
-readers return no side attributes for old, absent, unknown-version, or invalid
-data. Existing centerline classification remains available as a fallback.
+readers return no side attributes for old, absent, or unknown-version sections.
+Invalid index bounds and failed reads follow the repository's fail-fast policy;
+the bounded payload decoder still rejects malformed payloads. Existing centerline
+classification remains available as a fallback when optional data is absent.
 
 The version-1 section contains an eight-byte header (uint32 version/count), a
 sorted sparse index (uint32 feature ID, uint64 offset, uint32 length), and binary
@@ -87,6 +89,15 @@ certified. This is not a new routing graph or a claim of a marked crossing.
   prototype's older versions of shared files.
 
 ## Verification Boundary
+
+The current nonvisual ownership revision is documented separately in
+[merge preparation](nonvisual-merge-readiness.md), with
+[556 exact-head native checks](nonvisual-native-results.json) and
+[the source/asset boundary audit](nonvisual-source-audit.json). Historical
+results below retain their actual source pins. OSM policy now belongs to
+generator; selected styles pass the same geometry padding to the renderer
+instead of triggering a second metadata decode. Neither change alters the
+approved presentation contract above.
 
 The pre-hardening master-based renderer candidate `398c4ed223` builds with current upstream
 merged. It passes 26 offset/clipping tests, 214 geometry tests, 194 indexer tests,

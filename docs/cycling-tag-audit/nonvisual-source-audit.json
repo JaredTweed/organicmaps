@@ -1,0 +1,19 @@
+{
+  "baseline": "badbc0753b7e2a1b73ebb802fc5c9bf75d37cb7a",
+  "candidate": "ef743e813409c7b907ca5fe7b98aae2e7ac4157c",
+  "unchanged_asset_roots": [
+    "data",
+    "libs/shaders"
+  ],
+  "changed_assets": [],
+  "payload_codec_unchanged": true,
+  "osm_policy_body_moved_verbatim": true,
+  "osm_policy_body_sha256": "d9a7e07d4f57c048d4adf2ea84304d59a7ae5c633deabb7af079a8d4917bc489",
+  "unchanged_algorithm_paths": [
+    "generator/cycling_junctions.cpp",
+    "generator/cycling_junctions.hpp",
+    "generator/generator_tests/cycling_junctions_tests.cpp",
+    "libs/drape_frontend/drape_frontend_tests/cycling_offset_geometry_tests.cpp"
+  ],
+  "scope": "Source ownership audit; native tests and matched-map checks are separate; not screenshot proof"
+}

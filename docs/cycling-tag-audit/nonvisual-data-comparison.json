@@ -1,0 +1,16 @@
+{
+  "baseline_source": "1a3b3df8f66331b5d8776bd742bc659f75b85012",
+  "candidate_source": "ef743e813409c7b907ca5fe7b98aae2e7ac4157c",
+  "map_sha256": "bf175108f165a39a21fe7c434f7f11ecbe55fcb1a03ce81bc268281d579874b7",
+  "map_bytes": 2668110,
+  "complete_map_bytes_identical": true,
+  "complete_export_bytes_identical": true,
+  "export_sha256": "30ae06fc50367a8305d03ba89ea97c7b6e976c14e09fad5461c282b8a4346859",
+  "exported_rows": {
+    "metadata": 1,
+    "feature": 82785,
+    "chain": 2010
+  },
+  "active_junction_hints": 173,
+  "scope": "Exact map and production-reader export equality to installed production baseline; not a new GPU screenshot capture"
+}
