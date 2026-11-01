@@ -1,7 +1,50 @@
 # Cycling stack: remaining merge decisions
 
-This is a preparation checklist, not maintainer approval. The split visuals
-remain unchanged. PR #12692's code and the phone offset prototype are protected.
+This is a preparation checklist, not maintainer approval. The current author
+request expands the stack to integrate the installed side-offset/junction
+prototype, intentionally changing the earlier centerline presentation.
+See [production-offset-design.md](production-offset-design.md) for the new
+boundaries and verification. #12692's code remains protected. Earlier results
+below apply to their explicitly pinned centerline candidates, not the new target.
+
+## Current Offset Integration Gates
+
+- All nine PRs remain drafts. Local preparation is not maintainer approval or
+  a substitute for applicable upstream CI.
+- #14040: agree the primary-highway/additional-infrastructure boundary and the
+  limited classifier-membership selector with vng. Its code remains unchanged.
+- #14054: resolve the independent permissive-motor-access review separately;
+  do not conflate access eligibility with physical cycling protection.
+- #14041: review the unchanged aggregate category/access/direction policy and
+  type retention. Conflicting-tag precedence changes remain separate work.
+- #14048/#14042: review optional phase-section compatibility and renderer phase
+  behavior on the supported graphics backends. Their code heads are unchanged.
+- #14074: review side/direction semantics, the optional sparse-section format,
+  legacy fallback, malformed-data handling, and runtime I/O/memory costs.
+- #14075: review topology/grade/access exclusions, the explicit-side taper
+  boundary, country-memory behavior, and planet-scale generation performance.
+- #14076: review fixed-pixel gap/miter/clipping behavior and arrow/taper geometry.
+- #14043: agree the final style base. It remains an old-base integration preview,
+  not a merge-as-is master candidate. Rebase, regenerate matching classifier
+  assets/maps, and repeat validation on the eventual actual merge integration.
+- Tested style source `1a3b3df8f6` builds and passes 553 native tests, including
+  the hardened decoder and modifier-only fixture. Published style head
+  `badbc0753b` has exactly the same Git tree; only source/generated-asset commit
+  separation changed. The launcher/research suite
+  passes 75 tests. Matched-map results are tracked separately in
+  [the production design](production-offset-design.md); old #12692 screenshots
+  are not evidence of pixel equality for the new offset rendering.
+- New fork commits may require workflow approval by an authorized upstream
+  maintainer. Keep all parts draft until their own review/CI gates are met.
+- Review/merge selector and access independently, then isolate/rebase each
+  cumulative topic in order: types, phase format, phase renderer, side data,
+  junction data, offset geometry, and final style integration. Do not silently
+  overwrite newer upstream work to match an older rendering reference.
+
+## Historical Centerline Checklist
+
+The remaining sections retain the earlier six-draft checklist and its pinned
+evidence. They are historical context, not the current offset readiness gates.
 
 ## Author-side preparation
 

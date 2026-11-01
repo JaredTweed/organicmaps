@@ -2,7 +2,7 @@
 
 Treats explicit `motor_vehicle=permissive` as positive motor access, alongside `yes` and `designated`, using the existing `hwtag|yescar` classification. This is an independent prerequisite, not another cycling display type.
 
-It targets `master` directly and contains no selector, cycling classifier, renderer, shader or map-style changes. The five-part cycling stack retains its existing numbering; its types branch includes this exact commit as an independent prerequisite.
+It targets `master` directly and contains no selector, cycling classifier, renderer, shader or map-style changes. The eight-part cycling stack includes this exact commit as an independent prerequisite in its types branch.
 
 ## Scope
 
@@ -30,3 +30,20 @@ Preparation evidence and remaining decisions: [merge-readiness checklist](https:
 3. [#14048: optional metaline phases](https://github.com/organicmaps/organicmaps/pull/14048)
 4. [#14042: renderer](https://github.com/organicmaps/organicmaps/pull/14042)
 5. [#14043: style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+
+## Stack
+
+Independent prerequisite; cycling parts in review order:
+
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
+
+1. [selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [side-aware data](https://github.com/organicmaps/organicmaps/pull/14074)
+6. [topology-backed junctions](https://github.com/organicmaps/organicmaps/pull/14075)
+7. [fixed-pixel offset renderer](https://github.com/organicmaps/organicmaps/pull/14076)
+8. [cycling style integration preview](https://github.com/organicmaps/organicmaps/pull/14043)
+
+Prepared with Codex (LLM) assistance; original commit authorship is retained.

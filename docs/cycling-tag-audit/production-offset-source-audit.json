@@ -1,0 +1,75 @@
+{
+  "prototype_runtime_commit": "f3d173f12daf698a0a9a02011197b407f1dfc79f",
+  "prototype_published_branch": "demo/cycling-topology-joins",
+  "prototype_map_producer_commit": "0da3c9e2bb79192b68b9606f3c09bc9b555635d8",
+  "prototype_map_sha256": "78703b720fcfa61a14633521c32e953266734970d2ef044af633cc791d5af8de",
+  "candidate_commit": "badbc0753b7e2a1b73ebb802fc5c9bf75d37cb7a",
+  "tested_source_commit": "1a3b3df8f66331b5d8776bd742bc659f75b85012",
+  "tested_source_validation_branch": "validation/cycling-offsets-1a3b3df8f6",
+  "tested_tree": "f1b7712f9e3f53a747e7dc6afb08b1961d72f181",
+  "published_tree": "f1b7712f9e3f53a747e7dc6afb08b1961d72f181",
+  "trees_identical": true,
+  "generated_atlases_commit": "62b0752c3ee83ca5696969e3cb89e3fe7acdef87",
+  "candidate_map_sha256": "bf175108f165a39a21fe7c434f7f11ecbe55fcb1a03ce81bc268281d579874b7",
+  "candidate_export_sha256": "30ae06fc50367a8305d03ba89ea97c7b6e976c14e09fad5461c282b8a4346859",
+  "reference_export_sha256": "45632e84094cf12e6276bda66551bcbb3566c0f2ed7f06ce3413d34bcf793aa0",
+  "candidate_exporter_sha256": "f072e8ffd7e5c5bf2d35733d708d6c96f1b404caa149fcb7792ff100201ff2ca",
+  "candidate_exporter_source_sha256": "a7d579e477dc732607a013748420038e6f40abdf057ca67e722cf9ed9b566f70",
+  "current_topic_heads": {
+    "prepare/cycling-side-data": "7f2a5a44809757d02c657ecf5249d6f13982b1f0",
+    "prepare/cycling-junction-data": "ae47242a881326bcc6cdf275e802bf0aa1789f78",
+    "prepare/cycling-offset-renderer": "a73a9b1995e07c78139b368ce474848acd20d127",
+    "prepare/cycling-style-offsets": "badbc0753b7e2a1b73ebb802fc5c9bf75d37cb7a"
+  },
+  "decoder_header_blobs": {
+    "prepare/cycling-side-data": "0dad661a118c06b101538b53fe0879b52cf93df8",
+    "prepare/cycling-junction-data": "0dad661a118c06b101538b53fe0879b52cf93df8",
+    "prepare/cycling-offset-renderer": "0dad661a118c06b101538b53fe0879b52cf93df8",
+    "prepare/cycling-style-offsets": "0dad661a118c06b101538b53fe0879b52cf93df8"
+  },
+  "decoder_test_blobs": {
+    "prepare/cycling-side-data": "9075bf65bc719772d0820ec8a8434e654a2728e1",
+    "prepare/cycling-junction-data": "9075bf65bc719772d0820ec8a8434e654a2728e1",
+    "prepare/cycling-offset-renderer": "9075bf65bc719772d0820ec8a8434e654a2728e1",
+    "prepare/cycling-style-offsets": "9075bf65bc719772d0820ec8a8434e654a2728e1"
+  },
+  "junction_source_blobs": {
+    "prepare/cycling-junction-data": "7b06d186852fe08e82658e4514bc7426c415ba55",
+    "prepare/cycling-offset-renderer": "7b06d186852fe08e82658e4514bc7426c415ba55",
+    "prepare/cycling-style-offsets": "7b06d186852fe08e82658e4514bc7426c415ba55"
+  },
+  "byte_identical_asset_paths": [
+    "data/styles",
+    "data/symbols",
+    "data/drules_cycling.bin",
+    "data/drules_cycling.txt",
+    "data/colors.txt",
+    "data/patterns.txt",
+    "data/types.txt",
+    "data/classificator.txt",
+    "libs/shaders",
+    "data/vulkan_shaders"
+  ],
+  "changed_asset_paths": [],
+  "data_report_sha256": "ba998c9b3db199489079f4d5dfe69f6e5b2b99892d486c9941c598afa4254e99",
+  "native_report_sha256": "08d74a1bca163063486140dc65f1c2b71e98b1611c32aa26b95faa0e39497831",
+  "original_pr_protected_head": "955cd49403ed025c24beec09f5551e8d274a38ff",
+  "protected_existing_topic_heads": {
+    "14040": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+    "14054": "6daf0d87550ccfcf8ee199b3b8173a53245990cb",
+    "14041": "750c72f0623dd4b93b97f205e1269866c8282b48",
+    "14048": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+    "14042": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957"
+  },
+  "all_nine_published_drafts_verified": true,
+  "github_snapshot_sha256": "5f6fb2268fad97464d79faf767ef0eefcc769fca2fa5491bf82fcf2c77afae26",
+  "rollout_verification_log_sha256": "48e705c51e24e5d15eacbbec82944d8695183c23d40a98fe807e364efebe0b17",
+  "initial_mismatch": {
+    "candidate_commit": "3b4c7519382469f0a7a3fe868bb090ad8287e744",
+    "active_hints": 174,
+    "reference_hints": 173,
+    "osm_way": 1316287584,
+    "disposition": "Restored prototype explicit-side opt-in; regression fixture retains modifier-only lane rendering without adding a taper"
+  },
+  "scope": "Exact source/assets and complete matched-data evidence; not a pixel-equality certificate or planet-scale benchmark"
+}

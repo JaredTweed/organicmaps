@@ -1,50 +1,44 @@
-## Preview only — not for merge as-is.
+## Preview Only: Not for Merge As-Is
 
-Applies the cycling style to the new `cyclewaytag` types, with preservation of #12692's solid, dashed, and dotted presentation as the validation objective.
+Integrate parts 1-7 with the cycling style, targeting the installed side-offset/junction phone prototype. The author explicitly approved this new target; it intentionally differs from #12692's older centerline rendering. #12692's code/head are not changed.
 
-This draft exists so the appearance can be reviewed against the intended data model. It is based on `ab/cycling-style` plus parts 1-4.
+This cumulative upstream draft targets `ab/cycling-style`. It includes the selector, types, phase, side-data, junction-data, and offset-renderer dependencies plus the independent permissive-motor-access prerequisite. It is not an isolated style-only GitHub diff and does not certify a future rebased master integration.
 
-This upstream PR targets `ab/cycling-style` and also contains parts 1-4 plus the independent permissive-motor-access prerequisite. Review the `[styles]` commits; this is not an isolated style-only GitHub diff.
+## Presentation
 
-## What to review
+- Keep the highway's normal core and casing. Explicitly sided attached tracks and lanes use small side indicators; dedicated cycleways remain core lines. Unqualified aggregate tags retain their fallback rather than inventing a side.
+- Exactly three categories: solid track, dashed lane, dotted shared lane. All indicators have the same nominal width at a given zoom: 2 logical pixels through z16, 2.5 at z17+.
+- Shared-lane dots always stay on one centerline; they do not imply a separate roadside facility.
+- One-way arrows follow the bike line, including reverse direction and junction tapers. Solid arrows have the tested thin color-matched outline.
+- Keep the road/indicator gap fixed during smooth zoom. Bridge/tunnel decoration does not change ordinary highway-relative offset distance.
+- Taper only at topology-confirmed connections supplied by the normal generator. Do not snap disconnected, restricted, grade-separated, or ambiguous features by proximity, and do not imply a marked crossing.
+- Side-data transport uses an optional `cycling_infra` section, never the prototype's debug metadata or Python OSM annotations. Old maps retain the existing centerline fallback.
 
-- Same roads at the same zoom levels and themes should keep the same solid/dashed/dotted appearance as #12692.
-- Direction arrows and shared-lane dots should follow the additional types rather than replacing the road type.
-- The diff against this base includes parts 1-4 because the preview depends on them; review the `[styles]` commits and the screenshots.
-- Earlier `indexer_tests` passed on the preview; new revisions need their own applicable checks before merge.
-- Exact baseline/candidate Android native builds succeed. The complete tracked `data/` trees match. Separately generated Vancouver maps match all 82,785 features (including stored type order and metadata) and all 2,010 directed chains/offsets using isolated, explicitly verified classifiers. Aggregate type counts are not used as the proof.
-- On exact candidate `5eb0952ef3`, 295 native tests pass with Debug assertions: 62 classification/metalines tests, 18 clipping/phase tests, 188 indexer tests (including 7 codec tests) and 27 routing-common tests. This is not pixel-equivalence evidence.
-- A separate research integration probe on this exact head passes 88 route checks across 44 generated synthetic OSM networks using the production router. It is bounded routing evidence, not a whole-region audit or a claim that this probe runs in normal PR CI.
-- The earlier Qt/OpenGL audit had a stable-pair discrepancy of 17 grayscale road-edge pixels; it remains archived, not erased by the new phone result.
-- Completed Pixel OpenGL/Vulkan audit: 60 saved-camera views, both themes and repeated cold starts. Eleven cross-build pairs are exact; the reference repeats exactly in 10 views and the candidate in 11. No pair stable in both builds differs cross-build. Maximum difference is 289/1,219,096 map pixels (about 0.024%). Strict pixel equivalence remains unverified; no tolerance was introduced. One volume-panel-contaminated case was recaptured in full with identical settings and explicit provenance, preserving the raw evidence.
-- Generate preview maps from this branch with its matching classifier and renderer format. On these pinned branches, the cycling entries occupy lines 1658-1660 of `types.txt` here (stored indices 1657-1659), versus lines 1660-1662 on the master-based types branch (stored indices 1659-1661). Mismatched app/map mappings already caused incorrect lane/track/shared rendering in a preview. The base branch alone does not supply the added types.
+## Validation and Review
 
-## Open questions
+The pre-hardening master-based part-7 head `398c4ed223` passes 26 offset/clipping tests, 214 geometry tests, 194 indexer tests, and 82 focused generator tests. Tested style source `1a3b3df8f6` builds and passes 553 native tests with Debug assertions: 45 rendering, 209 geometry, 194 indexer, 78 focused generator, and 27 routing-common. This includes raw-bit non-finite coordinate rejection and the explicit-side junction boundary. The shared decoder and junction sources are identical across their consuming topics. See [exact-head native results](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/production-offset-native-results.json) and the [production integration design](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/production-offset-design.md). These results are not pixel-exact screenshot evidence.
 
-- When to add side-specific rendering as a follow-up.
-- Whether individual roads lose `cyclewaytag` at the eight-type cap; aggregate Vancouver dumps do not resolve this.
+Fresh normal generation from the original Vancouver OSM input matches all 82,785 complete features, side categories/directions, 2,010 directed phase chains, and 173 active junction hints against the installed prototype. Hint-coordinate differences are within the repository's 1e-7-degree projected node-cache precision; this is not a pixel tolerance. Style/rule/symbol assets match the prototype byte-for-byte. See [matched-data results](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/production-offset-data-comparison.json) and [generation provenance](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/production-offset-map-manifest.json). The sparse side section is 192,973 bytes; net map growth is about 5.1% on this road-only fixture, not a whole-region estimate.
 
-Do not merge as-is: the base is the maintainer's `ab/cycling-style` branch, dependencies remain cumulative, and the visual checklist above is not complete.
+Published head `badbc0753b` has the exact same Git tree (`f1b7712f9e3f53a747e7dc6afb08b1961d72f181`) as tested source `1a3b3df8f6`, archived on `validation/cycling-offsets-1a3b3df8f6`. Only commit organization changed: generated atlases now have their own `[styles] Regenerated` commit, as the PR guide requires. The native/generation reports retain their actual tested source pin rather than relabeling it.
 
-## Scope
+Earlier #12692 comparisons apply to the superseded centerline candidate, not this revision. They remain archived in the research branch rather than being relabeled as proof of side-offset equivalence. Classifier mappings remain branch-relative; generate maps using this branch's matching classifier, not the master-based part-2 resources.
 
-- This revision was refined with Codex assistance. The shared metaline codec/tests moved into `indexer`; the codec body and the writer/reader logic are unchanged after ownership-name and formatting normalization. All other runtime sources and tracked assets are unchanged from the previous split preview.
-- Centerline style only; side-specific facilities are deferred.
-- Conflicting-tag order and collision-free chain grouping are separate behavioral follow-ups, excluded to preserve #12692's classification and grouping logic.
-- This old-base preview does not certify the eventual merged-master integration. Rebase/regenerate and repeat the comparison on that actual integration before claiming final equivalence; do not silently revert unrelated upstream work to match an older baseline.
-- A per-feature follow-up on the earlier retention-map pair finds unchanged complete type lists on all 1,858 cycling features. The maps are not globally certified equal (generated roundabout identities differ), and those earlier generator build pins were not archived. The current ranking stays pending review; no all-regions or exact-current-head retention claim is made.
-- Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
-
-Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
+Review the remaining model/format decisions with vng, renderer geometry and arrow behavior with rendering maintainers, generator scale/performance, fallback behavior, and the eventual style-base integration. This work was prepared with Codex assistance. CI and maintainer agreement are still required; all parts remain drafts.
 
 ## Stack
 
-Part 5 of 5, in review order:
+Part 8 of 8, in review order:
 
 Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
-1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
-2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
-3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
-4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
-5. **organicmaps#14043 — cycling style preview (this PR)**
+1. [selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [side-aware data](https://github.com/organicmaps/organicmaps/pull/14074)
+6. [topology-backed junctions](https://github.com/organicmaps/organicmaps/pull/14075)
+7. [fixed-pixel offset renderer](https://github.com/organicmaps/organicmaps/pull/14076)
+8. **cycling style integration preview (this PR)**
+
+Prepared with Codex (LLM) assistance; original commit authorship is retained.

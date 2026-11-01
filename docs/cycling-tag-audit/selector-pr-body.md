@@ -14,10 +14,10 @@ The parser and the `extra_tag` syntax already exist; the runtime implementation 
 
 - A road keeps its primary `highway=*` type. Attached infrastructure belongs in additional types such as `cyclewaytag=*` or a future `footwaytag=*`, not a second primary road category. Shared footway/cycleway features are the proposed exception.
 - `extra_tag` only tests classifier membership with `=` or `!=`; it neither creates types nor decides the primary highway. For example, a secondary road can test `extra_tag=cyclewaytag=lane` without also becoming a `highway=cycleway`.
-- This PR does not add side-aware data or offset rendering. The #12692 comparison preview remains the existing appearance; left/right offset rendering is a separate proposal/prototype, pending agreement on side/direction semantics.
+- This PR does not add side-aware data or offset rendering. Those are separate parts 5-8; their new author-approved target is the phone side-offset prototype, pending maintainer agreement on side/direction semantics.
 - Existing legacy modifiers, notably `highway|ford`, need explicit clarification before a global one-highway assertion or migration. They are not silently removed by this selector change.
 
-See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). The author subsequently authorized draft-only split updates preserving #12692's appearance; that is not maintainer agreement on the model. This selector's code remains unchanged.
+See [vng's constraints](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420) and [the proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599). The author subsequently authorized integrating the tested side-offset prototype in additional focused drafts; that is not maintainer agreement on the model. This selector's code remains unchanged.
 
 ## Testing
 
@@ -28,18 +28,23 @@ Related: #12692 (read-only reference; this PR does not modify it).
 
 ## Review questions
 
-Answers to @vng's questions are in the 2/5 PR and in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
+Answers to @vng's questions are in the 2/8 PR and in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
 
 Preparation evidence and remaining decisions: [merge-readiness checklist](https://github.com/JaredTweed/organicmaps/blob/research/cycling-tag-types/docs/cycling-tag-audit/merge-readiness.md).
 
 ## Stack
 
-Part 1 of 5, in review order:
+Part 1 of 8, in review order:
 
-Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054). It is not part of this selector diff.
+Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
-1. **organicmaps#14040 — selector (this PR)**
-2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
-3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
-4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
-5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+1. **selector (this PR)**
+2. [cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. [metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [side-aware data](https://github.com/organicmaps/organicmaps/pull/14074)
+6. [topology-backed junctions](https://github.com/organicmaps/organicmaps/pull/14075)
+7. [fixed-pixel offset renderer](https://github.com/organicmaps/organicmaps/pull/14076)
+8. [cycling style integration preview](https://github.com/organicmaps/organicmaps/pull/14043)
+
+Prepared with Codex (LLM) assistance; original commit authorship is retained.

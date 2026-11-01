@@ -37,7 +37,7 @@ This upstream PR is cumulative: it contains part 1 (the selector) and an indepen
 
 Answers to @vng's questions in [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067):
 
-- The stack keeps the road's main type and adds one centerline `cyclewaytag`; per-side rendering and per-side directions are deferred.
+- This part keeps the road's main type and adds one aggregate `cyclewaytag`. Parts 5-8 add separate side/direction attributes and side rendering; the classifier and categorization in this part are unchanged.
 - Eight-type cap: a per-feature follow-up on the earlier retention-map pair finds unchanged complete type lists on all 1,858 cycling features. The whole maps are not certified equal (generated roundabout identities differ), and the earlier generator build pins were not archived. This is bounded evidence, not an all-regions or exact-current-head result; keep the current priority policy pending review.
 - Routing: this PR still changes bicycle access/direction flags as well as display classification. Motor access is an independent prerequisite. Generated-map fixtures now cover bicycle access, ordinary/explicit/reversed one-way directions and contraflow; conflicting-tag and country-specific policy review remains. No general claim of routing/visual independence is made.
 - Pedestrian reuse is a follow-up, not part of this stack.
@@ -46,12 +46,17 @@ Preparation evidence and remaining decisions: [merge-readiness checklist](https:
 
 ## Stack
 
-Part 2 of 5, in review order:
+Part 2 of 8, in review order:
 
 Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
-1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
-2. **organicmaps#14041 — cycling types (this PR)**
-3. [organicmaps#14048 — metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
-4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
-5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+1. [selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. **cycling types (this PR)**
+3. [metalines offsets](https://github.com/organicmaps/organicmaps/pull/14048)
+4. [continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [side-aware data](https://github.com/organicmaps/organicmaps/pull/14074)
+6. [topology-backed junctions](https://github.com/organicmaps/organicmaps/pull/14075)
+7. [fixed-pixel offset renderer](https://github.com/organicmaps/organicmaps/pull/14076)
+8. [cycling style integration preview](https://github.com/organicmaps/organicmaps/pull/14043)
+
+Prepared with Codex (LLM) assistance; original commit authorship is retained.

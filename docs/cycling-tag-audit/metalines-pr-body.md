@@ -31,7 +31,7 @@ This upstream PR is cumulative: it also contains parts 1-2 and the independent m
 ## Scope
 
 - This revision was refined with Codex assistance.
-- Stores offsets only; the renderer use is 4/5.
+- Stores offsets only; the renderer use is 4/8.
 - One centerline chain per road pattern; no side-specific data.
 - Additive phase metadata preserves the authoritative legacy section. Emitted legacy records and resolved offsets are included in the matched-map audit; historical-client coverage is reported separately.
 - Answers to @vng's questions: [#12692](https://github.com/organicmaps/organicmaps/pull/12692#issuecomment-6506449067).
@@ -40,12 +40,17 @@ Preparation evidence and remaining decisions: [merge-readiness checklist](https:
 
 ## Stack
 
-Part 3 of 5, in review order:
+Part 3 of 8, in review order:
 
 Independent motor-access prerequisite: [#14054](https://github.com/organicmaps/organicmaps/pull/14054).
 
-1. [organicmaps#14040 — selector](https://github.com/organicmaps/organicmaps/pull/14040)
-2. [organicmaps#14041 — cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
-3. **organicmaps#14048 — metalines offsets (this PR)**
-4. [organicmaps#14042 — continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
-5. [organicmaps#14043 — cycling style preview](https://github.com/organicmaps/organicmaps/pull/14043)
+1. [selector](https://github.com/organicmaps/organicmaps/pull/14040)
+2. [cycling types](https://github.com/organicmaps/organicmaps/pull/14041)
+3. **metalines offsets (this PR)**
+4. [continuous dash phase](https://github.com/organicmaps/organicmaps/pull/14042)
+5. [side-aware data](https://github.com/organicmaps/organicmaps/pull/14074)
+6. [topology-backed junctions](https://github.com/organicmaps/organicmaps/pull/14075)
+7. [fixed-pixel offset renderer](https://github.com/organicmaps/organicmaps/pull/14076)
+8. [cycling style integration preview](https://github.com/organicmaps/organicmaps/pull/14043)
+
+Prepared with Codex (LLM) assistance; original commit authorship is retained.

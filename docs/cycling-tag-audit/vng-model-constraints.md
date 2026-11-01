@@ -2,9 +2,12 @@
 
 Discussion: [vng on #14040](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6523827420).
 Response: [proposed boundary](https://github.com/organicmaps/organicmaps/pull/14040#issuecomment-6524260599).
-User decision, 2026-10-30: preserve #12692's appearance; keep offset rendering
-as a separate proposal/prototype. This is not an assertion that vng accepted
-the existing centerline preview as the final rendering design.
+Earlier user decision, 2026-10-30: preserve #12692's appearance; keep offset
+rendering as a separate proposal/prototype. On 2026-10-31 the user explicitly
+superseded that author-side boundary: integrate the installed offset/junction
+prototype into focused split drafts while keeping #12692's code unchanged.
+See [production-offset-design.md](production-offset-design.md). Neither author
+decision is an assertion of maintainer approval.
 
 ## Proposed contract
 

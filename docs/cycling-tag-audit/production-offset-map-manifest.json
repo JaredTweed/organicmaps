@@ -1,0 +1,18 @@
+{
+  "source_commit": "1a3b3df8f66331b5d8776bd742bc659f75b85012",
+  "source_status": "M 3party/expat\n M tools/kothic\n M tools/python/twine",
+  "submodules": "8aa5145039b972ba30e98e788752d37d14568824 3party/BLAKE3 (1.8.5-5-g8aa5145)\n 85010b874b5b33286dc74e53ce9e8c9eaa8b59b9 3party/CMake-MetalShaderSupport (heads/main)\n 6433e5c70bb9ec995f72d767934acaff8ef11ae3 3party/Vulkan-Headers (v1.4.355)\n 62e2e655e5dbf4531c3a891e6e0becc46944805a 3party/boost_headers (heads/master)\n+b8fedbbfd826c220dca5cd758816cc8be1b68897 3party/expat (R_2_9_0-44-gb8fedbbf)\n 34164f547b7df3f5d794ff67e9f885c36819ebfc 3party/fast_float (v6.1.0-369-g34164f5)\n d620667f10a548dee94dbc8c144bb22f79162176 3party/fast_obj (v1.3-6-gd620667)\n 85c8efe0afa5ad0df35114e317a065f544943c52 3party/freetype/freetype (VER-2-13-2-578-g85c8efe0a)\n 395ccad2c1e0daae535c4d20bb0a3f2424648e17 3party/freetype/freetype/subprojects/dlg (v0.2.2-50-g395ccad)\n 33bb3461e10864b5406353d3a1fb7ff34c2314b8 3party/gflags (v2.3.0)\n 98bd97183db1806b834245d4292eaef713fc184f 3party/glaze (98bd971)\n 7c9ea952338b792cb2f70d7c663e498725073797 3party/glfw (3.4-81-g7c9ea952)\n e7970a8b26732f1b0df9690f7180546f8c30e48e 3party/glm (0.9.5.3-2971-ge7970a8b)\n 52eb8108c5bdec04579160ae17225d66034bd723 3party/googletest (release-1.8.0-3544-g52eb8108)\n 56feae4035bdd48f62ba2b8d8c16232d4d89b3a4 3party/harfbuzz/harfbuzz (14.2.1)\n 21d1eb0f306e1141c10931e914dfc038c06121da 3party/icu/icu (cldr/2023-09-27-1183-g21d1eb0f30)\n 8936b58fe26e8c3da834b8f60b06511d537b4c63 3party/imgui/imgui (v1.62-5420-g8936b58fe)\n 7b2387161c542fa9f427352dcdef76097d0d692b 3party/minizip-ng (4.2.2)\n c8033ce9d039e7f9d134877c363397b3cfe20816 3party/pugixml/pugixml (latest)\n 819011bb01628fe1aa2f1da9f2c842a48fd5680b 3party/utfcpp (v2.3.4-149-g819011b)\n 12731092979c6d07f42da27da673a9f6c7b13586 3party/zlib-ng (v1.2.8_jtkv4-2415-g12731092)\n+c5546e4f70128a301fc2f08b391baeafe29e5ee9 tools/kothic (heads/master)\n 45bb767d7939aaca39901d494c080fc4e7916ba7 tools/osmctools (0.0.1~1)\n+779807f7b5d0679937f2d74a516f50a82d74e403 tools/python/twine (v0.10.0-218-g779807f)",
+  "osm_sha256": "d034b4a5f1758e0b856b5bc09057e79200853f2970f5a12cb1ba927881c9ce08",
+  "generator_sha256": "fa9c191fb7469c5966ad85baba19be55514817a624bec8bb6a597e7797a96f93",
+  "map_sha256": "bf175108f165a39a21fe7c434f7f11ecbe55fcb1a03ce81bc268281d579874b7",
+  "map_bytes": 2668110,
+  "generation_workers": 1,
+  "memory_limit_mib": 1800,
+  "swap_limit_bytes": 0,
+  "elapsed_seconds": {
+    "preprocess": 5.77331136004068,
+    "features": 134.84641663893126,
+    "geometry": 389.50072551704943
+  },
+  "scope": "Normal generator, original unannotated road extract; not a routing-graph map"
+}
