@@ -1,7 +1,6 @@
 """Guard the explicitly nonvisual ownership revision against source drift."""
 
 from pathlib import Path
-import re
 import unittest
 
 from audit_nonvisual_refactor import audit
@@ -13,9 +12,10 @@ BASELINE = 'badbc0753b7e2a1b73ebb802fc5c9bf75d37cb7a'
 
 
 class NonvisualRefactorTests(unittest.TestCase):
-    def test_current_style_preserves_assets_codec_and_osm_policy(self):
-        candidate = re.search(r'^readonly STYLE_HEAD=(\w+)$',
-                              (DOCS / 'rollout.sh').read_text(), re.M).group(1)
+    def test_recorded_nonvisual_revision_preserves_assets_codec_and_osm_policy(self):
+        # Preserve the historical proof; the later author-approved quiet style
+        # is intentionally visual and must not be certified as nonvisual.
+        candidate = 'ef743e813409c7b907ca5fe7b98aae2e7ac4157c'
         report = audit(ROOT, BASELINE, candidate)
         self.assertTrue(report['payload_codec_unchanged'])
         self.assertTrue(report['osm_policy_body_moved_verbatim'])

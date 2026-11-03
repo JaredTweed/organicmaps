@@ -1,6 +1,22 @@
 # Cycling PR stack readiness
 
-## Current Integration Target (2026-11-01)
+## Current OM Test Presentation
+
+The author approved promoting OM Test's gray-road/reduced-clutter styling.
+Part 8 (#14043) is now `3ab7ff9e6644d1fd1972ceffabc4a3edcf19b1b7`;
+combined #12692 is `fd7b8f32d31fcd10a4b53e9342fa42934df4bb22`, with the
+same file tree. Original #12692 is preserved on `backup/pr-12692-before-split`.
+Parts 1-7 and independent #14054 retain their previous source heads.
+
+See [the promotion scope and evidence](quiet-style-promotion.md),
+[generated-rule proof](quiet-style-promotion.json) and
+[239 matching-head native checks](quiet-style-native-results.json).
+The research suite passes 79 tests. This deliberately changes the presentation,
+including shared default palettes, and still needs maintainer agreement and CI.
+Earlier records below retain their original targets, test pins and protection
+policy; the author subsequently authorized the combined PR and styling updates.
+
+## Previous Nonvisual Integration (2026-11-01)
 
 The author has now authorized incorporating the installed side-offset/junction
 prototype into the split drafts, with separate side-data, topology-data, and

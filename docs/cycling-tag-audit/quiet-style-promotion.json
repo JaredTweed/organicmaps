@@ -1,0 +1,145 @@
+{
+  "baseline": "ef743e813409c7b907ca5fe7b98aae2e7ac4157c",
+  "head": "3ab7ff9e6644d1fd1972ceffabc4a3edcf19b1b7",
+  "changed_paths": [
+    "data/colors.txt",
+    "data/drules_cycling.bin",
+    "data/drules_cycling.txt",
+    "data/drules_default.bin",
+    "data/drules_default.txt",
+    "data/drules_design.bin",
+    "data/drules_merged.bin",
+    "data/drules_merged.txt",
+    "data/drules_outdoors.bin",
+    "data/drules_outdoors.txt",
+    "data/drules_vehicle.txt",
+    "data/styles/common/QuietCycling.mapcss",
+    "data/styles/common/dark/quiet_roads.mapcss",
+    "data/styles/common/light/quiet_roads.mapcss",
+    "data/styles/cycling/dark/style.mapcss",
+    "data/styles/cycling/light/style.mapcss",
+    "data/styles/default/dark/colors.mapcss",
+    "data/styles/default/dark/style.mapcss",
+    "data/styles/default/light/colors.mapcss",
+    "data/styles/default/light/style.mapcss"
+  ],
+  "native_code_unchanged": true,
+  "reference_apk_sha256": "fd9e893781ec5d4058bdb063859c8c2d466da34c7192bd10eff1e3fc7d82e235",
+  "generated_files": {
+    "types.txt": {
+      "sha256": "fa26d8d21e358f19c1d758c46a95d30cd05c233e4372f17fd2a77df1a1ae8e95",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "classificator.txt": {
+      "sha256": "f52b1c6cc7f4f5cc8068f5f4e3c7a107fb0d10025e001bf73804ec2fc954383d",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "visibility.txt": {
+      "sha256": "3ecbc424f78c87f16f6bef6d530148b97a8259d8751051eeab2c1970469411ad",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "colors.txt": {
+      "sha256": "b8c4437304d9e2cfa218e01b36e4035b47af5377fdf1ba04fcd7e1f4e58cdabb",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "patterns.txt": {
+      "sha256": "c29e992302bbfea254374df2df27f6e29614b2aa96c0311c5567066426574d21",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "drules_cycling.bin": {
+      "sha256": "6fbe7784144743293114f870e66ac4b6efe442de838b5b9d58c23c9b9ccf3b96",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "drules_cycling.txt": {
+      "sha256": "8d498361ea26073ccdf1f4c93f18d79e4f22a98cfdce87bd0d70d0e0a9d77a5f",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "drules_default.bin": {
+      "sha256": "75d542a02725ae358f20ece824cd0ef0545ebd35ac844fa3bf9bc0ca2f7bca85",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "drules_default.txt": {
+      "sha256": "6eb2f2b42dd96d043e360f1456a3b618c2883d78268d5bea9d906f67e2332a3a",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "drules_design.bin": {
+      "sha256": "199290407cfd090d8c26d536a9b50f0317f28c621944f476558ef906f2c78a1a",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "drules_merged.bin": {
+      "sha256": "67e288ea9f230205d3c112122cee62c64d83082195d3404a1ca848ecc6b04038",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "drules_merged.txt": {
+      "sha256": "b8186caebe6345970ba2054f2cf259a8a85843a155257a96b8eb1fe6fbd72dd7",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "drules_outdoors.bin": {
+      "sha256": "4e5e6e1e134c6b72c7cc3c503b7bc39c57db2f8e6a5b09661779cd0c7c069e49",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "drules_outdoors.txt": {
+      "sha256": "548fc5096bf14c02476db54b7ca9e88602ef304aa0414c29141c488d917971bf",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    },
+    "drules_vehicle.bin": {
+      "sha256": "422aea4e4b3a28af04088be3b25932eedfefab350226f01e0c106bea1f2449c1",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": true
+    },
+    "drules_vehicle.txt": {
+      "sha256": "1cd06ed224061bddce49ba147655918a05ae89d7c7bf66df583aded923ca4f7a",
+      "matches_om_test_generation": true,
+      "matches_packaged_asset": false
+    }
+  },
+  "variants": {
+    "default/light": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "default/dark": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "outdoors/light": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "outdoors/dark": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "cycling/light": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "cycling/dark": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "vehicle/light": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    },
+    "vehicle/dark": {
+      "line_geometry_unchanged": true,
+      "cycling_line_rules_unchanged": true
+    }
+  },
+  "scope": "Generated asset and line-rule equivalence to OM Test; not full-map generation or a new GPU capture"
+}

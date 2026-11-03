@@ -1,0 +1,140 @@
+{
+  "captured_at": "2026-11-03T15:58:17.940043+00:00",
+  "prs": [
+    {
+      "baseRefName": "master",
+      "headRefOid": "c24dc38dfe5e258837855cb84683c6ad0083adc7",
+      "isDraft": true,
+      "number": 14040,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14040",
+      "body_sha256": "fb5f3bfc1a241552ceb5e2c20ed579b701eb2eaa504b4fb26d0ca65a67ff52b0"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "6daf0d87550ccfcf8ee199b3b8173a53245990cb",
+      "isDraft": true,
+      "number": 14054,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14054",
+      "body_sha256": "cefceb06b36e2ff8e5e27185e1e63f3c0ae0acf9690b1bd94823f2117c9073cc"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "750c72f0623dd4b93b97f205e1269866c8282b48",
+      "isDraft": true,
+      "number": 14041,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14041",
+      "body_sha256": "ecc28481a50943f8011f80ca5fa8b8af3b61daa1f181fdd79137b206e2a03e95"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "1f4e588b3f1b02a905dcf23c6453457710ac12ed",
+      "isDraft": true,
+      "number": 14048,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14048",
+      "body_sha256": "0b52070715f816a61829f4f8cd5a7a630d06bc43a7b3a7dea79b557c4332ab76"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "c1f68d2aadc5383a85ffc9aa9754a0c871ecd957",
+      "isDraft": true,
+      "number": 14042,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14042",
+      "body_sha256": "4b076c9bb0fa92919304bc98831d180afaa66baafc718db77a0f679c07fa184f"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "ac284a82895ae7e05d438d766ab351d0af15c14d",
+      "isDraft": true,
+      "number": 14074,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14074",
+      "body_sha256": "35dbf8d427b0ec8465c16409a47900479d9ab0c79264691ade59e7ef79436bb7"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "b2526bd7de3d09b6698ff2fc9961cebeed91c123",
+      "isDraft": true,
+      "number": 14075,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14075",
+      "body_sha256": "e6e2a39e4a65201f962b4f1f6a2d6160f5372dc6c99df48ce4f3676e1b614e5d"
+    },
+    {
+      "baseRefName": "master",
+      "headRefOid": "6aefec7e5a1ccafb3ba5eefb32003eb6c7135ea9",
+      "isDraft": true,
+      "number": 14076,
+      "reviewDecision": "REVIEW_REQUIRED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14076",
+      "body_sha256": "feb37d69cfdc5800eaa9ff0a7662707731b26da3686a2c744ddc8efff2db13fa"
+    },
+    {
+      "baseRefName": "ab/cycling-style",
+      "headRefOid": "3ab7ff9e6644d1fd1972ceffabc4a3edcf19b1b7",
+      "isDraft": true,
+      "number": 14043,
+      "reviewDecision": "",
+      "url": "https://github.com/organicmaps/organicmaps/pull/14043",
+      "description_matches_source": true,
+      "workflow_runs": [
+        {
+          "conclusion": "action_required",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41668526170"
+        },
+        {
+          "conclusion": "action_required",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41668525968"
+        },
+        {
+          "conclusion": "action_required",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41668525935"
+        }
+      ],
+      "body_sha256": "b7fd33b594d9f144efbec332be9622d319ed06c748e42917a1994c7380eef131"
+    },
+    {
+      "baseRefName": "ab/cycling-style",
+      "headRefOid": "fd7b8f32d31fcd10a4b53e9342fa42934df4bb22",
+      "isDraft": false,
+      "number": 12692,
+      "reviewDecision": "APPROVED",
+      "url": "https://github.com/organicmaps/organicmaps/pull/12692",
+      "description_matches_source": true,
+      "workflow_runs": [
+        {
+          "conclusion": "action_required",
+          "name": "Android Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41668527126"
+        },
+        {
+          "conclusion": "action_required",
+          "name": "CMake",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41668527878"
+        },
+        {
+          "conclusion": "action_required",
+          "name": "iOS Check",
+          "status": "completed",
+          "url": "https://github.com/organicmaps/organicmaps/actions/runs/41668527050"
+        }
+      ],
+      "body_sha256": "7f27ed96bd47c7bf2583c571f867b5a93d7b84ea632d7bfd3040e079b66e1858"
+    }
+  ],
+  "combined_and_split_trees_equal": true,
+  "original_backup_head": "955cd49403ed025c24beec09f5551e8d274a38ff",
+  "scope": "Publication snapshot; old approvals are not approval of newly changed styling"
+}

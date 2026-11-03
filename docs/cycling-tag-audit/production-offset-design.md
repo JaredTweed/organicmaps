@@ -1,5 +1,9 @@
 # Production Side-Offset Integration
 
+The later author-approved [OM Test presentation promotion](quiet-style-promotion.md)
+changes palette and clutter rules, but not the data/geometry contracts below.
+This document's earlier visual-reference and validation records remain historical.
+
 ## Target
 
 The current author-approved target is the installed topology-junction phone
