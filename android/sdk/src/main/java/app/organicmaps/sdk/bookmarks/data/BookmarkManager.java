@@ -643,6 +643,12 @@ public enum BookmarkManager {
    */
   private native long nativeCreateCategory(@NonNull String name);
 
+  /** Explicit contact import. Returns category ID, added, updated, unchanged, locally edited, skipped counts. */
+  @NonNull
+  public native long[] importContactBookmarks(@NonNull String categoryName, @NonNull String[] keys,
+                                              @NonNull String[] names, @NonNull String[] addresses,
+                                              @NonNull double[] latitudes, @NonNull double[] longitudes);
+
   private native void nativeShowBookmarkOnMap(long bmkId);
 
   private native void nativeShowBookmarkCategoryOnMap(long catId);

@@ -1,21 +1,30 @@
 package app.organicmaps.bookmarks
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import app.organicmaps.MwmApplication
 import app.organicmaps.R
 import app.organicmaps.base.BaseMwmRecyclerFragment
+import app.organicmaps.contacts.ContactsImportViewModel
+import app.organicmaps.contacts.ContactsImporter
 import app.organicmaps.dialog.EditTextDialogFragment
 import app.organicmaps.sdk.bookmarks.data.BookmarkCategory
 import app.organicmaps.sdk.bookmarks.data.BookmarkManager
@@ -43,6 +52,34 @@ class BookmarkCategoriesFragment :
     private var selectedCategory: BookmarkCategory? = null
 
     private var importDialog: Dialog? = null
+    private var contactsDialog: AlertDialog? = null
+    private lateinit var contactsImport: ContactsImportViewModel
+
+    private val contactsPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            contactsImport.start()
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.bookmarks_contacts_permission_denied)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.settings) { _, _ ->
+                    try {
+                        startActivity(
+                            Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", requireContext().packageName, null),
+                            ),
+                        )
+                    } catch (_: ActivityNotFoundException) {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.bookmarks_contacts_permission_denied,
+                            Toast.LENGTH_LONG,
+                        ).show()
+                    }
+                }.show()
+        }
+    }
 
     private val categoriesUpdatesListener = DataChangedListener {
         adapter.setItems(BookmarkManager.INSTANCE.categories)
@@ -87,6 +124,8 @@ class BookmarkCategoriesFragment :
         super.onViewCreated(view, savedInstanceState)
         recyclerView.addItemDecoration(CardSectionDividerDecoration(requireContext()))
         BookmarkManager.INSTANCE.addCategoriesUpdatesListener(categoriesUpdatesListener)
+        contactsImport = ViewModelProvider(this)[ContactsImportViewModel::class.java]
+        contactsImport.state.observe(viewLifecycleOwner, ::showContactsImportState)
     }
 
     override fun onStart() {
@@ -104,6 +143,8 @@ class BookmarkCategoriesFragment :
         BookmarkManager.INSTANCE.removeCategoriesUpdatesListener(categoriesUpdatesListener)
         // The import keeps running, but its dialog belongs to the Activity that is going away.
         dismissImportDialog()
+        contactsDialog?.dismiss()
+        contactsDialog = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -180,6 +221,89 @@ class BookmarkCategoriesFragment :
 
     override fun onExportButtonClick() {
         BookmarksSharingHelper.INSTANCE.prepareBookmarkCategoriesForSharing(requireActivity(), shareLauncher)
+    }
+
+    override fun onImportContactsButtonClick() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.bookmarks_import_contacts)
+            .setMessage(R.string.bookmarks_contacts_import_explanation)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.bookmarks_import_contacts) { _, _ ->
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    contactsImport.start()
+                } else {
+                    contactsPermission.launch(Manifest.permission.READ_CONTACTS)
+                }
+            }.show()
+    }
+
+    private fun showContactsImportState(state: ContactsImporter.State) {
+        if (state.isRunning) {
+            if (contactsDialog == null) {
+                contactsDialog = MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.bookmarks_import_contacts)
+                    .setView(R.layout.dialog_contacts_import)
+                    .setNegativeButton(R.string.cancel) { _, _ -> contactsImport.cancel() }
+                    .setOnCancelListener { contactsImport.cancel() }
+                    .create()
+                contactsDialog?.show()
+                contactsDialog?.setCanceledOnTouchOutside(false)
+            }
+            val message = when (state.phase) {
+                ContactsImporter.Phase.READING -> getString(R.string.bookmarks_contacts_import_reading)
+                ContactsImporter.Phase.SAVING -> getString(R.string.bookmarks_contacts_import_saving)
+                else -> getString(R.string.bookmarks_contacts_import_resolving, state.processed, state.total)
+            }
+            contactsDialog?.findViewById<android.widget.TextView>(R.id.contacts_import_progress)?.text = message
+            contactsDialog?.setCancelable(state.phase != ContactsImporter.Phase.SAVING)
+            contactsDialog?.getButton(AlertDialog.BUTTON_NEGATIVE)?.isEnabled =
+                state.phase != ContactsImporter.Phase.SAVING
+            return
+        }
+        contactsDialog?.dismiss()
+        contactsDialog = null
+        val message = when (state.phase) {
+            ContactsImporter.Phase.DONE -> {
+                val result = checkNotNull(state.result)
+                if (state.total == 0) {
+                    getString(R.string.bookmarks_contacts_import_empty)
+                } else {
+                    getString(
+                        R.string.bookmarks_contacts_import_result,
+                        result.added,
+                        result.updated,
+                        result.unchanged,
+                        result.edited,
+                        result.skipped + state.unresolved,
+                    )
+                }
+            }
+
+            ContactsImporter.Phase.ERROR -> getString(
+                when (state.error) {
+                    ContactsImporter.Error.PERMISSION -> R.string.bookmarks_contacts_permission_denied
+                    ContactsImporter.Error.MAPS -> R.string.bookmarks_contacts_import_maps
+                    ContactsImporter.Error.READ -> R.string.bookmarks_contacts_import_read_error
+                    else -> R.string.bookmarks_contacts_import_save_error
+                },
+            )
+
+            ContactsImporter.Phase.CANCELLED -> {
+                contactsImport.dismissResult()
+                return
+            }
+
+            else -> return
+        }
+        contactsDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.bookmarks_import_contacts)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok) { _, _ -> contactsImport.dismissResult() }
+            .setOnCancelListener { contactsImport.dismissResult() }
+            .show()
     }
 
     private fun onShareActionSelected(category: BookmarkCategory, fileType: FileType) {

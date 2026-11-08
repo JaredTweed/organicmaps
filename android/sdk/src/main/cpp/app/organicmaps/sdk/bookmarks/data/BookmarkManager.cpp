@@ -8,6 +8,7 @@
 #include "kml/type_utils.hpp"
 
 #include "map/bookmark_helpers.hpp"
+#include "map/bookmark_import.hpp"
 #include "map/place_page_info.hpp"
 
 #include "coding/zip_creator.hpp"
@@ -577,5 +578,50 @@ JNIEXPORT jboolean JNICALL
 Java_app_organicmaps_sdk_widget_placepage_PlacePageButtonFactory_nativeHasRecentlyDeletedBookmark(JNIEnv *, jclass)
 {
   return frm()->GetBookmarkManager().HasRecentlyDeletedBookmark();
+}
+JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_importContactBookmarks(
+    JNIEnv * env, jobject, jstring categoryName, jobjectArray keys, jobjectArray names, jobjectArray addresses,
+    jdoubleArray latitudes, jdoubleArray longitudes)
+{
+  if (!categoryName || !keys || !names || !addresses || !latitudes || !longitudes)
+  {
+    env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "Missing bookmark import data");
+    return nullptr;
+  }
+  auto const count = env->GetArrayLength(keys);
+  if (count != env->GetArrayLength(names) || count != env->GetArrayLength(addresses) ||
+      count != env->GetArrayLength(latitudes) || count != env->GetArrayLength(longitudes))
+  {
+    env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "Mismatched bookmark import arrays");
+    return nullptr;
+  }
+  std::vector<double> lat(count), lon(count);
+  if (count != 0)
+  {
+    env->GetDoubleArrayRegion(latitudes, 0, count, lat.data());
+    env->GetDoubleArrayRegion(longitudes, 0, count, lon.data());
+  }
+  if (env->ExceptionCheck())
+    return nullptr;
+  std::vector<BookmarkImportEntry> entries;
+  entries.reserve(count);
+  for (jsize i = 0; i < count; ++i)
+  {
+    jni::ScopedLocalRef<jstring> key(env, static_cast<jstring>(env->GetObjectArrayElement(keys, i)));
+    jni::ScopedLocalRef<jstring> name(env, static_cast<jstring>(env->GetObjectArrayElement(names, i)));
+    jni::ScopedLocalRef<jstring> address(env, static_cast<jstring>(env->GetObjectArrayElement(addresses, i)));
+    entries.push_back({key.get() ? jni::ToNativeString(env, key.get()) : "",
+                       name.get() ? jni::ToNativeString(env, name.get()) : "",
+                       address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i]});
+  }
+  auto const imported =
+      ImportBookmarks(frm()->GetBookmarkManager(), "android-contacts", jni::ToNativeString(env, categoryName), entries);
+  jlong const values[] = {static_cast<jlong>(imported.m_categoryId), static_cast<jlong>(imported.m_added),
+                          static_cast<jlong>(imported.m_updated),    static_cast<jlong>(imported.m_unchanged),
+                          static_cast<jlong>(imported.m_edited),     static_cast<jlong>(imported.m_skipped)};
+  auto result = env->NewLongArray(6);
+  if (result)
+    env->SetLongArrayRegion(result, 0, 6, values);
+  return result;
 }
 }  // extern "C"
