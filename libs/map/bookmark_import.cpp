@@ -186,7 +186,6 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
     else
     {
       session.UpdateBookmark(id, data);
-      session.GetBookmarkForEdit(id)->SetPtOrg(point);
       ++result.m_updated;
     }
   }

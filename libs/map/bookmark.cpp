@@ -80,6 +80,9 @@ Bookmark::Bookmark(kml::BookmarkData && data)
 void Bookmark::SetData(kml::BookmarkData const & data)
 {
   SetDirty();
+  if (m_ptOrg != data.m_point)
+    m_address = {};
+  m_ptOrg = data.m_point;
   m_data = data;
   m_data.m_color = kml::NormalizeBookmarkColorData(m_data.m_color);
 }
