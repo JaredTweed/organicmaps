@@ -77,6 +77,8 @@ struct SearchParams
 
   // Amount of time after which the search is aborted.
   TimeDurationT m_timeout = kDefaultTimeout;
+  // Address resolution must not infer uniqueness from deadline-limited partial results.
+  bool m_requireCompleteResults = false;
 
   std::shared_ptr<Tracer> m_tracer;
 

@@ -509,6 +509,7 @@ void SearchAPI::StartAddressResolution()
   params.m_viewport = viewport;
   params.m_mode = request->m_background ? Mode::Viewport : Mode::Everywhere;
   params.m_needAddress = true;
+  params.m_requireCompleteResults = true;
   params.m_onResults = [this, request, generation, query, viewport](Results const & results)
   {
     std::optional<search::Result> earlyMatch;
