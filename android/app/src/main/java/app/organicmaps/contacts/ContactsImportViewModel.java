@@ -23,6 +23,17 @@ import java.util.function.Consumer;
 
 public final class ContactsImportViewModel extends AndroidViewModel
 {
+  private static ContactsImportViewModel instance;
+
+  // Process-owned: the bookmarks activity is finished when returning to the map.
+  // Only the application context and temporary import state are retained.
+  @androidx.annotation.MainThread
+  public static ContactsImportViewModel getInstance(Application app)
+  {
+    if (instance == null)
+      instance = new ContactsImportViewModel(app);
+    return instance;
+  }
   private final Handler main = new Handler(Looper.getMainLooper());
   private final MutableLiveData<ContactsImporter.State> state = new MutableLiveData<>(
       new ContactsImporter.State(ContactsImporter.Phase.IDLE, 0, 0, 0, ContactsImporter.Error.NONE, null));

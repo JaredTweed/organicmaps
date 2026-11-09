@@ -19,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import app.organicmaps.MwmApplication
 import app.organicmaps.R
 import app.organicmaps.base.BaseMwmRecyclerFragment
@@ -53,6 +52,7 @@ class BookmarkCategoriesFragment :
 
     private var importDialog: Dialog? = null
     private var contactsDialog: AlertDialog? = null
+    private var contactsProgressHidden = false
     private lateinit var contactsImport: ContactsImportViewModel
 
     private val contactsPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -124,7 +124,7 @@ class BookmarkCategoriesFragment :
         super.onViewCreated(view, savedInstanceState)
         recyclerView.addItemDecoration(CardSectionDividerDecoration(requireContext()))
         BookmarkManager.INSTANCE.addCategoriesUpdatesListener(categoriesUpdatesListener)
-        contactsImport = ViewModelProvider(this)[ContactsImportViewModel::class.java]
+        contactsImport = ContactsImportViewModel.getInstance(requireActivity().application)
         contactsImport.state.observe(viewLifecycleOwner, ::showContactsImportState)
     }
 
@@ -225,6 +225,12 @@ class BookmarkCategoriesFragment :
 
     override fun onImportContactsButtonClick() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        contactsProgressHidden = false
+        val current = contactsImport.state.value
+        if (current != null && current.isRunning) {
+            showContactsImportState(current)
+            return
+        }
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.bookmarks_import_contacts)
             .setMessage(R.string.bookmarks_contacts_import_explanation)
@@ -242,11 +248,16 @@ class BookmarkCategoriesFragment :
 
     private fun showContactsImportState(state: ContactsImporter.State) {
         if (state.isRunning) {
+            if (contactsProgressHidden) return
             if (contactsDialog == null) {
                 contactsDialog = MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.bookmarks_import_contacts)
                     .setView(R.layout.dialog_contacts_import)
                     .setNegativeButton(R.string.cancel) { _, _ -> contactsImport.cancel() }
+                    .setNeutralButton(R.string.hide) { _, _ ->
+                        contactsProgressHidden = true
+                        contactsDialog = null
+                    }
                     .setOnCancelListener { contactsImport.cancel() }
                     .create()
                 contactsDialog?.show()

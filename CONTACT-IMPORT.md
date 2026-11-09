@@ -24,7 +24,10 @@ The previous prototype remains on `feature/android-contact-import` in its origin
   skipped and reported. Re-import retries them; there is no persistent resolution cache.
 - Temporary contact data is released on completion, cancellation, or failure. Cancellation before
   the saving phase makes no bookmark changes. Rotation retains progress; abandoning the screen
-  cancels the task. A process restart does not resume an unfinished import.
+  no longer cancels the task while the app process remains alive. Hide the progress
+  dialog to browse the map; Import contacts reopens progress without starting a second import.
+  Android may terminate work after the app is closed. A process restart does not resume an
+  unfinished import or automatically read contacts again. Completed imports remain bookmarks.
 
 Imported entries are ordinary user-owned bookmarks. They remain after Contacts access is revoked
 and are included in normal bookmark backups/exports. Hashed keys are identifiers, not encryption
