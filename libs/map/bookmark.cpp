@@ -129,8 +129,9 @@ drape_ptr<df::UserPointMark::TitlesInfo> Bookmark::GetTitleDeclEx(settings::Plac
     title.m_primaryTextFont.m_color = isDarkTheme ? dp::Color(0xa6, 0xa6, 0xa6, 255) : dp::Color(0x44, 0x44, 0x44, 255);
     title.m_primaryTextFont.m_outlineColor = outlineColor;
     title.m_primaryTextFont.m_size = 10.0f;
-    title.m_anchor = dp::Left;
-    title.m_primaryOffset.x = 2.0f;
+    title.m_anchor = dp::Top;
+    title.m_primaryOffset.x = 0.0f;
+    title.m_primaryOffset.y = 2.0f;
     auto titles = make_unique_dp<TitlesInfo>();
     titles->push_back(std::move(title));
     return titles;

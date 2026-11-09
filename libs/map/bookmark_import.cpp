@@ -50,6 +50,11 @@ std::string Coordinate(double value)
   return stream.str();
 }
 
+std::string LocationKey(double lat, double lon)
+{
+  return Coordinate(lat) + ',' + Coordinate(lon);
+}
+
 std::string Identity(std::string const & name, std::string const & address)
 {
   auto normalize = [](std::string const & text)
@@ -95,6 +100,7 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
 
   std::map<std::string, std::vector<kml::MarkId>> existing;
   std::map<std::string, std::vector<kml::MarkId>> fallback;
+  std::map<std::string, std::vector<kml::MarkId>> existingByLocation;
   std::set<std::string> incomingKeys;
   for (auto const & entry : entries)
     incomingKeys.insert(entry.m_key);
@@ -108,8 +114,14 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       auto const * bookmark = manager.GetBookmark(id);
       if (!bookmark || Property(bookmark->GetData().m_properties, kSource) != source)
         continue;
-      auto const key = Property(bookmark->GetData().m_properties, kKey);
+      auto const & properties = bookmark->GetData().m_properties;
+      auto const key = Property(properties, kKey);
       existing[key].push_back(id);
+      double lat, lon;
+      if (strings::to_double(Property(properties, kLatitude), lat) &&
+          strings::to_double(Property(properties, kLongitude), lon) && IsFiniteCoordinate(lat) &&
+          IsFiniteCoordinate(lon) && mercator::ValidLat(lat) && mercator::ValidLon(lon))
+        existingByLocation[LocationKey(lat, lon)].push_back(id);
       // Recover changed provider keys only when the previous key is absent from this import.
       // Never merge two different current contacts just because they share a name and address.
       if (!incomingKeys.contains(key))
@@ -119,6 +131,7 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
 
   auto session = manager.GetEditSession();
   std::set<std::string> processedKeys;
+  std::set<std::string> processedLocations;
   std::set<kml::MarkId> claimed;
   for (auto const & entry : entries)
   {
@@ -129,6 +142,14 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       ++result.m_skipped;
       continue;
     }
+
+    std::string const locationKey = LocationKey(entry.m_lat, entry.m_lon);
+    if (!processedLocations.insert(locationKey).second)
+    {
+      ++result.m_skipped;
+      continue;
+    }
+
     kml::MarkId id = kml::kInvalidMarkId;
     auto const byKey = existing.find(entry.m_key);
     if (byKey != existing.end())
@@ -149,6 +170,10 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
         ++result.m_skipped;
         continue;
       }
+    }
+    else if (auto const it = existingByLocation.find(locationKey); it != existingByLocation.end())
+    {
+      id = it->second.front();
     }
 
     auto const snapshot = Snapshot(entry.m_name, entry.m_address);
@@ -171,6 +196,26 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       {
         ++result.m_edited;
         continue;
+      }
+      // Older imports stored one bookmark per contact, so several unchanged markers can share the
+      // same source location. Keep the target and remove the redundant, unedited duplicates.
+      if (auto const locationIt = existingByLocation.find(locationKey); locationIt != existingByLocation.end())
+      {
+        for (auto const duplicateId : locationIt->second)
+        {
+          if (duplicateId == id)
+            continue;
+          auto const * duplicate = manager.GetBookmark(duplicateId);
+          if (!duplicate)
+            continue;
+          auto const & duplicateProperties = duplicate->GetData().m_properties;
+          if (Property(duplicateProperties, kSource) != source)
+            continue;
+          if (Property(duplicateProperties, kSnapshot) !=
+              Snapshot(duplicate->GetPreferredName(), duplicate->GetDescription()))
+            continue;  // Keep locally edited bookmarks.
+          session.DeleteBookmark(duplicateId);
+        }
       }
       bool const needsPresentation = !entry.m_customImage.empty() && !data.m_properties.contains("CustomImage") &&
                                      !data.m_properties.contains("CustomImageOverride") &&

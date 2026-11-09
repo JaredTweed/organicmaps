@@ -87,7 +87,8 @@ public class ContactsImporterTest
     assertTrue(saved.isEmpty());
     complete(0, new ContactsImporter.Location(49, -123));
     assertEquals(1, callbacks.size());
-    assertEquals(2, saved.get(0).size());
+    assertEquals(1, saved.get(0).size());
+    assertEquals("Name one, Name two", saved.get(0).get(0).name());
     assertEquals(ContactsImporter.Phase.DONE, last().phase);
     assertEquals(0, last().unresolved);
   }

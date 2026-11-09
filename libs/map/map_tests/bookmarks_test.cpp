@@ -3497,7 +3497,7 @@ UNIT_TEST(BookmarkSourceImportRecoversChangedKeysWithoutMergingDifferentPeople)
   TEST_EQUAL(result.m_updated, 1, ());
   TEST_EQUAL(manager.GetUserMarkIds(category).size(), 1, ());
   result = ImportBookmarks(manager, "contacts", "Contacts",
-                           {{"new", "Person", "Address", 49, -123}, {"another", "Person", "Address", 49, -123}});
+                           {{"new", "Person", "Address", 49, -123}, {"another", "Person", "Other address", 50, -124}});
   TEST_EQUAL(result.m_added, 1, ());
   TEST_EQUAL(result.m_unchanged, 1, ());
   TEST_EQUAL(manager.GetUserMarkIds(category).size(), 2, ());

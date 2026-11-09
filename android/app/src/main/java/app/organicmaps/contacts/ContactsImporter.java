@@ -2,8 +2,12 @@ package app.organicmaps.contacts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -122,6 +126,7 @@ public final class ContactsImporter
   private final Map<String, Location> locations = new HashMap<>();
   private final List<Entry> entries = new ArrayList<>();
   private final Map<String, Location> previousLocations = new HashMap<>();
+  private final Map<String, Set<String>> previousKeysByLocation = new HashMap<>();
   private List<Contact> contacts = List.of();
   private int index;
   private int addressIndex;
@@ -155,6 +160,15 @@ public final class ContactsImporter
         duplicates.add(key);
     }
     duplicates.forEach(previousLocations::remove);
+    previousKeysByLocation.clear();
+    for (Map.Entry<String, Location> entry : previousLocations.entrySet())
+    {
+      int separator = entry.getKey().indexOf('\0');
+      if (separator < 0)
+        continue;
+      previousKeysByLocation.computeIfAbsent(locationKey(entry.getValue()), ignored -> new LinkedHashSet<>())
+          .add(entry.getKey().substring(0, separator));
+    }
     this.contacts = List.copyOf(contacts);
     index = addressIndex = unresolved = 0;
     running = true;
@@ -179,6 +193,47 @@ public final class ContactsImporter
     entries.clear();
     locations.clear();
     previousLocations.clear();
+    previousKeysByLocation.clear();
+  }
+
+  private static String locationKey(Location location)
+  {
+    return String.format(Locale.ROOT, "%.7f,%.7f", location.latitude(), location.longitude());
+  }
+
+  private static final class LocationGroup
+  {
+    final Entry first;
+    final Set<String> names = new LinkedHashSet<>();
+    final Set<String> previousKeys = new LinkedHashSet<>();
+
+    LocationGroup(Entry first)
+    {
+      this.first = first;
+    }
+  }
+
+  // Contacts that resolve to the same point share one map marker. Otherwise several labels would
+  // overlap at the same address (for example, two people living at the same house).
+  private List<Entry> groupByLocation(List<Entry> source)
+  {
+    Map<String, LocationGroup> groups = new LinkedHashMap<>();
+    for (Entry entry : source)
+    {
+      String key = locationKey(entry.location());
+      LocationGroup group = groups.computeIfAbsent(key, ignored -> new LocationGroup(entry));
+      group.names.add(entry.name());
+      if (previousKeysByLocation.getOrDefault(key, Set.of()).contains(entry.key()))
+        group.previousKeys.add(entry.key());
+    }
+
+    List<Entry> result = new ArrayList<>(groups.size());
+    for (LocationGroup group : groups.values())
+    {
+      String key = group.previousKeys.isEmpty() ? group.first.key() : group.previousKeys.iterator().next();
+      result.add(new Entry(key, String.join(", ", group.names), group.first.address(), group.first.location()));
+    }
+    return result;
   }
 
   private void next()
@@ -255,8 +310,8 @@ public final class ContactsImporter
     observer.accept(new State(Phase.SAVING, index, contacts.size(), unresolved, Error.NONE, null));
     try
     {
-      Summary result =
-          entries.isEmpty() ? new Summary(new long[] {-1, 0, 0, 0, 0, 0}) : store.save(List.copyOf(entries));
+      Summary result = entries.isEmpty() ? new Summary(new long[] {-1, 0, 0, 0, 0, 0})
+                                         : store.save(groupByLocation(entries));
       finish(Phase.DONE, Error.NONE, result);
     }
     catch (RuntimeException e)
