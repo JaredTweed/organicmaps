@@ -409,6 +409,23 @@ JNIEXPORT jobject Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_native
                         address);
 }
 
+JNIEXPORT jboolean JNICALL
+Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeIsContactBookmark(JNIEnv *, jobject, jlong bmkId)
+{
+  auto const & bm = frm()->GetBookmarkManager();
+  auto const * bookmark = bm.GetBookmark(static_cast<kml::MarkId>(bmkId));
+  if (!bookmark)
+    return JNI_FALSE;
+
+  auto const groupId = bookmark->GetGroupId();
+  if (!BookmarkManager::IsBookmarkCategory(groupId))
+    return JNI_FALSE;
+
+  auto const & properties = bm.GetCategoryData(groupId).m_properties;
+  auto const it = properties.find("om:import:source");
+  return (it != properties.end() && it->second == "android-contacts") ? JNI_TRUE : JNI_FALSE;
+}
+
 JNIEXPORT jobject Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeGetTrack(JNIEnv * env, jobject,
                                                                                          jlong trackId,
                                                                                          jclass trackClazz)

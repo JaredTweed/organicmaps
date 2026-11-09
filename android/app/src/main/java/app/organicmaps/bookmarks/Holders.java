@@ -428,10 +428,12 @@ public class Holders
       mDistance.setText(subtitleValue);
       UiUtils.hideIf(TextUtils.isEmpty(subtitleValue), mDistance);
 
-      mIcon.setImageResource(bookmark.getIcon().getResId());
+      final int iconRes = BookmarkManager.INSTANCE.isContactBookmark(bookmarkId)
+                              ? R.drawable.ic_bookmark_contact
+                              : bookmark.getIcon().getResId();
       Drawable circle =
           Graphics.drawCircleAndImage(bookmark.getIcon().argb(), R.dimen.track_circle_size,
-                                      bookmark.getIcon().getResId(), R.dimen.bookmark_icon_size, mIcon.getContext());
+                                      iconRes, R.dimen.bookmark_icon_size, mIcon.getContext());
       mIcon.setImageDrawable(circle);
     }
 

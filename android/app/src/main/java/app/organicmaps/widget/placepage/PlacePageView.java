@@ -582,8 +582,11 @@ public class PlacePageView extends Fragment implements View.OnClickListener, Vie
       Icon icon = bookmark.getIcon();
       if (icon != null)
       {
+        final int iconRes = BookmarkManager.INSTANCE.isContactBookmark(bookmark.getBookmarkId())
+                                ? R.drawable.ic_bookmark_contact
+                                : icon.getResId();
         Drawable circle = Graphics.drawCircleAndImage(icon.argb(), R.dimen.place_page_icon_background_size,
-                                                      icon.getResId(), R.dimen.place_page_icon_size, requireContext());
+                                                      iconRes, R.dimen.place_page_icon_size, requireContext());
         mColorIcon.setImageDrawable(circle);
         mTvCategory.setText(BookmarkManager.INSTANCE.getCategoryById(bookmark.getCategoryId()).getName());
       }
