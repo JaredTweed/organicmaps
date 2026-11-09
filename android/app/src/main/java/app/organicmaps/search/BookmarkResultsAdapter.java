@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import app.organicmaps.R;
+import app.organicmaps.sdk.bookmarks.data.BookmarkCategory;
 import app.organicmaps.sdk.bookmarks.data.BookmarkInfo;
 import app.organicmaps.sdk.bookmarks.data.BookmarkManager;
 import java.util.ArrayList;
@@ -54,7 +55,11 @@ final class BookmarkResultsAdapter extends RecyclerView.Adapter<BookmarkResultsA
   {
     BookmarkInfo info = results.get(position);
     ((TextView) holder.itemView.findViewById(R.id.title)).setText(info.getName());
-    ((TextView) holder.itemView.findViewById(R.id.description)).setText(R.string.bookmarks);
+    String description = holder.itemView.getContext().getString(R.string.bookmarks);
+    BookmarkCategory category = BookmarkManager.INSTANCE.getCategoryById(info.getCategoryId());
+    if (category != null && !category.getName().isEmpty())
+      description += " • " + category.getName();
+    ((TextView) holder.itemView.findViewById(R.id.description)).setText(description);
     ((TextView) holder.itemView.findViewById(R.id.region))
         .setText(HtmlCompat.fromHtml(info.getDescription(), HtmlCompat.FROM_HTML_MODE_LEGACY));
     holder.itemView.findViewById(R.id.open).setVisibility(View.GONE);
