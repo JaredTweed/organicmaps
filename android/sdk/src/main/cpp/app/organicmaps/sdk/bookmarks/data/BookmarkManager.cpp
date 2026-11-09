@@ -628,7 +628,7 @@ JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkMan
     jni::ScopedLocalRef<jstring> address(env, static_cast<jstring>(env->GetObjectArrayElement(addresses, i)));
     entries.push_back(
         {key.get() ? jni::ToNativeString(env, key.get()) : "", name.get() ? jni::ToNativeString(env, name.get()) : "",
-         address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i], "16,contact-m", true});
+         address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i], "15,contact-m", true});
   }
   auto const imported =
       ImportBookmarks(frm()->GetBookmarkManager(), "android-contacts", jni::ToNativeString(env, categoryName), entries);

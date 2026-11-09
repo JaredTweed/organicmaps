@@ -76,7 +76,9 @@ public:
 
   kml::MarkGroupId GetGroupId() const override;
 
-  int GetMinZoom() const override { return m_data.m_minZoom; }
+  // Imported contacts use the POI presentation and are useful from the same zoom as other POIs.
+  // The stored minZoom is normally 15, but older imports may still carry 16.
+  int GetMinZoom() const override { return HasPoiPresentation() && m_data.m_minZoom > 15 ? 15 : m_data.m_minZoom; }
 
   // Whether m_data.m_properties suitable to fill "Key info" part of placepage.
   bool CanFillPlacePageMetadata() const;

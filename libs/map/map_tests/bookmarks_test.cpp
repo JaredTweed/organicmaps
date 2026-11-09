@@ -3594,12 +3594,12 @@ UNIT_TEST(BookmarkSourceImportPoiPresentationPreservesUserAppearance)
   classificator::Load();
   BookmarkManager manager(BM_CALLBACKS);
   manager.EnableTestMode(true);
-  std::vector<BookmarkImportEntry> entries = {{"key", "Name", "Address", 49, -123, "16,contact-m", true}};
+  std::vector<BookmarkImportEntry> entries = {{"key", "Name", "Address", 49, -123, "15,contact-m", true}};
   auto result = ImportBookmarks(manager, "contacts", "Contacts", entries);
   auto id = *manager.GetUserMarkIds(result.m_categoryId).begin();
   auto const * bookmark = manager.GetBookmark(id);
   TEST_EQUAL(bookmark->GetAnchor(), dp::Center, ());
-  TEST_EQUAL(bookmark->GetMinZoom(), 16, ());
+  TEST_EQUAL(bookmark->GetMinZoom(), 15, ());
   TEST_EQUAL(bookmark->GetSymbolNames()->begin()->second, "contact-m", ());
   auto titles = bookmark->GetTitleDeclEx(settings::Placement::None, dp::Color::White());
   TEST(titles != nullptr, ());

@@ -121,10 +121,13 @@ drape_ptr<df::UserPointMark::TitlesInfo> Bookmark::GetTitleDeclEx(settings::Plac
 {
   if (HasPoiPresentation())
   {
+    // Match the standard POI caption colors from the default style. The outline color is supplied
+    // by the renderer and is white in the light theme and black in the dark theme.
+    bool const isDarkTheme = outlineColor == dp::Color::Black();
     dp::TitleDecl title;
     title.m_primaryText = GetPreferredName();
-    title.m_primaryTextFont.m_color = dp::Color(55, 55, 55, 255);
-    title.m_primaryTextFont.m_outlineColor = dp::Color::White();
+    title.m_primaryTextFont.m_color = isDarkTheme ? dp::Color(0xa6, 0xa6, 0xa6, 255) : dp::Color(0x44, 0x44, 0x44, 255);
+    title.m_primaryTextFont.m_outlineColor = outlineColor;
     title.m_primaryTextFont.m_size = 10.0f;
     title.m_anchor = dp::Left;
     title.m_primaryOffset.x = 2.0f;
@@ -208,6 +211,10 @@ drape_ptr<df::UserPointMark::SymbolNameZoomInfo> Bookmark::GetCustomSymbolNames(
     auto pos = token.find(',');
     if (pos != std::string::npos && strings::to_uint(token.substr(0, pos), zoomLevel))
       token = token.substr(pos + 1);
+    // Imported contacts use the POI presentation and should appear at the same scale as other
+    // POIs. Older imports stored 16 in the custom-image string.
+    if (HasPoiPresentation() && zoomLevel > 15)
+      zoomLevel = 15;
     if (!token.empty() && zoomLevel >= 1 && zoomLevel <= scales::GetUpperStyleScale())
       symbolNames->emplace(zoomLevel, std::string(token));
   });

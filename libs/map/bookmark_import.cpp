@@ -176,7 +176,12 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
                                      !data.m_properties.contains("CustomImageOverride") &&
                                      data.m_icon == kml::BookmarkIcon::None &&
                                      data.m_color.m_predefinedColor == kml::PredefinedColor::Blue;
-      if (!needsPresentation && current == snapshot && Property(data.m_properties, kKey) == entry.m_key &&
+      bool const isPoiPresentation = Property(data.m_properties, "CustomImageStyle") == "poi";
+      bool const needsPoiZoomUpdate =
+          entry.m_poiStyle && isPoiPresentation &&
+          (data.m_minZoom != 15 || Property(data.m_properties, "CustomImage") != entry.m_customImage);
+      if (!needsPresentation && !needsPoiZoomUpdate && current == snapshot &&
+          Property(data.m_properties, kKey) == entry.m_key &&
           mercator::DistanceOnEarth(bookmark->GetPivot(), point) <= 1.0)
       {
         ++result.m_unchanged;
@@ -213,8 +218,15 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       if (entry.m_poiStyle)
       {
         data.m_properties["CustomImageStyle"] = "poi";
-        data.m_minZoom = 16;
+        data.m_minZoom = 15;
       }
+    }
+    else if (entry.m_poiStyle && Property(data.m_properties, "CustomImageStyle") == "poi")
+    {
+      // Existing imports created before the marker became visible at scale 15.
+      if (!entry.m_customImage.empty())
+        data.m_properties["CustomImage"] = entry.m_customImage;
+      data.m_minZoom = 15;
     }
     if (id == kml::kInvalidMarkId)
     {
