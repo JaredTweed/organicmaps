@@ -213,12 +213,19 @@ drape_ptr<df::UserPointMark::SymbolNameZoomInfo> Bookmark::GetCustomSymbolNames(
     if (pos != std::string::npos && strings::to_uint(token.substr(0, pos), zoomLevel))
       token = token.substr(pos + 1);
     // Imported contacts use the POI presentation and should appear at the same scale as other
-    // POIs. Older imports stored 16 in the custom-image string.
+    // POIs. Older imports stored 16 with the medium symbol only.
     if (HasPoiPresentation() && zoomLevel > 15)
       zoomLevel = 15;
     if (!token.empty() && zoomLevel >= 1 && zoomLevel <= scales::GetUpperStyleScale())
       symbolNames->emplace(zoomLevel, std::string(token));
   });
+
+  if (HasPoiPresentation() && symbolNames->find(14) == symbolNames->end())
+  {
+    auto const medium = symbolNames->find(15);
+    if (medium != symbolNames->end() && medium->second == "contact-m")
+      symbolNames->emplace(14, "contact-s");
+  }
 
   if (symbolNames->empty())
     return nullptr;

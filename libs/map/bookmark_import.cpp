@@ -224,7 +224,7 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       bool const isPoiPresentation = Property(data.m_properties, "CustomImageStyle") == "poi";
       bool const needsPoiZoomUpdate =
           entry.m_poiStyle && isPoiPresentation &&
-          (data.m_minZoom != 15 || Property(data.m_properties, "CustomImage") != entry.m_customImage);
+          (data.m_minZoom != 14 || Property(data.m_properties, "CustomImage") != entry.m_customImage);
       if (!needsPresentation && !needsPoiZoomUpdate && current == snapshot &&
           Property(data.m_properties, kKey) == entry.m_key &&
           mercator::DistanceOnEarth(bookmark->GetPivot(), point) <= 1.0)
@@ -263,15 +263,15 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       if (entry.m_poiStyle)
       {
         data.m_properties["CustomImageStyle"] = "poi";
-        data.m_minZoom = 15;
+        data.m_minZoom = 14;
       }
     }
     else if (entry.m_poiStyle && Property(data.m_properties, "CustomImageStyle") == "poi")
     {
-      // Existing imports created before the marker became visible at scale 15.
+      // Existing imports created before the marker became visible at scale 14.
       if (!entry.m_customImage.empty())
         data.m_properties["CustomImage"] = entry.m_customImage;
-      data.m_minZoom = 15;
+      data.m_minZoom = 14;
     }
     if (id == kml::kInvalidMarkId)
     {
