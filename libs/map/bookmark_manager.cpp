@@ -52,6 +52,32 @@ std::string_view const kKMZMimeType = "application/vnd.google-earth.kmz";
 std::string_view const kGPXMimeType = "application/gpx+xml";
 std::string_view const kGeoJsonMimeType = "application/geo+json";
 
+bool IsContactCategory(BookmarkManager const & manager, kml::MarkGroupId groupId)
+{
+  if (!BookmarkManager::IsBookmarkCategory(groupId))
+    return false;
+  auto const & properties = manager.GetCategoryData(groupId).m_properties;
+  auto const it = properties.find("om:import:source");
+  return it != properties.end() && it->second == "android-contacts";
+}
+
+// New points added to the Contacts list use the same person badge and POI caption as imported
+// contacts. Explicit custom images are preserved; a feature-derived bookmark icon is replaced.
+void ApplyContactPresentation(Bookmark & bookmark)
+{
+  kml::BookmarkData data = bookmark.GetData();
+  if (data.m_properties.contains("CustomImage") || data.m_properties.contains("CustomImageOverride"))
+    return;
+
+  data.m_properties["CustomImage"] = "14,contact-s;15,contact-m";
+  data.m_properties["CustomImageStyle"] = "poi";
+  data.m_color = {};
+  data.m_color.m_predefinedColor = kml::PredefinedColor::Blue;
+  data.m_icon = kml::BookmarkIcon::None;
+  data.m_minZoom = 14;
+  bookmark.SetData(data);
+}
+
 class FindMarkFunctor
 {
 public:
@@ -367,6 +393,8 @@ Bookmark * BookmarkManager::CreateBookmark(kml::BookmarkData && bmData, kml::Mar
   auto * group = GetBmCategory(groupId);
   group->AttachUserMark(bookmark->GetId());
   m_changesTracker.OnAttachBookmark(bookmark->GetId(), groupId);
+  if (IsContactCategory(*this, groupId))
+    ApplyContactPresentation(*bookmark);
   group->SetIsVisible(true);
 
   SetLastEditedBmCategory(groupId);
@@ -399,9 +427,12 @@ Bookmark * BookmarkManager::GetBookmarkForEdit(kml::MarkId markId)
 void BookmarkManager::AttachBookmark(kml::MarkId bmId, kml::MarkGroupId catId)
 {
   CHECK_THREAD_CHECKER(m_threadChecker, ());
-  GetBookmarkForEdit(bmId)->Attach(catId);
+  auto * bookmark = GetBookmarkForEdit(bmId);
+  bookmark->Attach(catId);
   GetGroup(catId)->AttachUserMark(bmId);
   m_changesTracker.OnAttachBookmark(bmId, catId);
+  if (IsContactCategory(*this, catId))
+    ApplyContactPresentation(*bookmark);
 }
 
 void BookmarkManager::DetachBookmark(kml::MarkId bmId, kml::MarkGroupId catId)
