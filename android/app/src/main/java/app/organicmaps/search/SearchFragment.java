@@ -57,8 +57,79 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SearchFragment extends Fragment implements SearchListener, CategoriesAdapter.CategoriesUiListener
+public class SearchFragment extends Fragment
+    implements SearchListener, CategoriesAdapter.CategoriesUiListener, app.organicmaps.sdk.search.BookmarkSearchListener
 {
+  private final BookmarkResultsAdapter mBookmarkResults = new BookmarkResultsAdapter(this::showBookmarkOnMap);
+  private long mBookmarkTimestamp;
+  private String mBookmarkQuery = "";
+  private boolean mBookmarkSearchRunning;
+  private final app.organicmaps.sdk.bookmarks.data.DataChangedListener mBookmarksChanged = this::onBookmarksChanged;
+
+  private void onBookmarksChanged()
+  {
+    if (getView() != null && mToolbarController.hasQuery() && !isCategory())
+      runSearchDebounced();
+  }
+
+  private int getSearchResultCount()
+  {
+    return mSearchAdapter.getItemCount() + mBookmarkResults.getItemCount();
+  }
+
+  private void clearBookmarkResults()
+  {
+    mBookmarkTimestamp = 0;
+    mBookmarkQuery = "";
+    mBookmarkSearchRunning = false;
+    mBookmarkResults.update(null);
+  }
+
+  @Override
+  public void onBookmarkSearchResultsUpdate(long[] ids, long timestamp)
+  {
+    if (!isAdded() || getView() == null || timestamp != mBookmarkTimestamp || !mToolbarController.hasQuery()
+        || !mBookmarkQuery.equals(getQuery()))
+      return;
+    mBookmarkResults.update(ids);
+    if (getSearchResultCount() > 0)
+      hideShimmer();
+    updateResultsPlaceholder();
+  }
+
+  @Override
+  public void onBookmarkSearchResultsEnd(long[] ids, long timestamp)
+  {
+    if (timestamp != mBookmarkTimestamp)
+      return;
+    mBookmarkSearchRunning = false;
+    onBookmarkSearchResultsUpdate(ids, timestamp);
+    if (isAdded() && getView() != null)
+      mToolbarController.showProgress(mSearchRunning);
+  }
+
+  private void showBookmarkOnMap(long id)
+  {
+    var info = app.organicmaps.sdk.bookmarks.data.BookmarkManager.INSTANCE.getBookmarkInfo(id);
+    if (info == null)
+      return;
+    if (Config.isSearchHistoryEnabled())
+    {
+      SearchRecents.add(getQuery(), requireContext());
+      mSearchViewModel.notifyHistoryChanged();
+    }
+    mToolbarController.deactivate();
+    var controller = RoutingController.get();
+    if (controller.isWaitingPoiPick())
+    {
+      controller.onPoiSelected(MapObject.createMapObject(MapObject.SEARCH, info.getName(), info.getDescription(),
+                                                         info.getLat(), info.getLon()));
+      if (controller.getStartPoint() == null || controller.getEndPoint() == null)
+        Framework.nativeSetViewportCenter(info.getLat(), info.getLon(), PICKED_POINT_ZOOM);
+    }
+    else
+      app.organicmaps.sdk.bookmarks.data.BookmarkManager.INSTANCE.showBookmarkOnMap(id);
+  }
   @NonNull
   private final List<HiddenCommand> mHiddenCommands = new ArrayList<>();
   private final LastPosition mLastPosition = new LastPosition();
@@ -149,6 +220,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
       if (query != null && !query.isEmpty())
       {
         mSearchAdapter.clear();
+        clearBookmarkResults();
         stopSearch();
 
         // setQuery() fires the text watcher, which schedules the debounced search; runSearch() consumes
@@ -382,7 +454,8 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
 
   private void updateResultsPlaceholder()
   {
-    final boolean show = !mSearchRunning && mSearchAdapter.getItemCount() == 0 && mToolbarController.hasQuery();
+    final boolean show =
+        !mSearchRunning && !mBookmarkSearchRunning && getSearchResultCount() == 0 && mToolbarController.hasQuery();
 
     UiUtils.showIf(show, mResultsPlaceholder);
   }
@@ -464,7 +537,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
     });
 
     mResults.setLayoutManager(new LinearLayoutManager(view.getContext()));
-    mResults.setAdapter(mSearchAdapter);
+    mResults.setAdapter(new androidx.recyclerview.widget.ConcatAdapter(mBookmarkResults, mSearchAdapter));
 
     mPager.setClipToPadding(false);
     // Store insets and dispatch to tab fragment RecyclerViews.
@@ -509,6 +582,13 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
 
     updateFrames();
     SearchEngine.INSTANCE.addListener(this);
+    SearchEngine.INSTANCE.addBookmarkListener(this);
+    if (mToolbarController.hasQuery() && !isCategory())
+    {
+      mBookmarkTimestamp = System.nanoTime();
+      mBookmarkQuery = getQuery();
+      mBookmarkSearchRunning = SearchEngine.INSTANCE.searchInBookmarks(getQuery(), -1, mBookmarkTimestamp);
+    }
 
     // Pre-warm tabs after the activity's critical path so the first sheet open is instant.
     // Idempotent — if the sheet opens before the post runs, setupTabsIfNeeded() fires from the
@@ -575,6 +655,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
   public void onStart()
   {
     super.onStart();
+    app.organicmaps.sdk.bookmarks.data.BookmarkManager.INSTANCE.addCategoriesUpdatesListener(mBookmarksChanged);
     mToolbarController.attach(requireActivity());
     mSearchViewModel.getSearchEnabled().observe(getViewLifecycleOwner(), mSearchEnabledObserver);
     // LocationHelper.stop() notifies no listeners, so the my-position mode is the only signal that the
@@ -593,7 +674,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
 
     // onPause() stops the shimmer; if we are resuming mid-search with no results yet, restore it
     // so the results pane isn't blank until the next results callback arrives.
-    if (mSearchRunning && mSearchAdapter.getItemCount() == 0 && mShimmerView != null)
+    if (mSearchRunning && getSearchResultCount() == 0 && mShimmerView != null)
     {
       UiUtils.show(mShimmerView);
       mShimmerView.startShimmer();
@@ -611,6 +692,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
   @Override
   public void onStop()
   {
+    app.organicmaps.sdk.bookmarks.data.BookmarkManager.INSTANCE.removeCategoriesUpdatesListener(mBookmarksChanged);
     super.onStop();
     mToolbarController.detach();
   }
@@ -620,6 +702,8 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
   {
     mSearchDebounceHandler.removeCallbacks(mDebouncedRunSearch);
     SearchEngine.INSTANCE.removeListener(this);
+    SearchEngine.INSTANCE.removeBookmarkListener(this);
+    clearBookmarkResults();
     if (mPickerActionsAnimator != null)
       mPickerActionsAnimator.cancel();
     super.onDestroyView();
@@ -703,7 +787,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
   private void updateSearchView()
   {
     mSearchRunning = false;
-    mToolbarController.showProgress(false);
+    mToolbarController.showProgress(mBookmarkSearchRunning);
     hideShimmer();
     updateFrames();
     updateResultsPlaceholder();
@@ -727,6 +811,13 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
     // The previous search should be cancelled before the new one is started, since previous search
     // results are no longer needed.
     SearchEngine.INSTANCE.cancel();
+    clearBookmarkResults();
+    if (!isCategory() && !getQuery().trim().isEmpty())
+    {
+      mBookmarkTimestamp = System.nanoTime();
+      mBookmarkQuery = getQuery();
+      mBookmarkSearchRunning = SearchEngine.INSTANCE.searchInBookmarks(getQuery(), -1, mBookmarkTimestamp);
+    }
 
     boolean hasLocation = mLastPosition.valid;
     double lat = mLastPosition.lat;
@@ -764,7 +855,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
     mToolbarController.showProgress(true);
     updateResultsPlaceholder();
 
-    if (mSearchAdapter.getItemCount() == 0)
+    if (getSearchResultCount() == 0)
     {
       UiUtils.show(mShimmerView);
       mShimmerView.startShimmer();
@@ -1065,6 +1156,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
       if (query.trim().isEmpty())
       {
         mSearchAdapter.clear();
+        clearBookmarkResults();
         stopSearch();
         return;
       }
@@ -1072,6 +1164,7 @@ public class SearchFragment extends Fragment implements SearchListener, Categori
       if (tryRecognizeHiddenCommand(query))
       {
         mSearchAdapter.clear();
+        clearBookmarkResults();
         stopSearch();
         requireActivity().onBackPressed();
         return;

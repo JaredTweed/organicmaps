@@ -60,6 +60,32 @@ std::string Identity(std::string const & name, std::string const & address)
 }
 }  // namespace
 
+std::vector<BookmarkImportEntry> GetImportedBookmarks(BookmarkManager const & manager, std::string const & source)
+{
+  std::vector<BookmarkImportEntry> entries;
+  for (auto const category : manager.GetSortedBmGroupIdList())
+    for (auto const id : manager.GetUserMarkIds(category))
+    {
+      auto const * bookmark = manager.GetBookmark(id);
+      if (!bookmark)
+        continue;
+      auto const & properties = bookmark->GetData().m_properties;
+      if (Property(properties, kSource) != source)
+        continue;
+      BookmarkImportEntry entry;
+      entry.m_key = Property(properties, kKey);
+      std::istringstream snapshot(Property(properties, kSnapshot));
+      snapshot.imbue(std::locale::classic());
+      if (!(snapshot >> std::quoted(entry.m_name) >> std::quoted(entry.m_address)) || entry.m_key.empty() ||
+          !strings::to_double(Property(properties, kLatitude), entry.m_lat) ||
+          !strings::to_double(Property(properties, kLongitude), entry.m_lon) || !IsFiniteCoordinate(entry.m_lat) ||
+          !IsFiniteCoordinate(entry.m_lon) || !mercator::ValidLat(entry.m_lat) || !mercator::ValidLon(entry.m_lon))
+        continue;
+      entries.push_back(std::move(entry));
+    }
+  return entries;
+}
+
 BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string const & source,
                                      std::string const & categoryName, std::vector<BookmarkImportEntry> const & entries)
 {
@@ -146,7 +172,11 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
         ++result.m_edited;
         continue;
       }
-      if (current == snapshot && Property(data.m_properties, kKey) == entry.m_key &&
+      bool const needsPresentation = !entry.m_customImage.empty() && !data.m_properties.contains("CustomImage") &&
+                                     !data.m_properties.contains("CustomImageOverride") &&
+                                     data.m_icon == kml::BookmarkIcon::None &&
+                                     data.m_color.m_predefinedColor == kml::PredefinedColor::Blue;
+      if (!needsPresentation && current == snapshot && Property(data.m_properties, kKey) == entry.m_key &&
           mercator::DistanceOnEarth(bookmark->GetPivot(), point) <= 1.0)
       {
         ++result.m_unchanged;
@@ -175,6 +205,17 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
     data.m_properties[kSnapshot] = snapshot;
     data.m_properties[kLatitude] = Coordinate(entry.m_lat);
     data.m_properties[kLongitude] = Coordinate(entry.m_lon);
+    if (!entry.m_customImage.empty() && !data.m_properties.contains("CustomImage") &&
+        !data.m_properties.contains("CustomImageOverride") && data.m_icon == kml::BookmarkIcon::None &&
+        data.m_color.m_predefinedColor == kml::PredefinedColor::Blue)
+    {
+      data.m_properties["CustomImage"] = entry.m_customImage;
+      if (entry.m_poiStyle)
+      {
+        data.m_properties["CustomImageStyle"] = "poi";
+        data.m_minZoom = 16;
+      }
+    }
     if (id == kml::kInvalidMarkId)
     {
       // The interactive creation overload restores the last deleted bookmark and changes

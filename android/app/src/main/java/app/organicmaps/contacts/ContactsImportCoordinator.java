@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import app.organicmaps.R;
@@ -21,17 +20,22 @@ import app.organicmaps.sdk.util.concurrency.ThreadPool;
 import java.util.List;
 import java.util.function.Consumer;
 
-public final class ContactsImportViewModel extends AndroidViewModel
+public final class ContactsImportCoordinator
 {
-  private static ContactsImportViewModel instance;
+  private final Application application;
+  private Application getApplication()
+  {
+    return application;
+  }
+  private static ContactsImportCoordinator instance;
 
   // Process-owned: the bookmarks activity is finished when returning to the map.
   // Only the application context and temporary import state are retained.
   @androidx.annotation.MainThread
-  public static ContactsImportViewModel getInstance(Application app)
+  public static ContactsImportCoordinator getInstance(Application app)
   {
     if (instance == null)
-      instance = new ContactsImportViewModel(app);
+      instance = new ContactsImportCoordinator(app);
     return instance;
   }
   private final Handler main = new Handler(Looper.getMainLooper());
@@ -42,10 +46,24 @@ public final class ContactsImportViewModel extends AndroidViewModel
   private CancellationSignal reading;
   private long readGeneration;
 
-  public ContactsImportViewModel(@NonNull Application app)
+  public ContactsImportCoordinator(@NonNull Application app)
   {
-    super(app);
-    importer = new ContactsImporter(resolver, this::save, main::post, this::hasPermission, state::setValue);
+    application = app;
+    importer = new ContactsImporter(resolver, this::save, main::post, this::hasPermission, this::publish);
+  }
+
+  private void publish(ContactsImporter.State value)
+  {
+    var preferences = application.getSharedPreferences("contact_import", 0);
+    if (preferences.getBoolean("interrupted", false) != value.isRunning())
+      preferences.edit().putBoolean("interrupted", value.isRunning()).apply();
+    state.setValue(value);
+  }
+
+  public boolean wasInterrupted()
+  {
+    return !state.getValue().isRunning()
+ && application.getSharedPreferences("contact_import", 0).getBoolean("interrupted", false);
   }
 
   public LiveData<ContactsImporter.State> getState()
@@ -62,6 +80,19 @@ public final class ContactsImportViewModel extends AndroidViewModel
 
   public void start()
   {
+    try
+    {
+      ContextCompat.startForegroundService(application,
+                                           new android.content.Intent(application, ContactsImportService.class));
+    }
+    catch (RuntimeException e)
+    {
+      fail(ContactsImporter.Error.SAVE);
+    }
+  }
+
+  void begin()
+  {
     if (state.getValue().isRunning())
       return;
     if (!hasPermission())
@@ -77,8 +108,7 @@ public final class ContactsImportViewModel extends AndroidViewModel
     long generation = ++readGeneration;
     CancellationSignal signal = new CancellationSignal();
     reading = signal;
-    state.setValue(
-        new ContactsImporter.State(ContactsImporter.Phase.READING, 0, 0, 0, ContactsImporter.Error.NONE, null));
+    publish(new ContactsImporter.State(ContactsImporter.Phase.READING, 0, 0, 0, ContactsImporter.Error.NONE, null));
     ThreadPool.getStorage().execute(() -> {
       try
       {
@@ -87,7 +117,20 @@ public final class ContactsImportViewModel extends AndroidViewModel
           if (generation != readGeneration)
             return;
           reading = null;
-          importer.start(contacts);
+          try
+          {
+            String[] tuples = BookmarkManager.INSTANCE.getImportedContactLocations();
+            java.util.List<ContactsImporter.Entry> previous = new java.util.ArrayList<>();
+            for (int i = 0; i + 3 < tuples.length; i += 4)
+              previous.add(new ContactsImporter.Entry(
+                  tuples[i], "", tuples[i + 1],
+                  new ContactsImporter.Location(Double.parseDouble(tuples[i + 2]), Double.parseDouble(tuples[i + 3]))));
+            importer.start(contacts, previous);
+          }
+          catch (RuntimeException e)
+          {
+            fail(ContactsImporter.Error.READ);
+          }
         });
       }
       catch (RuntimeException e)
@@ -125,7 +168,7 @@ public final class ContactsImportViewModel extends AndroidViewModel
 
   private void fail(ContactsImporter.Error error)
   {
-    state.setValue(new ContactsImporter.State(ContactsImporter.Phase.ERROR, 0, 0, 0, error, null));
+    publish(new ContactsImporter.State(ContactsImporter.Phase.ERROR, 0, 0, 0, error, null));
   }
 
   private ContactsImporter.Summary save(List<ContactsImporter.Entry> entries)
@@ -137,13 +180,6 @@ public final class ContactsImportViewModel extends AndroidViewModel
         entries.stream().map(ContactsImporter.Entry::address).toArray(String[] ::new),
         entries.stream().mapToDouble(entry -> entry.location().latitude()).toArray(),
         entries.stream().mapToDouble(entry -> entry.location().longitude()).toArray()));
-  }
-
-  @Override
-  protected void onCleared()
-  {
-    cancel();
-    super.onCleared();
   }
 
   private final class NativeResolver implements ContactsImporter.Resolver

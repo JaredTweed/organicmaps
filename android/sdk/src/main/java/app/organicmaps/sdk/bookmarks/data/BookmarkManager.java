@@ -649,6 +649,10 @@ public enum BookmarkManager {
                                               @NonNull String[] names, @NonNull String[] addresses,
                                               @NonNull double[] latitudes, @NonNull double[] longitudes);
 
+  /** Flattened key, source address, latitude, longitude tuples from existing imported bookmarks. */
+  @NonNull
+  public native String[] getImportedContactLocations();
+
   private native void nativeShowBookmarkOnMap(long bmkId);
 
   private native void nativeShowBookmarkCategoryOnMap(long catId);

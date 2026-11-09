@@ -21,13 +21,17 @@ The previous prototype remains on `feature/android-contact-import` in its origin
 - User changes to names, descriptions, or locations are preserved. Color/icon and list visibility
   are not reset. The import does not consume the place-page bookmark undo state.
 - Missing or deleted source contacts do not delete existing bookmarks. Unresolved addresses are
-  skipped and reported. Re-import retries them; there is no persistent resolution cache.
+  skipped and reported. Re-import retries them; unchanged source addresses reuse the source
+  coordinates already recorded in their imported bookmarks, without another persistent cache.
 - Temporary contact data is released on completion, cancellation, or failure. Cancellation before
   the saving phase makes no bookmark changes. Rotation retains progress; abandoning the screen
-  no longer cancels the task while the app process remains alive. Hide the progress
+  no longer cancels the task. A user-started foreground service shows progress and Cancel
+  in a notification (when notification permission is granted). Hide the progress
   dialog to browse the map; Import contacts reopens progress without starting a second import.
-  Android may terminate work after the app is closed. A process restart does not resume an
-  unfinished import or automatically read contacts again. Completed imports remain bookmarks.
+  Android may still terminate work, or the user may force-stop it. A process restart offers an
+  explicit retry of an interrupted import, never automatic contact access. No address-book
+  checkpoint is stored. Completed imports remain bookmarks. Normal list visibility/deletion
+  provides hiding/removal; this feature does not claim to undo updates to existing bookmarks.
 
 Imported entries are ordinary user-owned bookmarks. They remain after Contacts access is revoked
 and are included in normal bookmark backups/exports. Hashed keys are identifiers, not encryption
@@ -35,10 +39,12 @@ or a claim of anonymity. KML/KMB preserve import metadata for re-import after a 
 that discard custom bookmark metadata cannot provide that guarantee.
 
 The shared address-search prerequisite is reused from the separately reviewed search work.
-There is no contact-specific map marker layer, search provider, setting, observer, or contact
-integration into general search. The shared prerequisite does improve ordinary address matching.
-Names can be searched inside the Contacts bookmark list. General
-search across bookmarks remains separate upstream work.
+There is no contact-specific map marker layer, search provider, setting, or provider observer.
+Global Android search queries the existing bookmark-name index across all lists, alongside
+ordinary map search. Imported contacts use that same bookmark path without Contacts access.
+The familiar person symbol and label presentation use generic bookmark custom-image metadata.
+User-selected icons/colors override the imported presentation. Existing untouched imports gain
+the presentation on re-import. The shared prerequisite also improves ordinary address matching.
 
 ## Local Test Build
 

@@ -57,6 +57,30 @@ public class ContactsImporterTest
   }
 
   @Test
+  public void reusesUnchangedImportedAddressWithoutSearching()
+  {
+    String address = "123 Main Street, Canada";
+    importer.start(
+        List.of(contact("one", address)),
+        List.of(new ContactsImporter.Entry("one", "Old name", address, new ContactsImporter.Location(49, -123))));
+    assertTrue(callbacks.isEmpty());
+    assertEquals("Name one", saved.get(0).get(0).name());
+    assertEquals(ContactsImporter.Phase.DONE, last().phase);
+  }
+
+  @Test
+  public void changedSourceAddressStillRequiresSearching()
+  {
+    importer.start(List.of(contact("one", "456 Other Road, Canada")),
+                   List.of(new ContactsImporter.Entry("one", "Name", "123 Main Street, Canada",
+                                                      new ContactsImporter.Location(49, -123))));
+    assertEquals(1, callbacks.size());
+    assertTrue(saved.isEmpty());
+    complete(0, null);
+    assertEquals(1, last().unresolved);
+  }
+
+  @Test
   public void resolvesOnceForPeopleSharingAnAddress()
   {
     importer.start(List.of(contact("one", "123 Main Street, Canada"), contact("two", "123 Main Street, Canada")));

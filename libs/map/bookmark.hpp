@@ -64,6 +64,12 @@ public:
   df::DepthLayer GetDepthLayerEx(settings::Placement p) const override;
 
   dp::Anchor GetAnchor() const override;
+  df::DepthLayer GetDepthLayer() const override
+  {
+    return HasPoiPresentation() ? df::DepthLayer::SearchMarkLayer : df::DepthLayer::UserMarkLayer;
+  }
+  bool GetDepthTestEnabled() const override { return !HasPoiPresentation(); }
+  bool IsMarkAboveText() const override { return HasPoiPresentation(); }
   drape_ptr<SymbolNameZoomInfo> GetSymbolNames() const override;
 
   df::ColorConstant GetColorConstant() const override;
@@ -79,6 +85,7 @@ public:
   void Detach();
 
 private:
+  bool HasPoiPresentation() const;
   drape_ptr<df::UserPointMark::SymbolNameZoomInfo> GetCustomSymbolNames() const;
 
   kml::BookmarkData m_data;

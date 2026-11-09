@@ -579,6 +579,22 @@ Java_app_organicmaps_sdk_widget_placepage_PlacePageButtonFactory_nativeHasRecent
 {
   return frm()->GetBookmarkManager().HasRecentlyDeletedBookmark();
 }
+JNIEXPORT jobjectArray JNICALL
+Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_getImportedContactLocations(JNIEnv * env, jobject)
+{
+  auto entries = GetImportedBookmarks(frm()->GetBookmarkManager(), "android-contacts");
+  jobjectArray result = env->NewObjectArray(entries.size() * 4, env->FindClass("java/lang/String"), nullptr);
+  jsize index = 0;
+  for (auto const & entry : entries)
+    for (auto const & value :
+         {entry.m_key, entry.m_address, strings::to_string(entry.m_lat), strings::to_string(entry.m_lon)})
+    {
+      jni::ScopedLocalRef<jstring> text(env, jni::ToJavaString(env, value));
+      env->SetObjectArrayElement(result, index++, text.get());
+    }
+  return result;
+}
+
 JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_importContactBookmarks(
     JNIEnv * env, jobject, jstring categoryName, jobjectArray keys, jobjectArray names, jobjectArray addresses,
     jdoubleArray latitudes, jdoubleArray longitudes)
@@ -610,9 +626,9 @@ JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkMan
     jni::ScopedLocalRef<jstring> key(env, static_cast<jstring>(env->GetObjectArrayElement(keys, i)));
     jni::ScopedLocalRef<jstring> name(env, static_cast<jstring>(env->GetObjectArrayElement(names, i)));
     jni::ScopedLocalRef<jstring> address(env, static_cast<jstring>(env->GetObjectArrayElement(addresses, i)));
-    entries.push_back({key.get() ? jni::ToNativeString(env, key.get()) : "",
-                       name.get() ? jni::ToNativeString(env, name.get()) : "",
-                       address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i]});
+    entries.push_back(
+        {key.get() ? jni::ToNativeString(env, key.get()) : "", name.get() ? jni::ToNativeString(env, name.get()) : "",
+         address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i], "16,contact-m", true});
   }
   auto const imported =
       ImportBookmarks(frm()->GetBookmarkManager(), "android-contacts", jni::ToNativeString(env, categoryName), entries);

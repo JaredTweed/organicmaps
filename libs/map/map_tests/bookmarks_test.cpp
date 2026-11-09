@@ -3573,4 +3573,47 @@ UNIT_CLASS_TEST(VisualParamsFixture, BookmarkSourceImportPreservesUndoAndHiddenR
   TEST_EQUAL(manager.GetUserMarkIds(category).size(), 2, ());
 }
 
+UNIT_TEST(BookmarkSourceImportRetrievesOriginalAddressAfterLocalEdits)
+{
+  BookmarkManager manager(BM_CALLBACKS);
+  manager.EnableTestMode(true);
+  auto result = ImportBookmarks(manager, "contacts", "Contacts", {{"key", "Name", "Address", 49, -123}});
+  auto id = *manager.GetUserMarkIds(result.m_categoryId).begin();
+  auto data = manager.GetBookmark(id)->GetData();
+  kml::SetDefaultStr(data.m_description, "Edited description");
+  manager.GetEditSession().UpdateBookmark(id, data);
+  auto entries = GetImportedBookmarks(manager, "contacts");
+  TEST_EQUAL(entries.size(), 1, ());
+  TEST_EQUAL(entries[0].m_address, "Address", ());
+  TEST_EQUAL(entries[0].m_key, "key", ());
+  TEST(GetImportedBookmarks(manager, "other").empty(), ());
+}
+
+UNIT_TEST(BookmarkSourceImportPoiPresentationPreservesUserAppearance)
+{
+  classificator::Load();
+  BookmarkManager manager(BM_CALLBACKS);
+  manager.EnableTestMode(true);
+  std::vector<BookmarkImportEntry> entries = {{"key", "Name", "Address", 49, -123, "16,contact-m", true}};
+  auto result = ImportBookmarks(manager, "contacts", "Contacts", entries);
+  auto id = *manager.GetUserMarkIds(result.m_categoryId).begin();
+  auto const * bookmark = manager.GetBookmark(id);
+  TEST_EQUAL(bookmark->GetAnchor(), dp::Center, ());
+  TEST_EQUAL(bookmark->GetMinZoom(), 16, ());
+  TEST_EQUAL(bookmark->GetSymbolNames()->begin()->second, "contact-m", ());
+  auto titles = bookmark->GetTitleDeclEx(settings::Placement::None, dp::Color::White());
+  TEST(titles != nullptr, ());
+  TEST_EQUAL(titles->front().m_primaryTextFont.m_size, 10.0f, ());
+  auto edited = bookmark->GetData();
+  edited.m_color = kml::MakeCustomBookmarkColorData(bookmark->GetColorForRendering());
+  kml::SetDefaultStr(edited.m_description, "Edited description");
+  manager.GetEditSession().UpdateBookmark(id, edited);
+  TEST_EQUAL(bookmark->GetAnchor(), dp::Center, ());
+  TEST(!bookmark->GetCustomColor().has_value(), ());
+  manager.GetEditSession().GetBookmarkForEdit(id)->SetColor(dp::Color::Red());
+  TEST_EQUAL(bookmark->GetAnchor(), dp::Bottom, ());
+  ImportBookmarks(manager, "contacts", "Contacts", entries);
+  TEST_EQUAL(bookmark->GetAnchor(), dp::Bottom, ());
+}
+
 }  // namespace bookmarks_test

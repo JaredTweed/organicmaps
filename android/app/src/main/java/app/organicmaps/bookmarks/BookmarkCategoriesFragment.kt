@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat
 import app.organicmaps.MwmApplication
 import app.organicmaps.R
 import app.organicmaps.base.BaseMwmRecyclerFragment
-import app.organicmaps.contacts.ContactsImportViewModel
+import app.organicmaps.contacts.ContactsImportCoordinator
 import app.organicmaps.contacts.ContactsImporter
 import app.organicmaps.dialog.EditTextDialogFragment
 import app.organicmaps.sdk.bookmarks.data.BookmarkCategory
@@ -53,11 +53,27 @@ class BookmarkCategoriesFragment :
     private var importDialog: Dialog? = null
     private var contactsDialog: AlertDialog? = null
     private var contactsProgressHidden = false
-    private lateinit var contactsImport: ContactsImportViewModel
+    private lateinit var contactsImport: ContactsImportCoordinator
+
+    private val contactsNotificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            contactsImport.start()
+        }
+
+    private fun startContactsImport() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            contactsNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            contactsImport.start()
+        }
+    }
 
     private val contactsPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
-            contactsImport.start()
+            startContactsImport()
         } else {
             MaterialAlertDialogBuilder(requireContext())
                 .setMessage(R.string.bookmarks_contacts_permission_denied)
@@ -124,7 +140,7 @@ class BookmarkCategoriesFragment :
         super.onViewCreated(view, savedInstanceState)
         recyclerView.addItemDecoration(CardSectionDividerDecoration(requireContext()))
         BookmarkManager.INSTANCE.addCategoriesUpdatesListener(categoriesUpdatesListener)
-        contactsImport = ContactsImportViewModel.getInstance(requireActivity().application)
+        contactsImport = ContactsImportCoordinator.getInstance(requireActivity().application)
         contactsImport.state.observe(viewLifecycleOwner, ::showContactsImportState)
     }
 
@@ -226,6 +242,14 @@ class BookmarkCategoriesFragment :
     override fun onImportContactsButtonClick() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
         contactsProgressHidden = false
+        if (contactsImport.wasInterrupted()) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage(R.string.bookmarks_contacts_import_interrupted)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.bookmarks_import_contacts) { _, _ -> startContactsImport() }
+                .show()
+            return
+        }
         val current = contactsImport.state.value
         if (current != null && current.isRunning) {
             showContactsImportState(current)
@@ -239,7 +263,7 @@ class BookmarkCategoriesFragment :
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS)
                     == PackageManager.PERMISSION_GRANTED
                 ) {
-                    contactsImport.start()
+                    startContactsImport()
                 } else {
                     contactsPermission.launch(Manifest.permission.READ_CONTACTS)
                 }
@@ -247,6 +271,15 @@ class BookmarkCategoriesFragment :
     }
 
     private fun showContactsImportState(state: ContactsImporter.State) {
+        adapter.contactImportProgress = if (state.isRunning) {
+            if (state.total > 0) {
+                getString(R.string.bookmarks_contacts_import_resolving, state.processed, state.total)
+            } else {
+                getString(R.string.bookmarks_contacts_import_reading)
+            }
+        } else {
+            null
+        }
         if (state.isRunning) {
             if (contactsProgressHidden) return
             if (contactsDialog == null) {
@@ -313,6 +346,17 @@ class BookmarkCategoriesFragment :
             .setTitle(R.string.bookmarks_import_contacts)
             .setMessage(message)
             .setPositiveButton(android.R.string.ok) { _, _ -> contactsImport.dismissResult() }
+            .apply {
+                val category = state.result?.let { result ->
+                    BookmarkManager.INSTANCE.categories.firstOrNull { it.id == result.categoryId }
+                }
+                if (category != null) {
+                    setNeutralButton(R.string.bookmarks_contacts_list_name) { _, _ ->
+                        contactsImport.dismissResult()
+                        openCategory(category)
+                    }
+                }
+            }
             .setOnCancelListener { contactsImport.dismissResult() }
             .show()
     }

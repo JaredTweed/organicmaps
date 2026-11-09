@@ -56,6 +56,13 @@ class BookmarkCategoriesAdapter(
     private val categoryCount: Int
         get() = bookmarkCategories.size
 
+    var contactImportProgress: String? = null
+        set(value) {
+            field = value
+            val index = actions.indexOf(Action.CONTACTS)
+            if (index >= 0 && categoryCount > 0) notifyItemChanged(HEADER_COUNT + categoryCount + index)
+        }
+
     fun setItems(categories: List<BookmarkCategory>) {
         bookmarkCategories = categories
         notifyDataSetChanged()
@@ -121,6 +128,11 @@ class BookmarkCategoriesAdapter(
         val action = actions[index]
         image.setImageResource(action.icon)
         text.setText(action.title)
+        if (action == Action.CONTACTS && contactImportProgress != null) {
+            text.text = contactImportProgress
+            image.setImageDrawable(android.widget.ProgressBar(itemView.context).indeterminateDrawable)
+            (image.drawable as? android.graphics.drawable.Animatable)?.start()
+        }
         itemView.setOnClickListener { action.click(categoryListCallback) }
         bindCardPosition(index == 0, index == actions.lastIndex)
         // Action rows share one view type, so the gap above the first one is reset on rebind.

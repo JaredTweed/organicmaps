@@ -15,6 +15,8 @@ struct BookmarkImportEntry
   std::string m_address;
   double m_lat = 0;
   double m_lon = 0;
+  std::string m_customImage = {};
+  bool m_poiStyle = false;
 };
 
 struct BookmarkImportResult
@@ -28,6 +30,8 @@ struct BookmarkImportResult
 };
 
 // Main-thread operation. Preserves local changes, unrelated bookmarks, and category names/visibility.
+std::vector<BookmarkImportEntry> GetImportedBookmarks(BookmarkManager const & manager, std::string const & source);
+
 BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string const & source,
                                      std::string const & categoryName,
                                      std::vector<BookmarkImportEntry> const & entries);

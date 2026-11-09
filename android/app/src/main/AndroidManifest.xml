@@ -578,6 +578,10 @@
         android:enabled="true"
         android:stopWithTask="false"/>
 
+    <service android:name=".contacts.ContactsImportService"
+        android:foregroundServiceType="dataSync" android:exported="false"
+        android:stopWithTask="false" />
+
     <provider
       android:name="androidx.core.content.FileProvider"
       android:authorities="${FILE_PROVIDER_PLACEHOLDER}"

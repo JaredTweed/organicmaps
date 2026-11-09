@@ -121,6 +121,7 @@ public final class ContactsImporter
   private final Consumer<State> observer;
   private final Map<String, Location> locations = new HashMap<>();
   private final List<Entry> entries = new ArrayList<>();
+  private final Map<String, Location> previousLocations = new HashMap<>();
   private List<Contact> contacts = List.of();
   private int index;
   private int addressIndex;
@@ -140,7 +141,20 @@ public final class ContactsImporter
 
   void start(List<Contact> contacts)
   {
+    start(contacts, List.of());
+  }
+
+  void start(List<Contact> contacts, List<Entry> previous)
+  {
     clear();
+    java.util.Set<String> duplicates = new java.util.HashSet<>();
+    for (Entry entry : previous)
+    {
+      String key = entry.key + "\0" + entry.address;
+      if (previousLocations.putIfAbsent(key, entry.location) != null)
+        duplicates.add(key);
+    }
+    duplicates.forEach(previousLocations::remove);
     this.contacts = List.copyOf(contacts);
     index = addressIndex = unresolved = 0;
     running = true;
@@ -164,6 +178,7 @@ public final class ContactsImporter
     contacts = List.of();
     entries.clear();
     locations.clear();
+    previousLocations.clear();
   }
 
   private void next()
@@ -185,6 +200,12 @@ public final class ContactsImporter
         if (address.getSearchQueries().isEmpty())
           continue;
         String key = address.getAddressKey();
+        Location previous = previousLocations.get(contact.key + "\0" + address.address);
+        if (previous != null)
+        {
+          entries.add(new Entry(contact.key, contact.name, address.address, previous));
+          break;
+        }
         if (locations.containsKey(key))
         {
           Location cached = locations.get(key);

@@ -12,6 +12,7 @@
 #include "base/cancellable.hpp"
 #include "base/string_utils.hpp"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -142,6 +143,23 @@ UNIT_CLASS_TEST(BookmarksProcessorTest, Smoke)
 
   GetProcessor().Reset();
   TEST_EQUAL(Search("place", GroupId{0}), Ids{}, ());
+}
+
+UNIT_CLASS_TEST(BookmarksProcessorTest, GlobalNameSearchIncludesAllListsAndUpdates)
+{
+  GetProcessor().EnableIndexingOfBookmarkGroup(GroupId{1}, true);
+  GetProcessor().EnableIndexingOfBookmarkGroup(GroupId{2}, true);
+  Add(Id{10}, GroupId{1}, MakeBookmarkData("Maya Patel", "", "", {}));
+  Add(Id{12}, GroupId{2}, MakeBookmarkData("Maya Park", "", "", {}));
+  auto results = Search("maya");
+  std::sort(results.begin(), results.end());
+  TEST_EQUAL(results, Ids({10, 12}), ());
+  TEST_EQUAL(Search("maya", GroupId{1}), Ids({10}), ());
+  Update(Id{10}, MakeBookmarkData("Jordan Patel", "", "", {}));
+  TEST_EQUAL(Search("maya"), Ids({12}), ());
+  DetachFromGroup(Id{12}, GroupId{2});
+  Erase(Id{12});
+  TEST(Search("maya").empty(), ());
 }
 
 UNIT_CLASS_TEST(BookmarksProcessorTest, SearchByType)
