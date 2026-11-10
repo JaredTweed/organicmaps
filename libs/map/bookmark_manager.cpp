@@ -86,6 +86,23 @@ void ApplyContactPresentation(Bookmark & bookmark, bool force)
   bookmark.SetData(data);
 }
 
+// A bookmark moved out of Contacts must not keep the person badge on the map.
+void RemoveContactPresentation(Bookmark & bookmark)
+{
+  kml::BookmarkData data = bookmark.GetData();
+  if (data.m_properties.contains("CustomImageOverride"))
+    return;
+  auto const image = data.m_properties.find("CustomImage");
+  if (image == data.m_properties.end() || image->second.find("contact-") == std::string::npos)
+    return;
+
+  data.m_properties.erase("CustomImage");
+  data.m_properties.erase("CustomImageStyle");
+  data.m_icon = GetBookmarkMatchInfo(data.m_featureTypes).m_icon;
+  data.m_minZoom = 1;
+  bookmark.SetData(data);
+}
+
 class FindMarkFunctor
 {
 public:
@@ -403,6 +420,8 @@ Bookmark * BookmarkManager::CreateBookmark(kml::BookmarkData && bmData, kml::Mar
   m_changesTracker.OnAttachBookmark(bookmark->GetId(), groupId);
   if (IsContactCategory(*this, groupId))
     ApplyContactPresentation(*bookmark, true /* force */);
+  else
+    RemoveContactPresentation(*bookmark);
   group->SetIsVisible(true);
 
   SetLastEditedBmCategory(groupId);
@@ -441,6 +460,8 @@ void BookmarkManager::AttachBookmark(kml::MarkId bmId, kml::MarkGroupId catId)
   m_changesTracker.OnAttachBookmark(bmId, catId);
   if (IsContactCategory(*this, catId))
     ApplyContactPresentation(*bookmark, true /* force */);
+  else
+    RemoveContactPresentation(*bookmark);
 }
 
 void BookmarkManager::DetachBookmark(kml::MarkId bmId, kml::MarkGroupId catId)
@@ -2386,6 +2407,8 @@ void BookmarkManager::UpdateBookmark(kml::MarkId bmID, kml::BookmarkData const &
   ASSERT(bookmark->GetGroupId() != kml::kInvalidMarkGroupId, ());
   if (IsContactCategory(*this, bookmark->GetGroupId()))
     ApplyContactPresentation(*bookmark, true /* force */);
+  else
+    RemoveContactPresentation(*bookmark);
 
   // Compare the full color (preset + rgba): comparing only the preset would miss custom->custom
   // edits and leave a stale last-edited color.
@@ -2859,6 +2882,8 @@ void BookmarkManager::CreateCategories(KMLDataCollection && dataCollection, bool
       // Older Contacts files may contain points saved before the person presentation existed.
       if (IsContactCategory(*this, groupId))
         ApplyContactPresentation(*bm, true /* force */);
+      else
+        RemoveContactPresentation(*bm);
     }
     for (auto & trackData : fileData.m_tracksData)
     {

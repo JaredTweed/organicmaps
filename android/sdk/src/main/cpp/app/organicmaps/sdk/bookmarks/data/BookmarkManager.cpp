@@ -416,6 +416,14 @@ Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeIsContactBookmark(
   if (!bookmark)
     return JNI_FALSE;
 
+  auto const groupId = bookmark->GetGroupId();
+  if (!BookmarkManager::IsBookmarkCategory(groupId))
+    return JNI_FALSE;
+  auto const & categoryProperties = frm()->GetBookmarkManager().GetCategoryData(groupId).m_properties;
+  auto const source = categoryProperties.find("om:import:source");
+  if (source == categoryProperties.end() || source->second != "android-contacts")
+    return JNI_FALSE;
+
   auto const & properties = bookmark->GetData().m_properties;
   if (properties.contains("CustomImageOverride"))
     return JNI_FALSE;
