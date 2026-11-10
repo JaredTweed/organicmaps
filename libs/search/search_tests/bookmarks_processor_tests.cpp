@@ -96,6 +96,16 @@ kml::BookmarkData MakeBookmarkData(string const & name, string const & customNam
   return b;
 }
 
+UNIT_CLASS_TEST(BookmarksProcessorTest, FullNameMatchRanksBeforePartialMatch)
+{
+  GetProcessor().EnableIndexingOfBookmarkGroup(GroupId{0}, true);
+  Add(Id{10}, GroupId{0}, MakeBookmarkData("Maya", "", "", {}));
+  Add(Id{12}, GroupId{0}, MakeBookmarkData("Maya Patel", "", "", {}));
+  auto const results = Search("maya patel");
+  TEST_EQUAL(results.size(), 2, ());
+  TEST_EQUAL(results.front(), Id{12}, ());
+}
+
 UNIT_CLASS_TEST(BookmarksProcessorTest, Smoke)
 {
   GetProcessor().EnableIndexingOfDescriptions(true);

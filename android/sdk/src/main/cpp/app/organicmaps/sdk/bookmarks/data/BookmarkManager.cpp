@@ -409,8 +409,9 @@ JNIEXPORT jobject Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_native
                         address);
 }
 
-JNIEXPORT jboolean JNICALL
-Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeIsContactBookmark(JNIEnv *, jobject, jlong bmkId)
+JNIEXPORT jboolean JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeIsContactBookmark(JNIEnv *,
+                                                                                                           jobject,
+                                                                                                           jlong bmkId)
 {
   auto const * bookmark = frm()->GetBookmarkManager().GetBookmark(static_cast<kml::MarkId>(bmkId));
   if (!bookmark)
@@ -620,11 +621,12 @@ JNIEXPORT jobjectArray JNICALL
 Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_getImportedContactLocations(JNIEnv * env, jobject)
 {
   auto entries = GetImportedBookmarks(frm()->GetBookmarkManager(), "android-contacts");
-  jobjectArray result = env->NewObjectArray(entries.size() * 5, env->FindClass("java/lang/String"), nullptr);
+  jobjectArray result = env->NewObjectArray(entries.size() * 6, env->FindClass("java/lang/String"), nullptr);
   jsize index = 0;
   for (auto const & entry : entries)
-    for (auto const & value : {entry.m_key, entry.m_address, strings::to_string(entry.m_lat),
-                               strings::to_string(entry.m_lon), strings::to_string(entry.m_groupId)})
+    for (auto const & value :
+         {entry.m_key, entry.m_address, strings::to_string(entry.m_lat), strings::to_string(entry.m_lon),
+          strings::to_string(entry.m_groupId), std::string(entry.m_canModify ? "true" : "false")})
     {
       jni::ScopedLocalRef<jstring> text(env, jni::ToJavaString(env, value));
       env->SetObjectArrayElement(result, index++, text.get());
@@ -634,16 +636,17 @@ Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_getImportedContactLocati
 
 JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_importContactBookmarks(
     JNIEnv * env, jobject, jstring categoryName, jobjectArray keys, jobjectArray names, jobjectArray addresses,
-    jdoubleArray latitudes, jdoubleArray longitudes)
+    jdoubleArray latitudes, jdoubleArray longitudes, jobjectArray supersededKeys)
 {
-  if (!categoryName || !keys || !names || !addresses || !latitudes || !longitudes)
+  if (!categoryName || !keys || !names || !addresses || !latitudes || !longitudes || !supersededKeys)
   {
     env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "Missing bookmark import data");
     return nullptr;
   }
   auto const count = env->GetArrayLength(keys);
   if (count != env->GetArrayLength(names) || count != env->GetArrayLength(addresses) ||
-      count != env->GetArrayLength(latitudes) || count != env->GetArrayLength(longitudes))
+      count != env->GetArrayLength(latitudes) || count != env->GetArrayLength(longitudes) ||
+      count != env->GetArrayLength(supersededKeys))
   {
     env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "Mismatched bookmark import arrays");
     return nullptr;
@@ -663,9 +666,20 @@ JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkMan
     jni::ScopedLocalRef<jstring> key(env, static_cast<jstring>(env->GetObjectArrayElement(keys, i)));
     jni::ScopedLocalRef<jstring> name(env, static_cast<jstring>(env->GetObjectArrayElement(names, i)));
     jni::ScopedLocalRef<jstring> address(env, static_cast<jstring>(env->GetObjectArrayElement(addresses, i)));
-    entries.push_back(
-        {key.get() ? jni::ToNativeString(env, key.get()) : "", name.get() ? jni::ToNativeString(env, name.get()) : "",
-         address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i], "14,contact-s;15,contact-m", true});
+    entries.push_back({key.get() ? jni::ToNativeString(env, key.get()) : "",
+                       name.get() ? jni::ToNativeString(env, name.get()) : "",
+                       address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i],
+                       "14,contact-s;15,contact-m", true});
+    entries.back().m_requireSourceCategory = true;
+    jni::ScopedLocalRef<jobjectArray> obsolete(
+        env, static_cast<jobjectArray>(env->GetObjectArrayElement(supersededKeys, i)));
+    if (obsolete.get())
+      for (jsize j = 0; j < env->GetArrayLength(obsolete.get()); ++j)
+      {
+        jni::ScopedLocalRef<jstring> value(env, static_cast<jstring>(env->GetObjectArrayElement(obsolete.get(), j)));
+        if (value.get())
+          entries.back().m_supersededKeys.push_back(jni::ToNativeString(env, value.get()));
+      }
   }
   auto const imported =
       ImportBookmarks(frm()->GetBookmarkManager(), "android-contacts", jni::ToNativeString(env, categoryName), entries);
@@ -678,21 +692,4 @@ JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkMan
   return result;
 }
 
-JNIEXPORT void JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_deleteImportedContactBookmarks(
-    JNIEnv * env, jobject, jobjectArray keys)
-{
-  if (!keys)
-    return;
-
-  jsize const count = env->GetArrayLength(keys);
-  std::vector<std::string> nativeKeys;
-  nativeKeys.reserve(count);
-  for (jsize i = 0; i < count; ++i)
-  {
-    jni::ScopedLocalRef<jstring> key(env, static_cast<jstring>(env->GetObjectArrayElement(keys, i)));
-    if (key.get())
-      nativeKeys.push_back(jni::ToNativeString(env, key.get()));
-  }
-  DeleteImportedBookmarksByKeys(frm()->GetBookmarkManager(), "android-contacts", nativeKeys);
-}
 }  // extern "C"

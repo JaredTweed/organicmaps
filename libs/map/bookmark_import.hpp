@@ -18,6 +18,12 @@ struct BookmarkImportEntry
   std::string m_customImage = {};
   bool m_poiStyle = false;
   kml::MarkGroupId m_groupId = kml::kInvalidMarkGroupId;
+  // Retire only unchanged entries in the saved bookmark's source category, after a successful upsert.
+  std::vector<std::string> m_supersededKeys = {};
+  // Opt-in protection for one-shot sources whose moved/edited bookmarks are now user-owned.
+  bool m_requireSourceCategory = false;
+  // Readback eligibility; rechecked natively at commit time.
+  bool m_canModify = true;
 };
 
 struct BookmarkImportResult
@@ -36,9 +42,3 @@ std::vector<BookmarkImportEntry> GetImportedBookmarks(BookmarkManager const & ma
 BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string const & source,
                                      std::string const & categoryName,
                                      std::vector<BookmarkImportEntry> const & entries);
-
-// Removes unchanged imported bookmarks with the given provider keys. Locally edited bookmarks are
-// preserved. Used to retire old per-contact rows after several contacts have been merged into one
-// residence bookmark.
-size_t DeleteImportedBookmarksByKeys(BookmarkManager & manager, std::string const & source,
-                                     std::vector<std::string> const & keys);

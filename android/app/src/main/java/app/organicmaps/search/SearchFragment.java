@@ -61,6 +61,30 @@ public class SearchFragment extends Fragment
     implements SearchListener, CategoriesAdapter.CategoriesUiListener, app.organicmaps.sdk.search.BookmarkSearchListener
 {
   private final BookmarkResultsAdapter mBookmarkResults = new BookmarkResultsAdapter(this::showBookmarkOnMap);
+  private final MapResultsLoadingAdapter mMapResultsLoading = new MapResultsLoadingAdapter();
+
+  private void updateSearchLoading()
+  {
+    if (mSearchAdapter == null || mToolbarController == null)
+      return;
+    boolean hasQuery = mToolbarController.hasQuery();
+    int bookmarks = mBookmarkResults.getItemCount();
+    int mapResults = mSearchAdapter.getItemCount();
+    mMapResultsLoading.setVisible(hasQuery
+                                  && SearchResultsPresentation.showMapLoading(bookmarks, mapResults, mSearchRunning));
+    mToolbarController.showProgress(hasQuery && (mSearchRunning || mBookmarkSearchRunning));
+    if (mShimmerView == null)
+      return;
+    if (hasQuery
+        && SearchResultsPresentation.showFullLoading(bookmarks, mapResults, mSearchRunning, mBookmarkSearchRunning))
+    {
+      UiUtils.show(mShimmerView);
+      mShimmerView.startShimmer();
+    }
+    else
+      hideShimmer();
+  }
+  private long mMapSearchTimestamp;
   private long mBookmarkTimestamp;
   private String mBookmarkQuery = "";
   private boolean mBookmarkSearchRunning;
@@ -83,6 +107,7 @@ public class SearchFragment extends Fragment
     mBookmarkQuery = "";
     mBookmarkSearchRunning = false;
     mBookmarkResults.update(null);
+    updateSearchLoading();
   }
 
   @Override
@@ -92,8 +117,7 @@ public class SearchFragment extends Fragment
         || !mBookmarkQuery.equals(getQuery()))
       return;
     mBookmarkResults.update(ids);
-    if (getSearchResultCount() > 0)
-      hideShimmer();
+    updateSearchLoading();
     updateResultsPlaceholder();
   }
 
@@ -104,8 +128,6 @@ public class SearchFragment extends Fragment
       return;
     mBookmarkSearchRunning = false;
     onBookmarkSearchResultsUpdate(ids, timestamp);
-    if (isAdded() && getView() != null)
-      mToolbarController.showProgress(mSearchRunning);
   }
 
   private void showBookmarkOnMap(long id)
@@ -497,6 +519,7 @@ public class SearchFragment extends Fragment
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
   {
     super.onViewCreated(view, savedInstanceState);
+    mMapSearchTimestamp = 0;
     mSearchAdapter = new SearchAdapter(this);
     mSearchViewModel = new ViewModelProvider(requireActivity()).get(SearchPageViewModel.class);
     mMapButtonsViewModel = new ViewModelProvider(requireActivity()).get(MapButtonsViewModel.class);
@@ -537,7 +560,8 @@ public class SearchFragment extends Fragment
     });
 
     mResults.setLayoutManager(new LinearLayoutManager(view.getContext()));
-    mResults.setAdapter(new androidx.recyclerview.widget.ConcatAdapter(mBookmarkResults, mSearchAdapter));
+    mResults.setAdapter(
+        new androidx.recyclerview.widget.ConcatAdapter(mBookmarkResults, mMapResultsLoading, mSearchAdapter));
 
     mPager.setClipToPadding(false);
     // Store insets and dispatch to tab fragment RecyclerViews.
@@ -667,6 +691,7 @@ public class SearchFragment extends Fragment
   public void onResume()
   {
     super.onResume();
+    updateSearchLoading();
     MwmApplication.from(requireContext()).getLocationHelper().addListener(mLocationListener);
 
     if (mTabAdapter != null)
@@ -787,14 +812,14 @@ public class SearchFragment extends Fragment
   private void updateSearchView()
   {
     mSearchRunning = false;
-    mToolbarController.showProgress(mBookmarkSearchRunning);
-    hideShimmer();
+    updateSearchLoading();
     updateFrames();
     updateResultsPlaceholder();
   }
 
   private void stopSearch()
   {
+    mMapSearchTimestamp = -1;
     mSearchDebounceHandler.removeCallbacks(mDebouncedRunSearch);
     SearchEngine.INSTANCE.cancel();
     updateSearchView();
@@ -812,6 +837,7 @@ public class SearchFragment extends Fragment
     // results are no longer needed.
     SearchEngine.INSTANCE.cancel();
     clearBookmarkResults();
+    mSearchAdapter.clear();
     if (!isCategory() && !getQuery().trim().isEmpty())
     {
       mBookmarkTimestamp = System.nanoTime();
@@ -843,7 +869,8 @@ public class SearchFragment extends Fragment
     mSearchViewModel.clearPendingRequest();
 
     SearchEngine.INSTANCE.setQuery(getQuery());
-    boolean started = SearchEngine.INSTANCE.searchInteractive(getQuery(), isCategory(), locale, System.nanoTime(),
+    mMapSearchTimestamp = System.nanoTime();
+    boolean started = SearchEngine.INSTANCE.searchInteractive(getQuery(), isCategory(), locale, mMapSearchTimestamp,
                                                               true /* isMapAndTable */, hasLocation, lat, lon);
     if (!started)
     {
@@ -852,14 +879,8 @@ public class SearchFragment extends Fragment
     }
 
     mSearchRunning = true;
-    mToolbarController.showProgress(true);
+    updateSearchLoading();
     updateResultsPlaceholder();
-
-    if (getSearchResultCount() == 0)
-    {
-      UiUtils.show(mShimmerView);
-      mShimmerView.startShimmer();
-    }
 
     updateFrames();
   }
@@ -867,8 +888,10 @@ public class SearchFragment extends Fragment
   @Override
   public void onResultsUpdate(@NonNull SearchResult[] results, long timestamp)
   {
-    if (!isAdded() || !mToolbarController.hasQuery())
+    if (!isAdded() || getView() == null || !mToolbarController.hasQuery()
+        || (mMapSearchTimestamp != 0 && mMapSearchTimestamp != timestamp))
       return;
+    mMapSearchTimestamp = timestamp;
 
     refreshSearchResults(results);
   }
@@ -876,6 +899,8 @@ public class SearchFragment extends Fragment
   @Override
   public void onResultsEnd(long timestamp)
   {
+    if (!isAdded() || getView() == null || (mMapSearchTimestamp != 0 && timestamp != mMapSearchTimestamp))
+      return;
     onSearchEnd();
   }
 
@@ -895,10 +920,9 @@ public class SearchFragment extends Fragment
   private void refreshSearchResults(@NonNull SearchResult[] results)
   {
     mSearchRunning = true;
-    hideShimmer();
     updateFrames();
     mSearchAdapter.refreshData(results);
-    mToolbarController.showProgress(true);
+    updateSearchLoading();
   }
 
   public boolean onBackPressed()
@@ -1150,6 +1174,7 @@ public class SearchFragment extends Fragment
     {
       if (!isAdded())
         return;
+      mMapSearchTimestamp = -1;
 
       mSearchViewModel.setCurrentToolbarCategorical(isCategory());
 

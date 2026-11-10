@@ -3431,6 +3431,90 @@ UNIT_TEST(BookmarkSourceImportUpdatesWithoutDuplicates)
   TEST_EQUAL(manager.GetBookmark(id)->GetPivot(), mercator::FromLatLon(50, entries[0].m_lon), ());
 }
 
+UNIT_TEST(BookmarkSourceImportConsolidatesUnchangedResidenceEntries)
+{
+  BookmarkManager manager(BM_CALLBACKS);
+  manager.EnableTestMode(true);
+  auto result = ImportBookmarks(manager, "contacts", "Contacts",
+                                {{"luke", "Luke Tweed", "#10 2453 163 St", 49.0465, -122.771},
+                                 {"natalie", "Natalie Tweed", "2453 163 St. Surrey", 49.046484, -122.771031}});
+  auto const category = result.m_categoryId;
+  TEST_EQUAL(manager.GetUserMarkIds(category).size(), 2, ());
+  // Exercise migration of the per-contact format shipped before edit-state snapshots existed.
+  for (auto id : manager.GetUserMarkIds(category))
+  {
+    auto data = manager.GetBookmark(id)->GetData();
+    data.m_properties.erase("om:import:appearance");
+    manager.GetEditSession().UpdateBookmark(id, data);
+  }
+  BookmarkImportEntry combined{"luke", "Luke Tweed, Natalie Tweed", "2453 163 St", 49.0465, -122.771};
+  combined.m_requireSourceCategory = true;
+  combined.m_supersededKeys = {"natalie"};
+  result = ImportBookmarks(manager, "contacts", "Contacts", {combined});
+  TEST_EQUAL(result.m_updated, 1, ());
+  TEST_EQUAL(manager.GetUserMarkIds(category).size(), 1, ());
+  TEST_EQUAL(GetImportedBookmarks(manager, "contacts").front().m_key, "luke", ());
+  result = ImportBookmarks(manager, "contacts", "Contacts", {combined});
+  TEST_EQUAL(result.m_unchanged, 1, ());
+  TEST_EQUAL(manager.GetUserMarkIds(category).size(), 1, ());
+}
+
+UNIT_TEST(BookmarkContactImportPresentationDoesNotCountAsALocalEdit)
+{
+  BookmarkManager manager(BM_CALLBACKS);
+  manager.EnableTestMode(true);
+  BookmarkImportEntry entry{"person", "Person", "8877 Wright St", 49.1, -122.6, "14,contact-s;15,contact-m", true};
+  entry.m_requireSourceCategory = true;
+  auto result = ImportBookmarks(manager, "android-contacts", "Contacts", {entry});
+  TEST_EQUAL(result.m_added, 1, ());
+  TEST(GetImportedBookmarks(manager, "android-contacts").front().m_canModify, ());
+  result = ImportBookmarks(manager, "android-contacts", "Contacts", {entry});
+  TEST_EQUAL(result.m_unchanged, 1, ());
+}
+
+UNIT_TEST(BookmarkSourceImportRetirementProtectsMovedAndEditedEntries)
+{
+  for (int modification = 0; modification < 6; ++modification)
+  {
+    BookmarkManager manager(BM_CALLBACKS);
+    manager.EnableTestMode(true);
+    auto result = ImportBookmarks(manager, "contacts", "Contacts",
+                                  {{"cody", "Cody Ellis", "8877 Wright St", 49.1, -122.6},
+                                   {"bev", "Bev Ellis", "8877 Wright Street", 49.1, -122.6}});
+    auto const category = result.m_categoryId;
+    kml::MarkId protectedId = kml::kInvalidMarkId;
+    for (auto id : manager.GetUserMarkIds(category))
+      if (manager.GetBookmark(id)->GetPreferredName() == (modification >= 4 ? "Cody Ellis" : "Bev Ellis"))
+        protectedId = id;
+    {
+      auto session = manager.GetEditSession();
+      auto data = manager.GetBookmark(protectedId)->GetData();
+      if (modification == 0 || modification == 5)
+      {
+        auto const other = manager.CreateBookmarkCategory("Other");
+        session.DetachBookmark(protectedId, category);
+        session.AttachBookmark(protectedId, other);
+      }
+      else
+      {
+        if (modification == 1)
+          data.m_point = mercator::FromLatLon(50, -123);
+        if (modification == 2)
+          data.m_color.m_predefinedColor = kml::PredefinedColor::Red;
+        if (modification == 3 || modification == 4)
+          kml::SetDefaultStr(data.m_customName, "My Bev");
+        session.UpdateBookmark(protectedId, data);
+      }
+    }
+    BookmarkImportEntry combined{"cody", "Cody Ellis, Bev Ellis", "8877 Wright St", 49.1, -122.6};
+    combined.m_requireSourceCategory = true;
+    combined.m_supersededKeys = {"bev"};
+    ImportBookmarks(manager, "contacts", "Contacts", {combined});
+    TEST(manager.GetBookmark(protectedId), (modification));
+    TEST_EQUAL(GetImportedBookmarks(manager, "contacts").size(), 2, (modification));
+  }
+}
+
 UNIT_TEST(BookmarkSourceImportPreservesLocalEditsAndMovedBookmarks)
 {
   BookmarkManager manager(BM_CALLBACKS);
@@ -3520,32 +3604,34 @@ UNIT_TEST(BookmarkSourceImportToleratesCoordinateSerializationRounding)
 
 UNIT_TEST(BookmarkSourceImportSurvivesKmlAndKmbRoundTrips)
 {
-  for (auto const type : {FileType::Kml, FileType::Kmb})
-  {
-    BookmarkManager manager(BM_CALLBACKS);
-    manager.EnableTestMode(true);
-    std::vector<BookmarkImportEntry> entries{{"key", "Person", "Address", 49.2104550001, -123.125801}};
-    auto result = ImportBookmarks(manager, "contacts", "Contacts", entries);
-    std::string serialized;
-    MemWriter writer(serialized);
-    TEST(manager.SaveBookmarkCategory(result.m_categoryId, writer, type), ());
-    auto data = LoadKmlData(MemReader(serialized.data(), serialized.size()), type);
-    TEST(data, ());
-    BookmarkManager restored(BM_CALLBACKS);
-    restored.EnableTestMode(true);
-    BookmarkManager::KMLDataCollection collection;
-    collection.emplace_back("", std::move(data));
-    restored.CreateCategories(std::move(collection));
-    result = ImportBookmarks(restored, "contacts", "Contacts", entries);
-    TEST_EQUAL(result.m_unchanged, 1, ());
-    TEST_EQUAL(result.m_added, 0, ());
-    TEST_EQUAL(result.m_edited, 0, ());
-    entries[0].m_name = "Updated after restore";
-    result = ImportBookmarks(restored, "contacts", "Contacts", entries);
-    TEST_EQUAL(result.m_updated, 1, ());
-    auto const id = *restored.GetUserMarkIds(result.m_categoryId).begin();
-    TEST_EQUAL(restored.GetBookmark(id)->GetPreferredName(), entries[0].m_name, ());
-  }
+  for (bool strict : {false, true})
+    for (auto const type : {FileType::Kml, FileType::Kmb})
+    {
+      BookmarkManager manager(BM_CALLBACKS);
+      manager.EnableTestMode(true);
+      std::vector<BookmarkImportEntry> entries{{"key", "Person", "Address", 49.2104550001, -123.125801}};
+      entries[0].m_requireSourceCategory = strict;
+      auto result = ImportBookmarks(manager, "contacts", "Contacts", entries);
+      std::string serialized;
+      MemWriter writer(serialized);
+      TEST(manager.SaveBookmarkCategory(result.m_categoryId, writer, type), ());
+      auto data = LoadKmlData(MemReader(serialized.data(), serialized.size()), type);
+      TEST(data, ());
+      BookmarkManager restored(BM_CALLBACKS);
+      restored.EnableTestMode(true);
+      BookmarkManager::KMLDataCollection collection;
+      collection.emplace_back("", std::move(data));
+      restored.CreateCategories(std::move(collection));
+      result = ImportBookmarks(restored, "contacts", "Contacts", entries);
+      TEST_EQUAL(result.m_unchanged, 1, ());
+      TEST_EQUAL(result.m_added, 0, ());
+      TEST_EQUAL(result.m_edited, 0, ());
+      entries[0].m_name = "Updated after restore";
+      result = ImportBookmarks(restored, "contacts", "Contacts", entries);
+      TEST_EQUAL(result.m_updated, 1, ());
+      auto const id = *restored.GetUserMarkIds(result.m_categoryId).begin();
+      TEST_EQUAL(restored.GetBookmark(id)->GetPreferredName(), entries[0].m_name, ());
+    }
 }
 
 UNIT_CLASS_TEST(VisualParamsFixture, BookmarkSourceImportPreservesUndoAndHiddenRenamedCategory)
@@ -3571,6 +3657,17 @@ UNIT_CLASS_TEST(VisualParamsFixture, BookmarkSourceImportPreservesUndoAndHiddenR
   TEST(manager.GetUserMarkIds(other).empty(), ());
   TEST(manager.HasRecentlyDeletedBookmark(), ());
   TEST_EQUAL(manager.GetUserMarkIds(category).size(), 2, ());
+  ImportBookmarks(manager, "contacts", "Contacts", {{"third", "Third", "Other address", 50, -124}});
+  BookmarkImportEntry combined{"second", "Second, Third", "Other address", 50, -124};
+  combined.m_requireSourceCategory = true;
+  combined.m_supersededKeys = {"third"};
+  ImportBookmarks(manager, "contacts", "Contacts", {combined});
+  TEST_EQUAL(manager.GetUserMarkIds(category).size(), 2, ());
+  TEST(manager.HasRecentlyDeletedBookmark(), ());
+  kml::BookmarkData restore;
+  auto const * restored = manager.GetEditSession().CreateBookmark(std::move(restore), other);
+  TEST_EQUAL(restored->GetId(), deleted, ());
+  TEST_EQUAL(restored->GetPreferredName(), "Deleted by user", ());
 }
 
 UNIT_TEST(BookmarkSourceImportRetrievesOriginalAddressAfterLocalEdits)
@@ -3595,7 +3692,8 @@ UNIT_TEST(BookmarkSourceImportPoiPresentationPreservesUserAppearance)
   BookmarkManager manager(BM_CALLBACKS);
   manager.EnableTestMode(true);
   std::vector<BookmarkImportEntry> entries = {{"key", "Name", "Address", 49, -123, "14,contact-s;15,contact-m", true}};
-  auto result = ImportBookmarks(manager, "contacts", "Contacts", entries);
+  entries[0].m_requireSourceCategory = true;
+  auto result = ImportBookmarks(manager, "android-contacts", "Contacts", entries);
   auto id = *manager.GetUserMarkIds(result.m_categoryId).begin();
   auto const * bookmark = manager.GetBookmark(id);
   TEST_EQUAL(bookmark->GetAnchor(), dp::Center, ());
@@ -3616,8 +3714,22 @@ UNIT_TEST(BookmarkSourceImportPoiPresentationPreservesUserAppearance)
   TEST(!bookmark->GetCustomColor().has_value(), ());
   manager.GetEditSession().GetBookmarkForEdit(id)->SetColor(dp::Color::Red());
   TEST_EQUAL(bookmark->GetAnchor(), dp::Bottom, ());
-  ImportBookmarks(manager, "contacts", "Contacts", entries);
+  ImportBookmarks(manager, "android-contacts", "Contacts", entries);
   TEST_EQUAL(bookmark->GetAnchor(), dp::Bottom, ());
+}
+
+UNIT_TEST(BookmarkSourceImportPreservesDifferentContactsAtSamePoint)
+{
+  BookmarkManager manager(BM_CALLBACKS);
+  manager.EnableTestMode(true);
+  std::vector<BookmarkImportEntry> entries = {{"first", "First", "Unit 1, 123 Main Street", 49, -123},
+                                              {"second", "Second", "Unit 2, 123 Main Street", 49, -123}};
+  auto result = ImportBookmarks(manager, "contacts", "Contacts", entries);
+  TEST_EQUAL(result.m_added, 2, ());
+  TEST_EQUAL(manager.GetUserMarkIds(result.m_categoryId).size(), 2, ());
+  result = ImportBookmarks(manager, "contacts", "Contacts", entries);
+  TEST_EQUAL(result.m_unchanged, 2, ());
+  TEST_EQUAL(manager.GetUserMarkIds(result.m_categoryId).size(), 2, ());
 }
 
 }  // namespace bookmarks_test

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -55,17 +54,12 @@ public final class ContactsImporter
   record Location(double latitude, double longitude)
   {
   }
-  record Entry(String key, String name, String address, Location location, String streetKey,
-               List<String> obsoleteKeys, boolean inContacts)
+  record Entry(String key, String name, String address, Location location, boolean inContacts, boolean canModify,
+               List<String> obsoleteKeys)
   {
     Entry(String key, String name, String address, Location location)
     {
-      this(key, name, address, location, "", List.of(), true);
-    }
-    Entry(String key, String name, String address, Location location, String streetKey,
-          List<String> obsoleteKeys)
-    {
-      this(key, name, address, location, streetKey, obsoleteKeys, true);
+      this(key, name, address, location, true, true, List.of());
     }
   }
 
@@ -136,6 +130,7 @@ public final class ContactsImporter
   private final List<Entry> entries = new ArrayList<>();
   private final Map<String, Location> previousLocations = new HashMap<>();
   private final List<Entry> previousEntries = new ArrayList<>();
+  private final Map<String, String> streetKeys = new HashMap<>();
   private List<Contact> contacts = List.of();
   private int index;
   private int addressIndex;
@@ -169,13 +164,7 @@ public final class ContactsImporter
         duplicates.add(key);
     }
     duplicates.forEach(previousLocations::remove);
-    previousEntries.clear();
-    for (Entry entry : previous)
-    {
-      String streetKey = ContactAddressNormalizer.normalizeStreet(entry.address);
-      previousEntries.add(new Entry(entry.key, entry.name, entry.address, entry.location, streetKey,
-                                    List.of(), entry.inContacts()));
-    }
+    previousEntries.addAll(previous);
     this.contacts = List.copyOf(contacts);
     index = addressIndex = unresolved = 0;
     running = true;
@@ -201,33 +190,30 @@ public final class ContactsImporter
     locations.clear();
     previousLocations.clear();
     previousEntries.clear();
-  }
-
-  private static String locationKey(Location location)
-  {
-    return String.format(Locale.ROOT, "%.7f,%.7f", location.latitude(), location.longitude());
+    streetKeys.clear();
   }
 
   private static final double RESIDENCE_RADIUS_METERS = 300.0;
 
-  private static final class ResidenceGroup
+  private String residenceAddress(String address)
   {
-    final String streetKey;
+    return streetKeys.computeIfAbsent(
+        address,
+        value
+        -> String.join(" ", ContactAddressNormalizer.matchTokens(ContactAddressNormalizer.normalizeStreet(value))));
+  }
+
+  private final class ResidenceGroup
+  {
     final List<Entry> entries = new ArrayList<>();
     final Set<String> names = new LinkedHashSet<>();
 
-    ResidenceGroup(String streetKey)
-    {
-      this.streetKey = streetKey;
-    }
-
     boolean canAccept(Entry entry)
     {
-      if (streetKey.isEmpty() || entry.streetKey().isEmpty())
-        return locationKey(entries.get(0).location()).equals(locationKey(entry.location()));
-      if (!streetKey.equals(entry.streetKey()))
+      if (residenceAddress(entry.address()).isEmpty()
+          || !residenceAddress(first().address()).equals(residenceAddress(entry.address())))
         return false;
-      return entries.stream().anyMatch(
+      return entries.stream().allMatch(
           existing -> distanceMeters(existing.location(), entry.location()) <= RESIDENCE_RADIUS_METERS);
     }
 
@@ -243,14 +229,27 @@ public final class ContactsImporter
     }
   }
 
-  // People who share a residence often have different unit prefixes or address formatting and
-  // resolve to slightly different points. Group by the normalized street and a small radius, not
-  // by exact coordinates.
+  // Include house number in the normalized street identity; bound the whole group rather than
+  // allowing a chain of nearby points to join unrelated residences.
   private List<Entry> groupByResidence(List<Entry> source)
   {
-    List<ResidenceGroup> groups = new ArrayList<>();
-    for (Entry entry : source)
+    Set<String> movedKeys = new java.util.HashSet<>();
+    for (Entry previous : previousEntries)
     {
+      if (!previous.inContacts() || !previous.canModify())
+        movedKeys.add(previous.key());
+    }
+    List<Entry> ordered = new ArrayList<>(source);
+    ordered.sort(java.util.Comparator.comparing(Entry::key));
+    List<Entry> result = new ArrayList<>();
+    List<ResidenceGroup> groups = new ArrayList<>();
+    for (Entry entry : ordered)
+    {
+      if (movedKeys.contains(entry.key()))
+      {
+        result.add(entry);
+        continue;
+      }
       ResidenceGroup target = null;
       for (ResidenceGroup group : groups)
       {
@@ -262,47 +261,34 @@ public final class ContactsImporter
       }
       if (target == null)
       {
-        target = new ResidenceGroup(entry.streetKey());
+        target = new ResidenceGroup();
         groups.add(target);
       }
       target.add(entry);
     }
 
-    List<Entry> result = new ArrayList<>(groups.size());
+    Set<String> assignedKeys = new java.util.HashSet<>();
+    Set<String> currentKeys = new java.util.HashSet<>();
+    source.forEach(entry -> currentKeys.add(entry.key()));
     for (ResidenceGroup group : groups)
     {
-      final List<String> previousKeys = new ArrayList<>();
-      final Set<String> movedOutKeys = new LinkedHashSet<>();
-      for (Entry previous : previousEntries)
-      {
-        final boolean near;
-        if (group.streetKey.isEmpty() || previous.streetKey().isEmpty())
-          near = locationKey(group.first().location()).equals(locationKey(previous.location()));
-        else
-          near = group.streetKey.equals(previous.streetKey()) &&
-                 group.entries.stream().anyMatch(
-                     entry -> distanceMeters(entry.location(), previous.location()) <= RESIDENCE_RADIUS_METERS);
-        if (!near)
-          continue;
-        if (previous.inContacts())
-          previousKeys.add(previous.key());
-        else
-          movedOutKeys.add(previous.key());
-      }
-
-      final String primaryKey;
-      if (!previousKeys.isEmpty())
-        primaryKey = previousKeys.get(0);
-      else
-        primaryKey = group.entries.stream()
-                         .map(Entry::key)
-                         .filter(key -> !movedOutKeys.contains(key))
-                         .findFirst()
-                         .orElse("residence:" + group.streetKey + "@" + locationKey(group.first().location()));
-      final List<String> obsoleteKeys =
-          previousKeys.stream().filter(key -> !key.equals(primaryKey)).distinct().toList();
+      Set<String> groupKeys = new java.util.HashSet<>();
+      group.entries.forEach(entry -> groupKeys.add(entry.key()));
+      List<String> previousKeys =
+          previousEntries.stream()
+              .filter(previous -> previous.inContacts() && previous.canModify() && group.canAccept(previous))
+              .map(Entry::key)
+              .filter(key -> !movedKeys.contains(key) && !assignedKeys.contains(key))
+              .filter(key -> !currentKeys.contains(key) || groupKeys.contains(key))
+              .distinct()
+              .sorted()
+              .toList();
+      String primaryKey = previousKeys.isEmpty() ? group.first().key() : previousKeys.get(0);
+      assignedKeys.addAll(previousKeys);
+      assignedKeys.add(primaryKey);
       result.add(new Entry(primaryKey, String.join(", ", group.names), group.first().address(),
-                           group.first().location(), group.streetKey, obsoleteKeys));
+                           group.first().location(), true, true,
+                           previousKeys.stream().filter(key -> !key.equals(primaryKey)).toList()));
     }
     return result;
   }
@@ -338,11 +324,10 @@ public final class ContactsImporter
         if (address.getSearchQueries().isEmpty())
           continue;
         String key = address.getAddressKey();
-        String streetKey = ContactAddressNormalizer.normalizeStreet(address.address);
         Location previous = previousLocations.get(contact.key + "\0" + address.address);
         if (previous != null)
         {
-          entries.add(new Entry(contact.key, contact.name, address.address, previous, streetKey, List.of()));
+          entries.add(new Entry(contact.key, contact.name, address.address, previous));
           break;
         }
         if (locations.containsKey(key))
@@ -350,7 +335,7 @@ public final class ContactsImporter
           Location cached = locations.get(key);
           if (cached == null)
             continue;
-          entries.add(new Entry(contact.key, contact.name, address.address, cached, streetKey, List.of()));
+          entries.add(new Entry(contact.key, contact.name, address.address, cached));
           break;
         }
         long attempt = ++generation;
@@ -368,7 +353,7 @@ public final class ContactsImporter
             locations.put(key, valid);
             if (valid != null)
             {
-              entries.add(new Entry(contact.key, contact.name, address.address, valid, streetKey, List.of()));
+              entries.add(new Entry(contact.key, contact.name, address.address, valid));
               ++index;
               addressIndex = 0;
             }
@@ -394,8 +379,8 @@ public final class ContactsImporter
     observer.accept(new State(Phase.SAVING, index, contacts.size(), unresolved, Error.NONE, null));
     try
     {
-      Summary result = entries.isEmpty() ? new Summary(new long[] {-1, 0, 0, 0, 0, 0})
-                                         : store.save(groupByResidence(entries));
+      Summary result =
+          entries.isEmpty() ? new Summary(new long[] {-1, 0, 0, 0, 0, 0}) : store.save(groupByResidence(entries));
       finish(Phase.DONE, Error.NONE, result);
     }
     catch (RuntimeException e)

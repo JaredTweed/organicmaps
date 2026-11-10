@@ -650,5 +650,49 @@ UNIT_CLASS_TEST(SearchAPITest, BookmarksSearch)
   m_api.ResetBookmarksEngine();
   runTest(query, kml::MarkGroupId(11), {});
 }
+UNIT_CLASS_TEST(SearchAPITest, BookmarkSearchLimitAcrossLists)
+{
+  size_t constexpr kGroups = 10;
+  size_t constexpr kPerGroup = 105;
+  vector<kml::BookmarkData> data(kGroups * kPerGroup);
+  vector<BookmarkInfo> marks;
+  vector<BookmarkGroupInfo> groups;
+  for (size_t group = 0; group < kGroups; ++group)
+  {
+    vector<kml::MarkId> ids;
+    for (size_t i = 0; i < kPerGroup; ++i)
+    {
+      auto const id = static_cast<kml::MarkId>(group * kPerGroup + i);
+      kml::SetDefaultStr(data[id].m_name, "Maya");
+      marks.emplace_back(id, &data[id]);
+      ids.push_back(id);
+    }
+    m_api.EnableIndexingOfBookmarkGroup(group + 10, true);
+    groups.emplace_back(group + 10, std::move(ids));
+  }
+  m_api.OnBookmarksCreated(marks);
+  m_api.OnBookmarksAttached(groups);
+  m_api.OnViewportChanged(m2::RectD(-1, -1, 1, 1));
+
+  auto count = [&](kml::MarkGroupId group)
+  {
+    auto completion = std::make_shared<promise<size_t>>();
+    auto future = completion->get_future();
+    BookmarksSearchParams params;
+    params.m_query = "Maya";
+    params.m_groupId = group;
+    params.m_onResults = [completion](vector<kml::MarkId> const & ids, BookmarksSearchParams::Status status)
+    {
+      if (status == BookmarksSearchParams::Status::Completed)
+        completion->set_value(ids.size());
+    };
+    TEST(m_api.SearchInBookmarks(params), ());
+    auto const ready = future.wait_for(std::chrono::seconds(30)) == std::future_status::ready;
+    TEST(ready, ("Bookmark search did not complete"));
+    return ready ? future.get() : size_t{0};
+  };
+  TEST_EQUAL(count(kml::kInvalidMarkGroupId), 1000, ());
+  TEST_EQUAL(count(10), kPerGroup, ());
+}
 }  // namespace
 }  // namespace search_api_tests

@@ -96,8 +96,8 @@ public class ContactsImporterTest
   @Test
   public void mergesResidentsWithDifferentUnitsAndFormatting()
   {
-    importer.start(List.of(contact("luke", "#10 2453 163 St, Surrey, BC, Canada"),
-                           contact("natalie", "2453 163 St. Surrey")));
+    importer.start(
+        List.of(contact("luke", "#10 2453 163 St, Surrey, BC, Canada"), contact("natalie", "2453 163 St. Surrey")));
     complete(0, new ContactsImporter.Location(49.0465, -122.771));
     complete(1, new ContactsImporter.Location(49.046484, -122.771031));
     assertEquals(1, saved.get(0).size());
@@ -114,19 +114,66 @@ public class ContactsImporterTest
   }
 
   @Test
-  public void retiresOldPerContactBookmarksAtTheSameResidence()
+  public void residenceIdentityIgnoresCaseAndOrdinalFormatting()
   {
     importer.start(
-        List.of(contact("luke", "#10 2453 163 St, Surrey, BC"), contact("natalie", "2453 163 St. Surrey")),
-        List.of(new ContactsImporter.Entry("oldLuke", "", "#10 2453 163 St, Surrey, BC",
-                                           new ContactsImporter.Location(49.0465, -122.771)),
-                new ContactsImporter.Entry("oldNatalie", "", "2453 163 St. Surrey",
-                                           new ContactsImporter.Location(49.046484, -122.771031))));
+        List.of(contact("luke", "#10 2453 163rd street, Surrey"), contact("natalie", "2453 163 St. Surrey")));
+    complete(0, new ContactsImporter.Location(49.0465, -122.771));
+    complete(1, new ContactsImporter.Location(49.046484, -122.771031));
+    assertEquals(1, saved.get(0).size());
+  }
+
+  @Test
+  public void retiresOldPerContactBookmarksAtTheSameResidence()
+  {
+    importer.start(List.of(contact("luke", "#10 2453 163 St, Surrey, BC"), contact("natalie", "2453 163 St. Surrey")),
+                   List.of(new ContactsImporter.Entry("oldLuke", "", "#10 2453 163 St, Surrey, BC",
+                                                      new ContactsImporter.Location(49.0465, -122.771)),
+                           new ContactsImporter.Entry("oldNatalie", "", "2453 163 St. Surrey",
+                                                      new ContactsImporter.Location(49.046484, -122.771031))));
     complete(0, new ContactsImporter.Location(49.0465, -122.771));
     complete(1, new ContactsImporter.Location(49.046484, -122.771031));
     assertEquals(1, saved.get(0).size());
     assertEquals("oldLuke", saved.get(0).get(0).key());
     assertEquals(List.of("oldNatalie"), saved.get(0).get(0).obsoleteKeys());
+  }
+
+  @Test
+  public void mergesCodyAndBevEllisAtWrightStreet()
+  {
+    var cody = contact("cody", "8877 Wright St, Langley");
+    var bev = contact("bev", "Unit 2, 8877 Wright Street, Langley, BC, Canada");
+    importer.start(List.of(cody, bev));
+    complete(0, new ContactsImporter.Location(49.1, -122.6));
+    complete(1, new ContactsImporter.Location(49.1001, -122.6001));
+    assertEquals(1, saved.get(0).size());
+    assertEquals("Name bev, Name cody", saved.get(0).get(0).name());
+  }
+
+  @Test
+  public void doesNotRetireMovedOrLocallyEditedResidenceBookmarks()
+  {
+    String address = "8877 Wright St, Langley";
+    var point = new ContactsImporter.Location(49.1, -122.6);
+    importer.start(List.of(contact("new", address)),
+                   List.of(new ContactsImporter.Entry("moved", "", address, point, false, true, List.of()),
+                           new ContactsImporter.Entry("edited", "", address, point, true, false, List.of())));
+    complete(0, point);
+    assertEquals("new", saved.get(0).get(0).key());
+    assertTrue(saved.get(0).get(0).obsoleteKeys().isEmpty());
+  }
+
+  @Test
+  public void doesNotReuseTheKeyOfAContactWhoMovedToAnotherResidence()
+  {
+    importer.start(
+        List.of(contact("one", "123 Main Street"), contact("two", "456 Other Road")),
+        List.of(new ContactsImporter.Entry("two", "", "123 Main Street", new ContactsImporter.Location(49, -123))));
+    complete(0, new ContactsImporter.Location(49, -123));
+    complete(1, new ContactsImporter.Location(50, -124));
+    assertEquals("one", saved.get(0).get(0).key());
+    assertEquals("two", saved.get(0).get(1).key());
+    assertTrue(saved.get(0).get(0).obsoleteKeys().isEmpty());
   }
 
   @Test

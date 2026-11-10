@@ -58,6 +58,7 @@ std::string GetBookmarkIconType(kml::BookmarkIcon const & icon)
 }
 
 std::string const kCustomImageProperty = "CustomImage";
+df::ColorConstant PresetBookmarkColorConstant(kml::PredefinedColor color);
 }  // namespace
 
 Bookmark::Bookmark(m2::PointD const & ptOrg) : Base(ptOrg, UserMark::BOOKMARK), m_groupId(kml::kInvalidMarkGroupId)
@@ -83,8 +84,10 @@ void Bookmark::SetData(kml::BookmarkData const & data)
   if (HasPoiPresentation())
   {
     auto const color = kml::NormalizeBookmarkColorData(data.m_color);
-    bool const changedColor =
-        kml::IsCustomBookmarkColor(color) ? dp::Color(color.m_rgba) != GetColorForRendering() : color != m_data.m_color;
+    auto const renderedColor = kml::IsCustomBookmarkColor(color)
+                                 ? dp::Color(color.m_rgba)
+                                 : df::GetColorConstant(PresetBookmarkColorConstant(color.m_predefinedColor));
+    bool const changedColor = renderedColor != GetColorForRendering();
     changedAppearance = data.m_icon != m_data.m_icon || changedColor;
   }
   SetDirty();

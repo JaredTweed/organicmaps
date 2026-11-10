@@ -375,6 +375,14 @@ final class ContactAddressNormalizer
         continue;
       }
 
+      // A numbered street's ordinal (163rd Street) is not an attached road suffix (163 Rd).
+      if (i > 0 && i + 1 < rawTokens.length && ORDINAL.matcher(rawTokens[i]).matches()
+          && isStreetSuffix(rawTokens[i + 1]))
+      {
+        tokens.add(rawTokens[i]);
+        continue;
+      }
+
       final Matcher suffix = ATTACHED_SUFFIX.matcher(rawTokens[i]);
       if (suffix.matches())
       {

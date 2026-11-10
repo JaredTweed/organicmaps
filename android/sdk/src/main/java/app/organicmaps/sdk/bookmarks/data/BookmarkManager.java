@@ -661,12 +661,10 @@ public enum BookmarkManager {
   @NonNull
   public native long[] importContactBookmarks(@NonNull String categoryName, @NonNull String[] keys,
                                               @NonNull String[] names, @NonNull String[] addresses,
-                                              @NonNull double[] latitudes, @NonNull double[] longitudes);
+                                              @NonNull double[] latitudes, @NonNull double[] longitudes,
+                                              @NonNull String[][] supersededKeys);
 
-  /** Deletes unchanged imported contact bookmarks whose hashed provider keys are listed. */
-  public native void deleteImportedContactBookmarks(@NonNull String[] keys);
-
-  /** Flattened key, source address, latitude, longitude tuples from existing imported bookmarks. */
+  /** Flattened key, source address, latitude, longitude, category ID, modifiable tuples. */
   @NonNull
   public native String[] getImportedContactLocations();
 

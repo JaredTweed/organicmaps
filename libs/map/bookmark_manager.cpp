@@ -471,7 +471,7 @@ void BookmarkManager::DetachBookmark(kml::MarkId bmId, kml::MarkGroupId catId)
   DetachUserMark(bmId, catId);
 }
 
-void BookmarkManager::DeleteBookmark(kml::MarkId bmId)
+void BookmarkManager::DeleteBookmark(kml::MarkId bmId, bool rememberForUndo)
 {
   CHECK_THREAD_CHECKER(m_threadChecker, ());
   ASSERT(IsBookmark(bmId), ());
@@ -485,7 +485,8 @@ void BookmarkManager::DeleteBookmark(kml::MarkId bmId)
   DetachUserMark(bmId, groupId);
   m_changesTracker.OnDeleteMark(bmId);
 
-  m_recentlyDeletedBookmark = std::move(it->second);
+  if (rememberForUndo)
+    m_recentlyDeletedBookmark = std::move(it->second);
   m_bookmarks.erase(it);
 }
 
@@ -3621,9 +3622,9 @@ void BookmarkManager::EditSession::DeleteUserMark(kml::MarkId markId)
   m_bmManager.DeleteUserMark(markId);
 }
 
-void BookmarkManager::EditSession::DeleteBookmark(kml::MarkId bmId)
+void BookmarkManager::EditSession::DeleteBookmark(kml::MarkId bmId, bool rememberForUndo)
 {
-  m_bmManager.DeleteBookmark(bmId);
+  m_bmManager.DeleteBookmark(bmId, rememberForUndo);
 }
 
 Track * BookmarkManager::EditSession::GetTrackForEdit(kml::TrackId trackId)
