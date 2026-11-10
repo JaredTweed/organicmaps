@@ -377,6 +377,7 @@ public class Holders
     private final ImageView mMoreButton;
     @Nullable
     private final Drawable mIconBackground;
+    private boolean mIsContact;
 
     BookmarkViewHolder(@NonNull View itemView)
     {
@@ -399,6 +400,14 @@ public class Holders
       // In selection mode every tap on the row must toggle it, so the inner targets step aside.
       UiUtils.hideIf(selectionMode, mMoreButton);
       bindSelectableChild(mIcon, mIconBackground, selectionMode);
+      if (mIsContact)
+      {
+        mIcon.setClickable(false);
+        mIcon.setFocusable(false);
+        mIcon.setBackground(mIconBackground);
+        mIcon.setImportantForAccessibility(selectionMode ? View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                                                         : View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      }
     }
 
     public void setMoreButtonClickListener(@Nullable RecyclerClickListener listener)
@@ -427,6 +436,9 @@ public class Holders
       String subtitleValue = distanceValue.concat(separator).concat(bookmark.getFeatureType());
       mDistance.setText(subtitleValue);
       UiUtils.hideIf(TextUtils.isEmpty(subtitleValue), mDistance);
+
+      mIsContact = BookmarkManager.INSTANCE.isContactCategory(bookmark.getCategoryId());
+      mIcon.setContentDescription(mIsContact ? null : mIcon.getContext().getString(R.string.change_color));
 
       final int iconRes = BookmarkManager.INSTANCE.isContactBookmark(bookmarkId)
                               ? R.drawable.ic_bookmark_contact

@@ -412,16 +412,28 @@ JNIEXPORT jobject Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_native
 JNIEXPORT jboolean JNICALL
 Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeIsContactBookmark(JNIEnv *, jobject, jlong bmkId)
 {
-  auto const & bm = frm()->GetBookmarkManager();
-  auto const * bookmark = bm.GetBookmark(static_cast<kml::MarkId>(bmkId));
+  auto const * bookmark = frm()->GetBookmarkManager().GetBookmark(static_cast<kml::MarkId>(bmkId));
   if (!bookmark)
     return JNI_FALSE;
 
-  auto const groupId = bookmark->GetGroupId();
+  auto const & properties = bookmark->GetData().m_properties;
+  if (properties.contains("CustomImageOverride"))
+    return JNI_FALSE;
+  auto const style = properties.find("CustomImageStyle");
+  if (style == properties.end() || style->second != "poi")
+    return JNI_FALSE;
+  auto const image = properties.find("CustomImage");
+  return (image == properties.end() || image->second.find("contact-") != std::string::npos) ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_nativeIsContactCategory(JNIEnv *, jobject, jlong categoryId)
+{
+  auto const groupId = static_cast<kml::MarkGroupId>(categoryId);
   if (!BookmarkManager::IsBookmarkCategory(groupId))
     return JNI_FALSE;
 
-  auto const & properties = bm.GetCategoryData(groupId).m_properties;
+  auto const & properties = frm()->GetBookmarkManager().GetCategoryData(groupId).m_properties;
   auto const it = properties.find("om:import:source");
   return (it != properties.end() && it->second == "android-contacts") ? JNI_TRUE : JNI_FALSE;
 }

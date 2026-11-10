@@ -247,10 +247,16 @@ public enum BookmarkManager {
     return nativeGetBookmarkInfo(bmkId);
   }
 
-  /** Whether the bookmark belongs to the tagged Contacts list and uses its person presentation. */
+  /** Whether the bookmark uses the contact person presentation. */
   public boolean isContactBookmark(long bmkId)
   {
     return nativeIsContactBookmark(bmkId);
+  }
+
+  /** Whether the category is the tagged Contacts list. */
+  public boolean isContactCategory(long categoryId)
+  {
+    return nativeIsContactCategory(categoryId);
   }
 
   @NonNull
@@ -623,6 +629,7 @@ public enum BookmarkManager {
   @Nullable
   private native BookmarkInfo nativeGetBookmarkInfo(long bmkId);
   private native boolean nativeIsContactBookmark(long bmkId);
+  private native boolean nativeIsContactCategory(long categoryId);
 
   @NonNull
   private native Track nativeGetTrack(long trackId, Class<Track> trackClazz);
