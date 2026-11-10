@@ -17,6 +17,7 @@ import app.organicmaps.sdk.downloader.MapManager;
 import app.organicmaps.sdk.search.SearchEngine;
 import app.organicmaps.sdk.util.Language;
 import app.organicmaps.sdk.util.concurrency.ThreadPool;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -121,10 +122,15 @@ public final class ContactsImportCoordinator
           {
             String[] tuples = BookmarkManager.INSTANCE.getImportedContactLocations();
             java.util.List<ContactsImporter.Entry> previous = new java.util.ArrayList<>();
-            for (int i = 0; i + 3 < tuples.length; i += 4)
+            for (int i = 0; i + 4 < tuples.length; i += 5)
+            {
+              final long categoryId = Long.parseLong(tuples[i + 4]);
               previous.add(new ContactsImporter.Entry(
                   tuples[i], "", tuples[i + 1],
-                  new ContactsImporter.Location(Double.parseDouble(tuples[i + 2]), Double.parseDouble(tuples[i + 3]))));
+                  new ContactsImporter.Location(Double.parseDouble(tuples[i + 2]),
+                                                Double.parseDouble(tuples[i + 3])),
+                  "", java.util.List.of(), BookmarkManager.INSTANCE.isContactCategory(categoryId)));
+            }
             importer.start(contacts, previous);
           }
           catch (RuntimeException e)
@@ -173,13 +179,22 @@ public final class ContactsImportCoordinator
 
   private ContactsImporter.Summary save(List<ContactsImporter.Entry> entries)
   {
-    return new ContactsImporter.Summary(BookmarkManager.INSTANCE.importContactBookmarks(
+    final List<String> obsoleteKeys = new ArrayList<>();
+    for (ContactsImporter.Entry entry : entries)
+      obsoleteKeys.addAll(entry.obsoleteKeys());
+
+    final long[] values = BookmarkManager.INSTANCE.importContactBookmarks(
         getApplication().getString(R.string.bookmarks_contacts_list_name),
         entries.stream().map(ContactsImporter.Entry::key).toArray(String[] ::new),
         entries.stream().map(ContactsImporter.Entry::name).toArray(String[] ::new),
         entries.stream().map(ContactsImporter.Entry::address).toArray(String[] ::new),
         entries.stream().mapToDouble(entry -> entry.location().latitude()).toArray(),
-        entries.stream().mapToDouble(entry -> entry.location().longitude()).toArray()));
+        entries.stream().mapToDouble(entry -> entry.location().longitude()).toArray());
+
+    if (!obsoleteKeys.isEmpty())
+      BookmarkManager.INSTANCE.deleteImportedContactBookmarks(obsoleteKeys.toArray(String[] ::new));
+
+    return new ContactsImporter.Summary(values);
   }
 
   private final class NativeResolver implements ContactsImporter.Resolver

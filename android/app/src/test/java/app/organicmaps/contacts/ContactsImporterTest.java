@@ -94,6 +94,42 @@ public class ContactsImporterTest
   }
 
   @Test
+  public void mergesResidentsWithDifferentUnitsAndFormatting()
+  {
+    importer.start(List.of(contact("luke", "#10 2453 163 St, Surrey, BC, Canada"),
+                           contact("natalie", "2453 163 St. Surrey")));
+    complete(0, new ContactsImporter.Location(49.0465, -122.771));
+    complete(1, new ContactsImporter.Location(49.046484, -122.771031));
+    assertEquals(1, saved.get(0).size());
+    assertEquals("Name luke, Name natalie", saved.get(0).get(0).name());
+  }
+
+  @Test
+  public void keepsDifferentHouseNumbersOnTheSameStreetSeparate()
+  {
+    importer.start(List.of(contact("one", "123 Main Street, Canada"), contact("two", "125 Main Street, Canada")));
+    complete(0, new ContactsImporter.Location(49, -123));
+    complete(1, new ContactsImporter.Location(49.0001, -123.0001));
+    assertEquals(2, saved.get(0).size());
+  }
+
+  @Test
+  public void retiresOldPerContactBookmarksAtTheSameResidence()
+  {
+    importer.start(
+        List.of(contact("luke", "#10 2453 163 St, Surrey, BC"), contact("natalie", "2453 163 St. Surrey")),
+        List.of(new ContactsImporter.Entry("oldLuke", "", "#10 2453 163 St, Surrey, BC",
+                                           new ContactsImporter.Location(49.0465, -122.771)),
+                new ContactsImporter.Entry("oldNatalie", "", "2453 163 St. Surrey",
+                                           new ContactsImporter.Location(49.046484, -122.771031))));
+    complete(0, new ContactsImporter.Location(49.0465, -122.771));
+    complete(1, new ContactsImporter.Location(49.046484, -122.771031));
+    assertEquals(1, saved.get(0).size());
+    assertEquals("oldLuke", saved.get(0).get(0).key());
+    assertEquals(List.of("oldNatalie"), saved.get(0).get(0).obsoleteKeys());
+  }
+
+  @Test
   public void triesOtherAddressesAfterAnUnresolvedPrimary()
   {
     importer.start(List.of(contact("one", "123 Main Street, Canada", "456 Other Road, Canada")));

@@ -78,6 +78,7 @@ std::vector<BookmarkImportEntry> GetImportedBookmarks(BookmarkManager const & ma
       if (Property(properties, kSource) != source)
         continue;
       BookmarkImportEntry entry;
+      entry.m_groupId = category;
       entry.m_key = Property(properties, kKey);
       std::istringstream snapshot(Property(properties, kSnapshot));
       snapshot.imbue(std::locale::classic());
@@ -288,4 +289,36 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
     }
   }
   return result;
+}
+
+size_t DeleteImportedBookmarksByKeys(BookmarkManager & manager, std::string const & source,
+                                     std::vector<std::string> const & keys)
+{
+  if (keys.empty())
+    return 0;
+
+  std::set<std::string> const keySet(keys.begin(), keys.end());
+  std::vector<kml::MarkId> toDelete;
+  for (auto const groupId : manager.GetSortedBmGroupIdList())
+  {
+    if (Property(manager.GetCategoryData(groupId).m_properties, kSource) != source)
+      continue;
+    for (auto const id : manager.GetUserMarkIds(groupId))
+    {
+      auto const * bookmark = manager.GetBookmark(id);
+      if (!bookmark)
+        continue;
+      auto const & properties = bookmark->GetData().m_properties;
+      if (Property(properties, kSource) != source || !keySet.contains(Property(properties, kKey)))
+        continue;
+      if (Property(properties, kSnapshot) != Snapshot(bookmark->GetPreferredName(), bookmark->GetDescription()))
+        continue;  // Keep locally edited bookmarks.
+      toDelete.push_back(id);
+    }
+  }
+
+  auto session = manager.GetEditSession();
+  for (auto const id : toDelete)
+    session.DeleteBookmark(id);
+  return toDelete.size();
 }
