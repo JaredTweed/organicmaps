@@ -57,6 +57,51 @@ public class ContactsImporterTest
   }
 
   @Test
+  public void unknownFingerprintDoesNotFallBackToLegacyAddressCache()
+  {
+    String address = "123 Example Street, Canada";
+    importer.start(List.of(contact("one", address)),
+                   List.of(new ContactsImporter.Entry("one", "Name", address, new ContactsImporter.Location(49, -123),
+                                                      true, true, List.of(), "v2:unknown")));
+    assertEquals(1, callbacks.size());
+    complete(0, null);
+  }
+
+  @Test
+  public void reusesStructuredAddressFingerprintAndInvalidatesChangedCity()
+  {
+    var person = new ContactsImporter.Contact("one", "Person");
+    person.addAddress(new ContactAddress("123 Example Street", "123 Example Street", "First City", "BC", "Canada"));
+    importer.start(List.of(person));
+    complete(0, new ContactsImporter.Location(49, -123));
+    var previous = saved.get(0);
+    assertTrue(previous.get(0).sourceKeys().startsWith("v1:"));
+    importer.start(List.of(person), previous);
+    assertEquals(1, callbacks.size());
+    assertEquals(2, saved.size());
+    person.addresses.clear();
+    person.addAddress(new ContactAddress("123 Example Street", "123 Example Street", "Other City", "BC", "Canada"));
+    importer.start(List.of(person), previous);
+    assertEquals(2, callbacks.size());
+    complete(1, null);
+  }
+
+  @Test
+  public void retainsAllResidenceMemberFingerprints()
+  {
+    var first = contact("one", "#10 2453 Example Street, Surrey, BC, Canada");
+    var second = contact("two", "2453 Example St. Surrey");
+    importer.start(List.of(first, second));
+    complete(0, new ContactsImporter.Location(49, -123));
+    complete(1, new ContactsImporter.Location(49, -123));
+    assertEquals(1, saved.get(0).size());
+    assertEquals(2, saved.get(0).get(0).sourceKeys().substring(3).split(";").length);
+    importer.start(List.of(first, second), saved.get(0));
+    assertEquals(2, callbacks.size());
+    assertEquals(1, saved.get(1).size());
+  }
+
+  @Test
   public void reusesUnchangedImportedAddressWithoutSearching()
   {
     String address = "123 Main Street, Canada";
@@ -66,6 +111,54 @@ public class ContactsImporterTest
     assertTrue(callbacks.isEmpty());
     assertEquals("Name one", saved.get(0).get(0).name());
     assertEquals(ContactsImporter.Phase.DONE, last().phase);
+  }
+
+  @Test
+  public void reusesSavedAddressForOtherResidentsWithoutSearching()
+  {
+    String address = "8877 Example Street, Example City";
+    importer.start(
+        List.of(contact("first", address), contact("second", address)),
+        List.of(new ContactsImporter.Entry("old", "", address, new ContactsImporter.Location(49.1, -122.6))));
+    assertTrue(callbacks.isEmpty());
+    assertEquals(1, saved.get(0).size());
+    assertEquals("Name first, Name second", saved.get(0).get(0).name());
+  }
+
+  @Test
+  public void doesNotReuseConflictingSavedAddressLocations()
+  {
+    String address = "123 Main Street, Canada";
+    importer.start(List.of(contact("new", address)),
+                   List.of(new ContactsImporter.Entry("old1", "", address, new ContactsImporter.Location(49, -123)),
+                           new ContactsImporter.Entry("old2", "", address, new ContactsImporter.Location(50, -124))));
+    assertEquals(1, callbacks.size());
+    complete(0, null);
+  }
+
+  @Test
+  public void doesNotGeocodeMovedOrLocallyEditedBookmarks()
+  {
+    String address = "123 Main Street, Canada";
+    importer.start(List.of(contact("moved", address), contact("edited", address)),
+                   List.of(new ContactsImporter.Entry("moved", "", address, new ContactsImporter.Location(49, -123),
+                                                      false, true, List.of()),
+                           new ContactsImporter.Entry("edited", "", address, new ContactsImporter.Location(49, -123),
+                                                      true, false, List.of())));
+    assertTrue(callbacks.isEmpty());
+    assertEquals(2, saved.get(0).size());
+    assertTrue(saved.get(0).stream().allMatch(entry -> entry.obsoleteKeys().isEmpty()));
+  }
+
+  @Test
+  public void sharedAddressCacheDoesNotOverrideStructuredLocality()
+  {
+    var person = new ContactsImporter.Contact("new", "Person");
+    person.addAddress(new ContactAddress("123 Main Street", "123 Main Street", "Other City", "BC", "Canada"));
+    importer.start(List.of(person), List.of(new ContactsImporter.Entry("old", "", "123 Main Street",
+                                                                       new ContactsImporter.Location(49, -123))));
+    assertEquals(1, callbacks.size());
+    complete(0, null);
   }
 
   @Test
@@ -131,8 +224,7 @@ public class ContactsImporterTest
                                                       new ContactsImporter.Location(49.0465, -122.771)),
                            new ContactsImporter.Entry("oldNatalie", "", "2453 163 St. Surrey",
                                                       new ContactsImporter.Location(49.046484, -122.771031))));
-    complete(0, new ContactsImporter.Location(49.0465, -122.771));
-    complete(1, new ContactsImporter.Location(49.046484, -122.771031));
+    assertTrue(callbacks.isEmpty());
     assertEquals(1, saved.get(0).size());
     assertEquals("oldLuke", saved.get(0).get(0).key());
     assertEquals(List.of("oldNatalie"), saved.get(0).get(0).obsoleteKeys());
@@ -169,8 +261,8 @@ public class ContactsImporterTest
     importer.start(
         List.of(contact("one", "123 Main Street"), contact("two", "456 Other Road")),
         List.of(new ContactsImporter.Entry("two", "", "123 Main Street", new ContactsImporter.Location(49, -123))));
-    complete(0, new ContactsImporter.Location(49, -123));
-    complete(1, new ContactsImporter.Location(50, -124));
+    assertEquals(1, callbacks.size());
+    complete(0, new ContactsImporter.Location(50, -124));
     assertEquals("one", saved.get(0).get(0).key());
     assertEquals("two", saved.get(0).get(1).key());
     assertTrue(saved.get(0).get(0).obsoleteKeys().isEmpty());

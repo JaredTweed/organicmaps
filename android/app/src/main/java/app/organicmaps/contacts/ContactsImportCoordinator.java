@@ -106,6 +106,7 @@ public final class ContactsImportCoordinator
       return;
     }
     long generation = ++readGeneration;
+    resolver.maps.invalidate();
     CancellationSignal signal = new CancellationSignal();
     reading = signal;
     publish(new ContactsImporter.State(ContactsImporter.Phase.READING, 0, 0, 0, ContactsImporter.Error.NONE, null));
@@ -121,14 +122,14 @@ public final class ContactsImportCoordinator
           {
             String[] tuples = BookmarkManager.INSTANCE.getImportedContactLocations();
             java.util.List<ContactsImporter.Entry> previous = new java.util.ArrayList<>();
-            for (int i = 0; i + 5 < tuples.length; i += 6)
+            for (int i = 0; i + 6 < tuples.length; i += 7)
             {
               final long categoryId = Long.parseLong(tuples[i + 4]);
               previous.add(new ContactsImporter.Entry(
                   tuples[i], "", tuples[i + 1],
                   new ContactsImporter.Location(Double.parseDouble(tuples[i + 2]), Double.parseDouble(tuples[i + 3])),
                   BookmarkManager.INSTANCE.isContactCategory(categoryId), Boolean.parseBoolean(tuples[i + 5]),
-                  List.of()));
+                  List.of(), tuples[i + 6]));
             }
             importer.start(contacts, previous);
           }
@@ -185,19 +186,26 @@ public final class ContactsImportCoordinator
         entries.stream().map(ContactsImporter.Entry::address).toArray(String[] ::new),
         entries.stream().mapToDouble(entry -> entry.location().latitude()).toArray(),
         entries.stream().mapToDouble(entry -> entry.location().longitude()).toArray(),
-        entries.stream().map(entry -> entry.obsoleteKeys().toArray(String[] ::new)).toArray(String[][] ::new));
+        entries.stream().map(entry -> entry.obsoleteKeys().toArray(String[] ::new)).toArray(String[][] ::new),
+        entries.stream().map(ContactsImporter.Entry::sourceKeys).toArray(String[] ::new));
 
     return new ContactsImporter.Summary(values);
   }
 
   private final class NativeResolver implements ContactsImporter.Resolver
   {
+    private final ContactsMapAvailability maps = new ContactsMapAvailability();
     private Runnable timeout;
     private long activeId;
 
     @Override
     public long resolve(ContactAddress address, Consumer<ContactsImporter.Location> callback)
     {
+      if (!maps.mightHaveMap(address))
+      {
+        callback.accept(null);
+        return 0;
+      }
       List<ContactAddress.SearchQuery> queries = address.getSearchQueries();
       long id = SearchEngine.INSTANCE.resolveAddress(
           queries.stream().map(query -> query.query).toArray(String[] ::new),

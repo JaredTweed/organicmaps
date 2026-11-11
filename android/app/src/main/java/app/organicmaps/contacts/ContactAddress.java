@@ -91,8 +91,20 @@ final class ContactAddress
   private String normalizeStreet()
   {
     if (!ContactAddressNormalizer.usesNorthAmericanFormatting(mFormattingCountry))
-      return ContactAddressNormalizer.normalizeStreet(street.isEmpty() ? address : street, mFormattingCountry);
-    final String firstPart = address.split(",", 2)[0].trim();
+    {
+      String candidate =
+          ContactAddressNormalizer.normalizeStreet(street.isEmpty() ? address : street, mFormattingCountry);
+      if (street.isEmpty() && !ContactAddressNormalizer.looksLikeStructuredStreet(candidate))
+      {
+        var numberedStreet =
+            java.util.regex.Pattern.compile("^([^\\d,]+\\s+\\d+[\\p{L}]?(?:[-/]\\d+[\\p{L}]?)*)(?:\\s+.+)$")
+                .matcher(candidate);
+        if (numberedStreet.matches())
+          candidate = numberedStreet.group(1);
+      }
+      return candidate;
+    }
+    final String firstPart = ContactAddressNormalizer.prepareAddress(address.split("[,\\r\\n]", 2)[0]).trim();
     if (street.isEmpty() && ContactAddressNormalizer.looksLikeStructuredStreet(firstPart)
         && !ContactAddressNormalizer.hasRecognizedStreetSuffix(firstPart))
       return firstPart;
@@ -141,9 +153,22 @@ final class ContactAddress
   @NonNull
   private String normalizeResolutionContext()
   {
-    if (!region.isEmpty() || !country.isEmpty())
+    if (!locality.isEmpty() && (!region.isEmpty() || !country.isEmpty()))
       return ContactAddressNormalizer.normalizeContext(
           String.join(" ", locality, region, ContactAddressNormalizer.normalizeCountry(country)), mFormattingCountry);
+    String context = formattedResolutionContext();
+    for (String component : List.of(region, ContactAddressNormalizer.normalizeCountry(country)))
+    {
+      String extra = ContactAddressNormalizer.normalizeContext(component, mFormattingCountry);
+      if (!extra.isEmpty()
+          && !ContactAddressNormalizer.matchTokens(context).containsAll(ContactAddressNormalizer.matchTokens(extra)))
+        context = (context + " " + extra).trim();
+    }
+    return context;
+  }
+
+  private String formattedResolutionContext()
+  {
     // Preserve disambiguating components even for formatted-only provider rows.
     final String preparedAddress = ContactAddressNormalizer.prepareAddress(address, mFormattingCountry);
     final String[] parts = preparedAddress.split(",", 2);

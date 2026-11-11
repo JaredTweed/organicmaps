@@ -662,9 +662,9 @@ public enum BookmarkManager {
   public native long[] importContactBookmarks(@NonNull String categoryName, @NonNull String[] keys,
                                               @NonNull String[] names, @NonNull String[] addresses,
                                               @NonNull double[] latitudes, @NonNull double[] longitudes,
-                                              @NonNull String[][] supersededKeys);
+                                              @NonNull String[][] supersededKeys, @NonNull String[] sourceFingerprints);
 
-  /** Flattened key, source address, latitude, longitude, category ID, modifiable tuples. */
+  /** Flattened key, source address, latitude, longitude, category ID, modifiable, fingerprint tuples. */
   @NonNull
   public native String[] getImportedContactLocations();
 

@@ -55,8 +55,14 @@ public final class ContactsImporter
   {
   }
   record Entry(String key, String name, String address, Location location, boolean inContacts, boolean canModify,
-               List<String> obsoleteKeys)
+               List<String> obsoleteKeys, String sourceKeys)
   {
+    Entry(String key, String name, String address, Location location, boolean inContacts, boolean canModify,
+          List<String> obsoleteKeys)
+    {
+      this(key, name, address, location, inContacts, canModify, obsoleteKeys, "");
+    }
+
     Entry(String key, String name, String address, Location location)
     {
       this(key, name, address, location, true, true, List.of());
@@ -129,6 +135,9 @@ public final class ContactsImporter
   private final Map<String, Location> locations = new HashMap<>();
   private final List<Entry> entries = new ArrayList<>();
   private final Map<String, Location> previousLocations = new HashMap<>();
+  private final Map<String, Location> previousAddresses = new HashMap<>();
+  private final Map<String, Location> sourceLocations = new HashMap<>();
+  private final Map<String, Entry> protectedEntries = new HashMap<>();
   private final List<Entry> previousEntries = new ArrayList<>();
   private final Map<String, String> streetKeys = new HashMap<>();
   private List<Contact> contacts = List.of();
@@ -157,13 +166,35 @@ public final class ContactsImporter
   {
     clear();
     java.util.Set<String> duplicates = new java.util.HashSet<>();
+    Set<String> ambiguousAddresses = new java.util.HashSet<>();
+    Set<String> ambiguousSources = new java.util.HashSet<>();
     for (Entry entry : previous)
     {
+      if (!entry.inContacts() || !entry.canModify())
+      {
+        protectedEntries.putIfAbsent(entry.key(), entry);
+        continue;
+      }
+      if (!entry.sourceKeys().isEmpty())
+      {
+        for (String sourceKey : decodeSourceKeys(entry.sourceKeys()))
+        {
+          Location existing = sourceLocations.putIfAbsent(sourceKey, entry.location());
+          if (existing != null && !existing.equals(entry.location()))
+            ambiguousSources.add(sourceKey);
+        }
+        continue;
+      }
       String key = entry.key + "\0" + entry.address;
       if (previousLocations.putIfAbsent(key, entry.location) != null)
         duplicates.add(key);
+      Location existing = previousAddresses.putIfAbsent(entry.address(), entry.location());
+      if (existing != null && !existing.equals(entry.location()))
+        ambiguousAddresses.add(entry.address());
     }
     duplicates.forEach(previousLocations::remove);
+    ambiguousAddresses.forEach(previousAddresses::remove);
+    ambiguousSources.forEach(sourceLocations::remove);
     previousEntries.addAll(previous);
     this.contacts = List.copyOf(contacts);
     index = addressIndex = unresolved = 0;
@@ -189,6 +220,9 @@ public final class ContactsImporter
     entries.clear();
     locations.clear();
     previousLocations.clear();
+    previousAddresses.clear();
+    sourceLocations.clear();
+    protectedEntries.clear();
     previousEntries.clear();
     streetKeys.clear();
   }
@@ -288,7 +322,13 @@ public final class ContactsImporter
       assignedKeys.add(primaryKey);
       result.add(new Entry(primaryKey, String.join(", ", group.names), group.first().address(),
                            group.first().location(), true, true,
-                           previousKeys.stream().filter(key -> !key.equals(primaryKey)).toList()));
+                           previousKeys.stream().filter(key -> !key.equals(primaryKey)).toList(),
+                           "v1:"
+                               + String.join(";", group.entries.stream()
+                                                      .flatMap(entry -> decodeSourceKeys(entry.sourceKeys()).stream())
+                                                      .distinct()
+                                                      .sorted()
+                                                      .toList())));
     }
     return result;
   }
@@ -318,16 +358,40 @@ public final class ContactsImporter
     {
       observer.accept(new State(Phase.RESOLVING, index, contacts.size(), unresolved, Error.NONE, null));
       Contact contact = contacts.get(index);
+      Entry protectedEntry = protectedEntries.get(contact.key);
+      if (protectedEntry != null && !contact.addresses.isEmpty())
+      {
+        // The native store will preserve this user-owned bookmark, regardless of geocoding.
+        entries.add(new Entry(contact.key, contact.name, protectedEntry.address(), protectedEntry.location()));
+        ++index;
+        addressIndex = 0;
+        continue;
+      }
       while (addressIndex < contact.addresses.size())
       {
         ContactAddress address = contact.addresses.get(addressIndex++);
         if (address.getSearchQueries().isEmpty())
           continue;
         String key = address.getAddressKey();
-        Location previous = previousLocations.get(contact.key + "\0" + address.address);
+        String sourceKey = ContactSourceKey.hash("address-v1:" + key);
+        Location previous = sourceLocations.get(sourceKey);
+        if (previous == null && !previousAddresses.isEmpty())
+        {
+          // Old imports lack structured input identity. Reuse only when formatted text captures
+          // the current context; new imports take the fingerprint fast path above.
+          boolean compatible = ContactAddressNormalizer.matchTokens(address.getResolutionContext())
+                                   .equals(ContactAddressNormalizer.matchTokens(
+                                       new ContactAddress(address.address, "", "").getResolutionContext()));
+          if (compatible)
+          {
+            previous = previousLocations.get(contact.key + "\0" + address.address);
+            if (previous == null)
+              previous = previousAddresses.get(address.address);
+          }
+        }
         if (previous != null)
         {
-          entries.add(new Entry(contact.key, contact.name, address.address, previous));
+          entries.add(resolvedEntry(contact, address, previous, sourceKey));
           break;
         }
         if (locations.containsKey(key))
@@ -335,7 +399,7 @@ public final class ContactsImporter
           Location cached = locations.get(key);
           if (cached == null)
             continue;
-          entries.add(new Entry(contact.key, contact.name, address.address, cached));
+          entries.add(resolvedEntry(contact, address, cached, sourceKey));
           break;
         }
         long attempt = ++generation;
@@ -353,7 +417,7 @@ public final class ContactsImporter
             locations.put(key, valid);
             if (valid != null)
             {
-              entries.add(new Entry(contact.key, contact.name, address.address, valid));
+              entries.add(resolvedEntry(contact, address, valid, sourceKey));
               ++index;
               addressIndex = 0;
             }
@@ -394,5 +458,18 @@ public final class ContactsImporter
     int total = contacts.size();
     clear();
     observer.accept(new State(phase, index, total, unresolved, error, result));
+  }
+
+  private static Entry resolvedEntry(Contact contact, ContactAddress address, Location location, String sourceKey)
+  {
+    return new Entry(contact.key, contact.name, address.address, location, true, true, List.of(), "v1:" + sourceKey);
+  }
+
+  private static List<String> decodeSourceKeys(String value)
+  {
+    if (!value.startsWith("v1:"))
+      return List.of();
+    List<String> keys = List.of(value.substring(3).split(";", -1));
+    return keys.stream().allMatch(key -> key.matches("[0-9a-f]{64}")) ? keys : List.of();
   }
 }

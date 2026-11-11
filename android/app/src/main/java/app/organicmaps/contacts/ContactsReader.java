@@ -4,9 +4,6 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.CancellationSignal;
 import android.provider.ContactsContract;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -80,19 +77,6 @@ final class ContactsReader
 
   static String hashKey(String key)
   {
-    try
-    {
-      byte[] bytes = MessageDigest.getInstance("SHA-256").digest(key.getBytes(StandardCharsets.UTF_8));
-      char[] hex = "0123456789abcdef".toCharArray();
-      StringBuilder result = new StringBuilder(bytes.length * 2);
-      for (byte value : bytes)
-        result.append(hex[(value & 255) >>> 4]).append(hex[value & 15]);
-      return result.toString();
-    }
-    catch (NoSuchAlgorithmException e)
-    {
-      // SHA-256 is mandatory on Android; never fall back to storing a raw provider identifier.
-      throw new IllegalStateException(e);
-    }
+    return ContactSourceKey.hash(key);
   }
 }

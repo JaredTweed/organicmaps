@@ -77,8 +77,8 @@ public class ContactAddressNormalizerTest
   @Test
   public void normalizesCommonContactFormatting()
   {
-    assertEquals("10879-160 Street", ContactAddressNormalizer.normalizeStreet("10879-160 Street"));
-    assertEquals("14033 - 92 Avenue", ContactAddressNormalizer.normalizeStreet("14033 - 92 Avenue"));
+    assertEquals("10879 160 Street", ContactAddressNormalizer.normalizeStreet("10879-160 Street"));
+    assertEquals("14033 92 Avenue", ContactAddressNormalizer.normalizeStreet("14033 - 92 Avenue"));
     assertEquals("11371 161 Street", ContactAddressNormalizer.normalizeStreet("11371\n161 Street"));
     assertEquals("10514 74 Street Northwest", ContactAddressNormalizer.normalizeStreet("10514 74st NW"));
     assertEquals("11093 158 Street", ContactAddressNormalizer.normalizeStreet("11093 158St"));

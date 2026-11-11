@@ -242,7 +242,12 @@ final class ContactAddressNormalizer
   static String normalizeContext(@NonNull String value, @NonNull String country)
   {
     if (usesNorthAmericanFormatting(country))
+    {
+      // In a Canadian provider row, a trailing CA is the country, not California.
+      if (country.equalsIgnoreCase("Canada"))
+        value = value.replaceFirst("(?i)\\bCA\\s*$", "Canada");
       return normalizeContext(value);
+    }
     return value.replaceAll("[;\\r\\n]+", " ").replaceAll("\\s+", " ").trim();
   }
 
@@ -275,7 +280,7 @@ final class ContactAddressNormalizer
         || (addressTokens.contains("united") && addressTokens.contains("states")))
       return mapTokens.contains("us") || mapTokens.contains("usa")
    || (mapTokens.contains("united") && mapTokens.contains("states"));
-    // No geographical clue: the native resolver still limits the search and result to the viewport.
+    // No recognized geographical clue: leave disambiguation to the native resolver.
     return true;
   }
 
@@ -303,6 +308,9 @@ final class ContactAddressNormalizer
     if (australian)
       address = address.replaceFirst("^\\d+[A-Za-z]?\\s*/\\s*(\\d+[A-Za-z]?)\\s+", "$1 ");
     address = TRAILING_UNIT.matcher(address).replaceFirst("");
+    if (northAmerican)
+      address = address.replaceFirst("(?i)^(\\d{4,6})\\s*-\\s*(\\d{1,3}[A-Za-z]?)\\s+(st(?:reet)?|ave(?:nue)?)\\b",
+                                     "$1 $2 $3");
 
     if (northAmerican && !address.matches("^\\d+[A-Za-z]?(?:[-/]\\d+[A-Za-z]?)*(?:\\s|,)+\\S.*"))
     {

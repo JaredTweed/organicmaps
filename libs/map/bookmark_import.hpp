@@ -24,6 +24,8 @@ struct BookmarkImportEntry
   bool m_requireSourceCategory = false;
   // Readback eligibility; rechecked natively at commit time.
   bool m_canModify = true;
+  // Opaque source input identity, saved atomically with the resolved point.
+  std::string m_sourceFingerprint = {};
 };
 
 struct BookmarkImportResult

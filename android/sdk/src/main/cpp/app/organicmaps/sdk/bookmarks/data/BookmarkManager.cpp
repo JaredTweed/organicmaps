@@ -621,12 +621,12 @@ JNIEXPORT jobjectArray JNICALL
 Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_getImportedContactLocations(JNIEnv * env, jobject)
 {
   auto entries = GetImportedBookmarks(frm()->GetBookmarkManager(), "android-contacts");
-  jobjectArray result = env->NewObjectArray(entries.size() * 6, env->FindClass("java/lang/String"), nullptr);
+  jobjectArray result = env->NewObjectArray(entries.size() * 7, env->FindClass("java/lang/String"), nullptr);
   jsize index = 0;
   for (auto const & entry : entries)
-    for (auto const & value :
-         {entry.m_key, entry.m_address, strings::to_string(entry.m_lat), strings::to_string(entry.m_lon),
-          strings::to_string(entry.m_groupId), std::string(entry.m_canModify ? "true" : "false")})
+    for (auto const & value : {entry.m_key, entry.m_address, strings::to_string(entry.m_lat),
+                               strings::to_string(entry.m_lon), strings::to_string(entry.m_groupId),
+                               std::string(entry.m_canModify ? "true" : "false"), entry.m_sourceFingerprint})
     {
       jni::ScopedLocalRef<jstring> text(env, jni::ToJavaString(env, value));
       env->SetObjectArrayElement(result, index++, text.get());
@@ -636,9 +636,10 @@ Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_getImportedContactLocati
 
 JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_importContactBookmarks(
     JNIEnv * env, jobject, jstring categoryName, jobjectArray keys, jobjectArray names, jobjectArray addresses,
-    jdoubleArray latitudes, jdoubleArray longitudes, jobjectArray supersededKeys)
+    jdoubleArray latitudes, jdoubleArray longitudes, jobjectArray supersededKeys, jobjectArray sourceFingerprints)
 {
-  if (!categoryName || !keys || !names || !addresses || !latitudes || !longitudes || !supersededKeys)
+  if (!categoryName || !keys || !names || !addresses || !latitudes || !longitudes || !supersededKeys ||
+      !sourceFingerprints)
   {
     env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "Missing bookmark import data");
     return nullptr;
@@ -646,7 +647,7 @@ JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkMan
   auto const count = env->GetArrayLength(keys);
   if (count != env->GetArrayLength(names) || count != env->GetArrayLength(addresses) ||
       count != env->GetArrayLength(latitudes) || count != env->GetArrayLength(longitudes) ||
-      count != env->GetArrayLength(supersededKeys))
+      count != env->GetArrayLength(supersededKeys) || count != env->GetArrayLength(sourceFingerprints))
   {
     env->ThrowNew(env->FindClass("java/lang/IllegalArgumentException"), "Mismatched bookmark import arrays");
     return nullptr;
@@ -671,6 +672,10 @@ JNIEXPORT jlongArray JNICALL Java_app_organicmaps_sdk_bookmarks_data_BookmarkMan
                        address.get() ? jni::ToNativeString(env, address.get()) : "", lat[i], lon[i],
                        "14,contact-s;15,contact-m", true});
     entries.back().m_requireSourceCategory = true;
+    jni::ScopedLocalRef<jstring> fingerprint(env,
+                                             static_cast<jstring>(env->GetObjectArrayElement(sourceFingerprints, i)));
+    if (fingerprint.get())
+      entries.back().m_sourceFingerprint = jni::ToNativeString(env, fingerprint.get());
     jni::ScopedLocalRef<jobjectArray> obsolete(
         env, static_cast<jobjectArray>(env->GetObjectArrayElement(supersededKeys, i)));
     if (obsolete.get())

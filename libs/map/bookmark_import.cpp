@@ -18,6 +18,7 @@ namespace
 char const * kSource = "om:import:source";
 char const * kKey = "om:import:key";
 char const * kSnapshot = "om:import:snapshot";
+char const * kFingerprint = "om:import:fingerprint";
 char const * kLatitude = "om:import:latitude";
 char const * kLongitude = "om:import:longitude";
 char const * kAppearance = "om:import:appearance";
@@ -129,6 +130,7 @@ std::vector<BookmarkImportEntry> GetImportedBookmarks(BookmarkManager const & ma
       entry.m_canModify =
           Property(manager.GetCategoryData(category).m_properties, kSource) == source && Unmodified(*bookmark, true);
       entry.m_key = Property(properties, kKey);
+      entry.m_sourceFingerprint = Property(properties, kFingerprint);
       std::istringstream snapshot(Property(properties, kSnapshot));
       snapshot.imbue(std::locale::classic());
       if (!(snapshot >> std::quoted(entry.m_name) >> std::quoted(entry.m_address)) || entry.m_key.empty() ||
@@ -253,6 +255,7 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
       if (!needsPresentation && !needsPoiZoomUpdate &&
           (!entry.m_requireSourceCategory || !Property(data.m_properties, kAppearance).empty()) &&
           current == snapshot && Property(data.m_properties, kKey) == entry.m_key &&
+          Property(data.m_properties, kFingerprint) == entry.m_sourceFingerprint &&
           mercator::DistanceOnEarth(bookmark->GetPivot(), point) <= 1.0)
       {
         ++result.m_unchanged;
@@ -280,6 +283,10 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
     data.m_properties[kSource] = source;
     data.m_properties[kKey] = entry.m_key;
     data.m_properties[kSnapshot] = snapshot;
+    if (entry.m_sourceFingerprint.empty())
+      data.m_properties.erase(kFingerprint);
+    else
+      data.m_properties[kFingerprint] = entry.m_sourceFingerprint;
     data.m_properties[kLatitude] = Coordinate(entry.m_lat);
     data.m_properties[kLongitude] = Coordinate(entry.m_lon);
     if (!entry.m_customImage.empty() && !data.m_properties.contains("CustomImage") &&

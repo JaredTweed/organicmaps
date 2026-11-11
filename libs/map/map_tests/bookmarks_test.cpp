@@ -3686,6 +3686,30 @@ UNIT_TEST(BookmarkSourceImportRetrievesOriginalAddressAfterLocalEdits)
   TEST(GetImportedBookmarks(manager, "other").empty(), ());
 }
 
+UNIT_TEST(BookmarkSourceImportPersistsInputFingerprint)
+{
+  BookmarkManager manager(BM_CALLBACKS);
+  manager.EnableTestMode(true);
+  BookmarkImportEntry entry{"key", "Name", "Address", 49, -123};
+  entry.m_sourceFingerprint = "opaque-v1";
+  auto result = ImportBookmarks(manager, "contacts", "Contacts", {entry});
+  TEST_EQUAL(result.m_added, 1, ());
+  auto entries = GetImportedBookmarks(manager, "contacts");
+  TEST_EQUAL(entries.size(), 1, ());
+  TEST_EQUAL(entries[0].m_sourceFingerprint, "opaque-v1", ());
+  TEST(entries[0].m_canModify, ());
+  result = ImportBookmarks(manager, "contacts", "Contacts", {entry});
+  TEST_EQUAL(result.m_unchanged, 1, ());
+  entry.m_sourceFingerprint = "opaque-v2";
+  result = ImportBookmarks(manager, "contacts", "Contacts", {entry});
+  TEST_EQUAL(result.m_updated, 1, ());
+  TEST_EQUAL(GetImportedBookmarks(manager, "contacts")[0].m_sourceFingerprint, "opaque-v2", ());
+  entry.m_sourceFingerprint.clear();
+  result = ImportBookmarks(manager, "contacts", "Contacts", {entry});
+  TEST_EQUAL(result.m_updated, 1, ());
+  TEST(GetImportedBookmarks(manager, "contacts")[0].m_sourceFingerprint.empty(), ());
+}
+
 UNIT_TEST(BookmarkSourceImportPoiPresentationPreservesUserAppearance)
 {
   classificator::Load();

@@ -52,6 +52,43 @@ public class ContactAddressTest
   }
 
   @Test
+  public void handlesFormattedGermanStreetBeforeCityAndPostcode()
+  {
+    var address = new ContactAddress("Beispielstra\u00dfe 21 Beispielstadt 12345 Germany", "", "");
+    assertFalse(address.getSearchQueries().isEmpty());
+    assertEquals("Beispielstra\u00dfe 21", address.getNormalizedStreet());
+    assertTrue(address.getSearchQueries().get(0).query.contains("beispielstadt"));
+  }
+
+  @Test
+  public void handlesHyphenatedNumberedStreetAndMultilineMall()
+  {
+    var hyphenated = new ContactAddress("12345-123 Street\nExample City, BC, Canada", "", "");
+    assertFalse(hyphenated.getSearchQueries().isEmpty());
+    assertEquals("12345 123 Street", hyphenated.getNormalizedStreet());
+    var mall = new ContactAddress("1234 West Mall\nExample City BC Canada", "", "");
+    assertFalse(mall.getSearchQueries().isEmpty());
+    assertEquals("1234 West Mall", mall.getNormalizedStreet());
+  }
+
+  @Test
+  public void retainsFormattedCityWhenStructuredLocalityIsBlank()
+  {
+    var address =
+        new ContactAddress("123 Example Road, Example City, BC, Canada", "123 Example Road", "", "BC", "Canada");
+    assertTrue(address.getResolutionContext().contains("Example City"));
+    assertTrue(address.getResolutionContext().contains("British Columbia"));
+  }
+
+  @Test
+  public void canadianCountryCodeIsNotMistakenForCalifornia()
+  {
+    var address = new ContactAddress("123 Example Road, CA", "123 Example Road", "", "", "CA");
+    assertEquals("Canada", address.getResolutionContext());
+    assertEquals("California", ContactAddressNormalizer.normalizeContext("CA", "USA"));
+  }
+
+  @Test
   public void distinguishesStatesInCacheAndQueries()
   {
     final ContactAddress illinois = new ContactAddress("123 Main St, Springfield, IL 62701, USA", "", "");
