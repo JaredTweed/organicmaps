@@ -51,9 +51,38 @@ public class ContactsImporterTest
       tasks.remove().run();
   }
 
+  private static ContactsImporter.Entry cached(String key, String address, ContactsImporter.Location location)
+  {
+    String fingerprint =
+        "v2:" + ContactSourceKey.hash("address-v2:" + new ContactAddress(address, "", "").getAddressKey());
+    return new ContactsImporter.Entry(key, "", address, location, true, true, List.of(), fingerprint);
+  }
+
   private ContactsImporter.State last()
   {
     return states.get(states.size() - 1);
+  }
+
+  @Test
+  public void refreshesLegacyRoundedLocationsOnceThenReusesPrecisePoint()
+  {
+    String address = "123 Example Street, Example City";
+    var people = List.of(contact("one", address));
+    for (String oldFingerprint : List.of("", "v1:" + ContactSourceKey.hash("old")))
+    {
+      int request = callbacks.size();
+      importer.start(people, List.of(new ContactsImporter.Entry("one", "", address,
+                                                                new ContactsImporter.Location(49.1235, -122.765), true,
+                                                                true, List.of(), oldFingerprint)));
+      assertEquals(request + 1, callbacks.size());
+      var precise = new ContactsImporter.Location(49.1234567, -122.7654321);
+      complete(request, precise);
+      var previous = saved.get(saved.size() - 1);
+      assertEquals(precise, previous.get(0).location());
+      importer.start(people, previous);
+      assertEquals(request + 1, callbacks.size());
+      assertEquals(precise, saved.get(saved.size() - 1).get(0).location());
+    }
   }
 
   @Test
@@ -75,7 +104,7 @@ public class ContactsImporterTest
     importer.start(List.of(person));
     complete(0, new ContactsImporter.Location(49, -123));
     var previous = saved.get(0);
-    assertTrue(previous.get(0).sourceKeys().startsWith("v1:"));
+    assertTrue(previous.get(0).sourceKeys().startsWith("v2:"));
     importer.start(List.of(person), previous);
     assertEquals(1, callbacks.size());
     assertEquals(2, saved.size());
@@ -105,9 +134,8 @@ public class ContactsImporterTest
   public void reusesUnchangedImportedAddressWithoutSearching()
   {
     String address = "123 Main Street, Canada";
-    importer.start(
-        List.of(contact("one", address)),
-        List.of(new ContactsImporter.Entry("one", "Old name", address, new ContactsImporter.Location(49, -123))));
+    importer.start(List.of(contact("one", address)),
+                   List.of(cached("one", address, new ContactsImporter.Location(49, -123))));
     assertTrue(callbacks.isEmpty());
     assertEquals("Name one", saved.get(0).get(0).name());
     assertEquals(ContactsImporter.Phase.DONE, last().phase);
@@ -117,9 +145,8 @@ public class ContactsImporterTest
   public void reusesSavedAddressForOtherResidentsWithoutSearching()
   {
     String address = "8877 Example Street, Example City";
-    importer.start(
-        List.of(contact("first", address), contact("second", address)),
-        List.of(new ContactsImporter.Entry("old", "", address, new ContactsImporter.Location(49.1, -122.6))));
+    importer.start(List.of(contact("first", address), contact("second", address)),
+                   List.of(cached("old", address, new ContactsImporter.Location(49.1, -122.6))));
     assertTrue(callbacks.isEmpty());
     assertEquals(1, saved.get(0).size());
     assertEquals("Name first, Name second", saved.get(0).get(0).name());
@@ -130,8 +157,8 @@ public class ContactsImporterTest
   {
     String address = "123 Main Street, Canada";
     importer.start(List.of(contact("new", address)),
-                   List.of(new ContactsImporter.Entry("old1", "", address, new ContactsImporter.Location(49, -123)),
-                           new ContactsImporter.Entry("old2", "", address, new ContactsImporter.Location(50, -124))));
+                   List.of(cached("old1", address, new ContactsImporter.Location(49, -123)),
+                           cached("old2", address, new ContactsImporter.Location(50, -124))));
     assertEquals(1, callbacks.size());
     complete(0, null);
   }
@@ -224,7 +251,8 @@ public class ContactsImporterTest
                                                       new ContactsImporter.Location(49.0465, -122.771)),
                            new ContactsImporter.Entry("oldNatalie", "", "2453 163 St. Surrey",
                                                       new ContactsImporter.Location(49.046484, -122.771031))));
-    assertTrue(callbacks.isEmpty());
+    complete(0, new ContactsImporter.Location(49.0465, -122.771));
+    complete(1, new ContactsImporter.Location(49.046484, -122.771031));
     assertEquals(1, saved.get(0).size());
     assertEquals("oldLuke", saved.get(0).get(0).key());
     assertEquals(List.of("oldNatalie"), saved.get(0).get(0).obsoleteKeys());
@@ -261,8 +289,9 @@ public class ContactsImporterTest
     importer.start(
         List.of(contact("one", "123 Main Street"), contact("two", "456 Other Road")),
         List.of(new ContactsImporter.Entry("two", "", "123 Main Street", new ContactsImporter.Location(49, -123))));
-    assertEquals(1, callbacks.size());
-    complete(0, new ContactsImporter.Location(50, -124));
+    complete(0, new ContactsImporter.Location(49, -123));
+    assertEquals(2, callbacks.size());
+    complete(1, new ContactsImporter.Location(50, -124));
     assertEquals("one", saved.get(0).get(0).key());
     assertEquals("two", saved.get(0).get(1).key());
     assertTrue(saved.get(0).get(0).obsoleteKeys().isEmpty());

@@ -9,6 +9,7 @@
 #include "search/search_tests_support/test_results_matching.hpp"
 #include "search/search_tests_support/test_search_request.hpp"
 
+#include "search/address_matcher.hpp"
 #include "search/cities_boundaries_table.hpp"
 #include "search/features_layer_path_finder.hpp"
 #include "search/mwm_context.hpp"
@@ -212,6 +213,43 @@ UNIT_CLASS_TEST(ProcessorTest, NumberedStreetOrdinalSynonyms)
   SetViewport(m2::RectD(-0.2, -0.2, 0.2, 0.2));
   TEST(ResultsMatch("868 West 67 Ave", {ExactMatch(countryId, ordinalBuilding)}), ());
   TEST(ResultsMatch("100 East 67th Ave", {ExactMatch(countryId, numericBuilding)}), ());
+}
+
+UNIT_CLASS_TEST(ProcessorTest, NamedBuildingRetainsExactAddressIdentity)
+{
+  std::string const lang = "en";
+  TestStreet street({{-0.1, 0.0}, {0.0, 0.0}, {0.1, 0.0}}, "Example Drive", lang);
+  TestBuilding building({0.0, 0.0}, "Named Residence", "200", street.GetName(lang), lang);
+  TestPOI shop({0.00001, 0.0}, "Named Shop", lang);
+  shop.SetTypes({{"shop", "convenience"}});
+  shop.SetHouseNumber("200");
+  shop.SetStreetName(street.GetName(lang));
+  auto const countryId = BuildCountry("Named Addressland", [&](TestMwmBuilder & builder)
+  {
+    builder.Add(street);
+    builder.Add(building);
+    builder.Add(shop);
+  });
+  SetViewport(m2::RectD(-0.2, -0.2, 0.2, 0.2));
+  auto params = GetDefaultSearchParams("200 Example Drive");
+  params.m_needAddress = true;
+  auto const request = MakeRequest(params);
+  auto const & results = request->Results();
+  TEST(ResultsMatch(results, {ExactMatch(countryId, building), ExactMatch(countryId, shop)}), ());
+  Results candidates;
+  for (auto const & result : results)
+    candidates.AddResultNoChecks(Result(result));
+  auto const * match = FindUniqueAddressResult("200 Example Drive", candidates, "200 Example Drive");
+  TEST(match, ());
+  TEST_EQUAL(match->GetString(), "Named Residence", ());
+  TEST(match->GetAddressIdentity().has_value(), ());
+  TEST_EQUAL(match->GetAddressIdentity()->m_houseNumber, "200", ());
+
+  Result distant(mercator::FromLatLon(50, -123), "Other Residence");
+  distant.SetType(Result::Type::LatLon);
+  distant.SetAddressIdentity({"200", "Example Drive"});
+  candidates.AddResultNoChecks(std::move(distant));
+  TEST(!FindUniqueAddressResult("200 Example Drive", candidates, "200 Example Drive"), ());
 }
 
 UNIT_CLASS_TEST(ProcessorTest, NearbyAddressHouseNumber)

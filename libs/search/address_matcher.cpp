@@ -22,6 +22,7 @@ namespace search
 namespace
 {
 uint64_t constexpr kMaxNearbyHouseNumberDifference = 24;
+double constexpr kAssociatedAddressPoiRadiusMeters = 50.0;
 struct ParsedAddress
 {
   uint64_t m_houseNumber = 0;
@@ -222,7 +223,16 @@ std::optional<Candidate> ParseCandidate(size_t index, Result const & result, Add
   if (!result.HasPoint() || result.IsSuggest())
     return {};
 
-  auto const parsed = ParseAddress(result.GetString());
+  std::optional<ParsedAddress> parsed;
+  if (auto const & identity = result.GetAddressIdentity())
+  {
+    auto const house = ParseHouseIdentifier(identity->m_houseNumber);
+    auto streetTokens = Tokenize(identity->m_street);
+    if (house && !streetTokens.empty())
+      parsed = ParsedAddress{house->first, house->second, identity->m_street, std::move(streetTokens)};
+  }
+  else
+    parsed = ParseAddress(result.GetString());
   if (!parsed)
     return {};
 
@@ -471,6 +481,7 @@ Result const * FindUniqueAddressResult(std::string const & query, Results const 
     return nullptr;
   Result const * match = nullptr;
   auto bestKind = AddressResultMatch::None;
+  bool bestIsAddressPoint = false;
   bool ambiguous = false;
   for (auto const & result : results)
   {
@@ -478,15 +489,31 @@ Result const * FindUniqueAddressResult(std::string const & query, Results const 
     if ((kind != AddressResultMatch::Exact && kind != AddressResultMatch::Interpolated) ||
         (early && !IsEarlyAddressResultMatchingQuery(query, result, expectedStreet)))
       continue;
-    if (kind > bestKind)
+    bool const isAddressPoint = result.GetResultType() == Result::Type::Feature &&
+                                ftypes::IsAddressChecker::Instance()(result.GetFeatureType());
+    if (kind > bestKind || (kind == bestKind && isAddressPoint && !bestIsAddressPoint))
     {
       bestKind = kind;
+      bestIsAddressPoint = isAddressPoint;
       match = &result;
       ambiguous = false;
     }
-    else if (kind == bestKind && match->GetFeatureCenter() != result.GetFeatureCenter())
+    else if (kind == bestKind && isAddressPoint == bestIsAddressPoint &&
+             match->GetFeatureCenter() != result.GetFeatureCenter())
       ambiguous = true;
   }
-  return ambiguous ? nullptr : match;
+  if (ambiguous || !match)
+    return nullptr;
+  if (bestIsAddressPoint)
+  {
+    // A shop inside the addressed building must not displace its house-number point. A matching
+    // POI elsewhere is still a genuinely different location, not grounds to guess a residence.
+    for (auto const & result : results)
+      if (GetAddressResultMatch(*parsed, result, expectedStreet) == bestKind &&
+          mercator::DistanceOnEarth(match->GetFeatureCenter(), result.GetFeatureCenter()) >
+              kAssociatedAddressPoiRadiusMeters)
+        return nullptr;
+  }
+  return match;
 }
 }  // namespace search

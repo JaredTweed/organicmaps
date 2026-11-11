@@ -31,6 +31,39 @@ UNIT_TEST(AddressMatcher_PreservesExactAddress)
   TEST_EQUAL(results[0].GetString(), "6498, 131A Street", ());
 }
 
+UNIT_TEST(AddressMatcher_UsesMappedAddressOfNamedBuilding)
+{
+  auto result = MakeAddress(49.1234567, -122.7654321, "Named Residence", "Example City, Canada");
+  result.SetAddressIdentity({"200", "Example Drive"});
+  Results source;
+  source.AddResultNoChecks(Result(result));
+  auto const * match = FindUniqueAddressResult("200 Example Drive", source, "200 Example Drive");
+  TEST(match, ());
+  TEST_EQUAL(match->GetFeatureCenter(), result.GetFeatureCenter(), ());
+  TEST(!IsAddressResultMatchingQuery("202 Example Drive", result), ());
+  TEST(!IsAddressResultMatchingQuery("200 Other Drive", result), ());
+  TEST(!IsAddressResultMatchingQuery("200 Example Drive Other City", result), ());
+}
+
+UNIT_TEST(AddressMatcher_DoesNotUseNearbyAddressOrMisleadingTitle)
+{
+  auto result = MakeAddress(49, -123, "200, Example Drive", "200, Example Drive, Example City, Canada");
+  result.SetAddressIdentity({});
+  TEST(!IsAddressResultMatchingQuery("200 Example Drive", result), ());
+}
+
+UNIT_TEST(AddressMatcher_NamedAddressStillRequiresUniqueLocation)
+{
+  Results source;
+  for (double lat : {49.0, 50.0})
+  {
+    auto result = MakeAddress(lat, -123, "Named Residence", "Example City, Canada");
+    result.SetAddressIdentity({"200", "Example Drive"});
+    source.AddResultNoChecks(std::move(result));
+  }
+  TEST(!FindUniqueAddressResult("200 Example Drive", source), ());
+}
+
 UNIT_TEST(AddressMatcher_PreservesDistinctExactAddresses)
 {
   Results source;

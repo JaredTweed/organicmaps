@@ -621,16 +621,26 @@ JNIEXPORT jobjectArray JNICALL
 Java_app_organicmaps_sdk_bookmarks_data_BookmarkManager_getImportedContactLocations(JNIEnv * env, jobject)
 {
   auto entries = GetImportedBookmarks(frm()->GetBookmarkManager(), "android-contacts");
-  jobjectArray result = env->NewObjectArray(entries.size() * 7, env->FindClass("java/lang/String"), nullptr);
+  jni::ScopedLocalRef<jclass> clazz(env, env->FindClass("app/organicmaps/sdk/bookmarks/data/ImportedBookmarkLocation"));
+  auto const constructor =
+      jni::GetConstructorID(env, clazz.get(), "(Ljava/lang/String;Ljava/lang/String;DDJZLjava/lang/String;)V");
+  jobjectArray result = env->NewObjectArray(entries.size(), clazz.get(), nullptr);
+  if (!result)
+    return nullptr;
   jsize index = 0;
   for (auto const & entry : entries)
-    for (auto const & value : {entry.m_key, entry.m_address, strings::to_string(entry.m_lat),
-                               strings::to_string(entry.m_lon), strings::to_string(entry.m_groupId),
-                               std::string(entry.m_canModify ? "true" : "false"), entry.m_sourceFingerprint})
-    {
-      jni::ScopedLocalRef<jstring> text(env, jni::ToJavaString(env, value));
-      env->SetObjectArrayElement(result, index++, text.get());
-    }
+  {
+    jni::ScopedLocalRef<jstring> key(env, jni::ToJavaString(env, entry.m_key));
+    jni::ScopedLocalRef<jstring> address(env, jni::ToJavaString(env, entry.m_address));
+    jni::ScopedLocalRef<jstring> fingerprint(env, jni::ToJavaString(env, entry.m_sourceFingerprint));
+    jni::ScopedLocalRef<jobject> location(
+        env, env->NewObject(clazz.get(), constructor, key.get(), address.get(), entry.m_lat, entry.m_lon,
+                            static_cast<jlong>(entry.m_groupId), static_cast<jboolean>(entry.m_canModify),
+                            fingerprint.get()));
+    if (env->ExceptionCheck())
+      return nullptr;
+    env->SetObjectArrayElement(result, index++, location.get());
+  }
   return result;
 }
 

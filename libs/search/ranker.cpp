@@ -713,7 +713,7 @@ void Ranker::Finish(bool cancelled)
   m_emitter.Finish(cancelled);
 }
 
-std::string Ranker::ResolveAddress(RankerResult const & res) const
+std::string Ranker::ResolveAddress(RankerResult const & res, Result::AddressIdentity & identity) const
 {
   std::string region, st_hn_post;
 
@@ -725,7 +725,9 @@ std::string Ranker::ResolveAddress(RankerResult const & res) const
   if (m_typeResolver.m_isAddressObject(res.GetTypes()))
   {
     ReverseGeocoder::Address addr;
-    if (!(res.GetID().IsValid() && m_reverseGeocoder.GetExactAddress(res.GetID(), addr)))
+    if (res.GetID().IsValid() && m_reverseGeocoder.GetExactAddress(res.GetID(), addr))
+      identity = {addr.m_building.m_name, addr.m_street.m_name};
+    else
       m_reverseGeocoder.GetNearbyAddress(res.GetCenter(), addr);
 
     /// @todo Print "near" for not exact addresses.
@@ -763,7 +765,11 @@ Result Ranker::MakeResult(RankerResult const & rankerResult, bool needAddress, b
   Result res(rankerResult.GetCenter(), rankerResult.m_str);
 
   if (needAddress)
-    res.SetAddress(ResolveAddress(rankerResult));
+  {
+    Result::AddressIdentity identity;
+    res.SetAddress(ResolveAddress(rankerResult, identity));
+    res.SetAddressIdentity(std::move(identity));
+  }
 
   switch (rankerResult.GetResultType())
   {

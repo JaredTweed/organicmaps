@@ -120,16 +120,14 @@ public final class ContactsImportCoordinator
           reading = null;
           try
           {
-            String[] tuples = BookmarkManager.INSTANCE.getImportedContactLocations();
             java.util.List<ContactsImporter.Entry> previous = new java.util.ArrayList<>();
-            for (int i = 0; i + 6 < tuples.length; i += 7)
+            for (var location : BookmarkManager.INSTANCE.getImportedContactLocations())
             {
-              final long categoryId = Long.parseLong(tuples[i + 4]);
-              previous.add(new ContactsImporter.Entry(
-                  tuples[i], "", tuples[i + 1],
-                  new ContactsImporter.Location(Double.parseDouble(tuples[i + 2]), Double.parseDouble(tuples[i + 3])),
-                  BookmarkManager.INSTANCE.isContactCategory(categoryId), Boolean.parseBoolean(tuples[i + 5]),
-                  List.of(), tuples[i + 6]));
+              previous.add(
+                  new ContactsImporter.Entry(location.key, "", location.address,
+                                             new ContactsImporter.Location(location.latitude, location.longitude),
+                                             BookmarkManager.INSTANCE.isContactCategory(location.categoryId),
+                                             location.canModify, List.of(), location.fingerprint));
             }
             importer.start(contacts, previous);
           }

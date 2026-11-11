@@ -134,8 +134,6 @@ public final class ContactsImporter
   private final Consumer<State> observer;
   private final Map<String, Location> locations = new HashMap<>();
   private final List<Entry> entries = new ArrayList<>();
-  private final Map<String, Location> previousLocations = new HashMap<>();
-  private final Map<String, Location> previousAddresses = new HashMap<>();
   private final Map<String, Location> sourceLocations = new HashMap<>();
   private final Map<String, Entry> protectedEntries = new HashMap<>();
   private final List<Entry> previousEntries = new ArrayList<>();
@@ -165,8 +163,6 @@ public final class ContactsImporter
   void start(List<Contact> contacts, List<Entry> previous)
   {
     clear();
-    java.util.Set<String> duplicates = new java.util.HashSet<>();
-    Set<String> ambiguousAddresses = new java.util.HashSet<>();
     Set<String> ambiguousSources = new java.util.HashSet<>();
     for (Entry entry : previous)
     {
@@ -175,25 +171,15 @@ public final class ContactsImporter
         protectedEntries.putIfAbsent(entry.key(), entry);
         continue;
       }
-      if (!entry.sourceKeys().isEmpty())
+      // Older readback used six significant digits. Resolve those inputs once again rather
+      // than promoting an already-rounded point into the precise cache.
+      for (String sourceKey : decodeSourceKeys(entry.sourceKeys()))
       {
-        for (String sourceKey : decodeSourceKeys(entry.sourceKeys()))
-        {
-          Location existing = sourceLocations.putIfAbsent(sourceKey, entry.location());
-          if (existing != null && !existing.equals(entry.location()))
-            ambiguousSources.add(sourceKey);
-        }
-        continue;
+        Location existing = sourceLocations.putIfAbsent(sourceKey, entry.location());
+        if (existing != null && !existing.equals(entry.location()))
+          ambiguousSources.add(sourceKey);
       }
-      String key = entry.key + "\0" + entry.address;
-      if (previousLocations.putIfAbsent(key, entry.location) != null)
-        duplicates.add(key);
-      Location existing = previousAddresses.putIfAbsent(entry.address(), entry.location());
-      if (existing != null && !existing.equals(entry.location()))
-        ambiguousAddresses.add(entry.address());
     }
-    duplicates.forEach(previousLocations::remove);
-    ambiguousAddresses.forEach(previousAddresses::remove);
     ambiguousSources.forEach(sourceLocations::remove);
     previousEntries.addAll(previous);
     this.contacts = List.copyOf(contacts);
@@ -219,8 +205,6 @@ public final class ContactsImporter
     contacts = List.of();
     entries.clear();
     locations.clear();
-    previousLocations.clear();
-    previousAddresses.clear();
     sourceLocations.clear();
     protectedEntries.clear();
     previousEntries.clear();
@@ -323,7 +307,7 @@ public final class ContactsImporter
       result.add(new Entry(primaryKey, String.join(", ", group.names), group.first().address(),
                            group.first().location(), true, true,
                            previousKeys.stream().filter(key -> !key.equals(primaryKey)).toList(),
-                           "v1:"
+                           "v2:"
                                + String.join(";", group.entries.stream()
                                                       .flatMap(entry -> decodeSourceKeys(entry.sourceKeys()).stream())
                                                       .distinct()
@@ -373,22 +357,8 @@ public final class ContactsImporter
         if (address.getSearchQueries().isEmpty())
           continue;
         String key = address.getAddressKey();
-        String sourceKey = ContactSourceKey.hash("address-v1:" + key);
+        String sourceKey = ContactSourceKey.hash("address-v2:" + key);
         Location previous = sourceLocations.get(sourceKey);
-        if (previous == null && !previousAddresses.isEmpty())
-        {
-          // Old imports lack structured input identity. Reuse only when formatted text captures
-          // the current context; new imports take the fingerprint fast path above.
-          boolean compatible = ContactAddressNormalizer.matchTokens(address.getResolutionContext())
-                                   .equals(ContactAddressNormalizer.matchTokens(
-                                       new ContactAddress(address.address, "", "").getResolutionContext()));
-          if (compatible)
-          {
-            previous = previousLocations.get(contact.key + "\0" + address.address);
-            if (previous == null)
-              previous = previousAddresses.get(address.address);
-          }
-        }
         if (previous != null)
         {
           entries.add(resolvedEntry(contact, address, previous, sourceKey));
@@ -462,12 +432,12 @@ public final class ContactsImporter
 
   private static Entry resolvedEntry(Contact contact, ContactAddress address, Location location, String sourceKey)
   {
-    return new Entry(contact.key, contact.name, address.address, location, true, true, List.of(), "v1:" + sourceKey);
+    return new Entry(contact.key, contact.name, address.address, location, true, true, List.of(), "v2:" + sourceKey);
   }
 
   private static List<String> decodeSourceKeys(String value)
   {
-    if (!value.startsWith("v1:"))
+    if (!value.startsWith("v2:"))
       return List.of();
     List<String> keys = List.of(value.substring(3).split(";", -1));
     return keys.stream().allMatch(key -> key.matches("[0-9a-f]{64}")) ? keys : List.of();

@@ -100,7 +100,7 @@ private:
   friend class RankerResultMaker;
 
   void MakeRankerResults();
-  std::string ResolveAddress(RankerResult const & res) const;
+  std::string ResolveAddress(RankerResult const & res, Result::AddressIdentity & identity) const;
 
   void GetBestMatchName(FeatureType & f, std::string & name) const;
   void MatchForSuggestions(strings::UniString const & token, int8_t locale, std::string const & prolog);
