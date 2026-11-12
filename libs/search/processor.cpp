@@ -830,6 +830,7 @@ void Processor::SearchBookmarks(bookmarks::GroupId const & groupId, size_t maxRe
   bookmarks::Processor::Params params;
   InitParams(params);
   params.m_groupId = groupId;
+  params.m_requireAllTokens = groupId == bookmarks::kInvalidGroupId;
   params.m_maxNumResults = maxResults;
 
   try

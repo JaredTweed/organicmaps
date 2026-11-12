@@ -223,6 +223,8 @@ void Processor::Search(Params const & params) const
       Retrieve<strings::PrefixDFAModifier<strings::LevenshteinDFA>>(token, insertId);
     else
       Retrieve<strings::LevenshteinDFA>(token, insertId);
+    if (params.m_requireAllTokens && tokenIds.empty())
+      return;
     for (auto const & id : tokenIds)
       ++ids[id];
   }
@@ -234,6 +236,8 @@ void Processor::Search(Params const & params) const
   for (auto const & [id, matchedTokens] : ids)
   {
     BailIfCancelled();
+    if (params.m_requireAllTokens && matchedTokens != params.GetNumTokens())
+      continue;
 
     if (params.m_groupId != kInvalidGroupId)
     {
