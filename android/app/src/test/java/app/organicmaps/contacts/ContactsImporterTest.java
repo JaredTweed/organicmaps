@@ -153,6 +153,25 @@ public class ContactsImporterTest
   }
 
   @Test
+  public void sharesSavedAndNewlyResolvedLocationsWithinOneImport()
+  {
+    String savedAddress = "123 Main Street, Canada";
+    String newAddress = "456 Other Street, Canada";
+    var previous = new ContactsImporter.Location(49, -123);
+    var resolved = new ContactsImporter.Location(50, -124);
+    importer.start(List.of(contact("one", savedAddress), contact("two", newAddress),
+                           contact("three", savedAddress), contact("four", newAddress)),
+                   List.of(cached("old", savedAddress, previous)));
+    assertEquals(1, callbacks.size());
+    complete(0, resolved);
+    assertEquals(1, callbacks.size());
+    assertEquals(2, saved.get(0).size());
+    assertTrue(saved.get(0).stream().anyMatch(entry -> entry.location().equals(previous)));
+    assertTrue(saved.get(0).stream().anyMatch(entry -> entry.location().equals(resolved)));
+    assertEquals(ContactsImporter.Phase.DONE, last().phase);
+  }
+
+  @Test
   public void doesNotReuseConflictingSavedAddressLocations()
   {
     String address = "123 Main Street, Canada";

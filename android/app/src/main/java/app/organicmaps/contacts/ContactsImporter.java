@@ -134,7 +134,6 @@ public final class ContactsImporter
   private final Consumer<State> observer;
   private final Map<String, Location> locations = new HashMap<>();
   private final List<Entry> entries = new ArrayList<>();
-  private final Map<String, Location> sourceLocations = new HashMap<>();
   private final Map<String, Entry> protectedEntries = new HashMap<>();
   private final List<Entry> previousEntries = new ArrayList<>();
   private final Map<String, String> streetKeys = new HashMap<>();
@@ -175,12 +174,12 @@ public final class ContactsImporter
       // than promoting an already-rounded point into the precise cache.
       for (String sourceKey : decodeSourceKeys(entry.sourceKeys()))
       {
-        Location existing = sourceLocations.putIfAbsent(sourceKey, entry.location());
+        Location existing = locations.putIfAbsent(sourceKey, entry.location());
         if (existing != null && !existing.equals(entry.location()))
           ambiguousSources.add(sourceKey);
       }
     }
-    ambiguousSources.forEach(sourceLocations::remove);
+    ambiguousSources.forEach(locations::remove);
     previousEntries.addAll(previous);
     this.contacts = List.copyOf(contacts);
     index = addressIndex = unresolved = 0;
@@ -205,7 +204,6 @@ public final class ContactsImporter
     contacts = List.of();
     entries.clear();
     locations.clear();
-    sourceLocations.clear();
     protectedEntries.clear();
     previousEntries.clear();
     streetKeys.clear();
@@ -251,19 +249,13 @@ public final class ContactsImporter
   // allowing a chain of nearby points to join unrelated residences.
   private List<Entry> groupByResidence(List<Entry> source)
   {
-    Set<String> movedKeys = new java.util.HashSet<>();
-    for (Entry previous : previousEntries)
-    {
-      if (!previous.inContacts() || !previous.canModify())
-        movedKeys.add(previous.key());
-    }
     List<Entry> ordered = new ArrayList<>(source);
     ordered.sort(java.util.Comparator.comparing(Entry::key));
     List<Entry> result = new ArrayList<>();
     List<ResidenceGroup> groups = new ArrayList<>();
     for (Entry entry : ordered)
     {
-      if (movedKeys.contains(entry.key()))
+      if (protectedEntries.containsKey(entry.key()))
       {
         result.add(entry);
         continue;
@@ -296,7 +288,7 @@ public final class ContactsImporter
           previousEntries.stream()
               .filter(previous -> previous.inContacts() && previous.canModify() && group.canAccept(previous))
               .map(Entry::key)
-              .filter(key -> !movedKeys.contains(key) && !assignedKeys.contains(key))
+              .filter(key -> !protectedEntries.containsKey(key) && !assignedKeys.contains(key))
               .filter(key -> !currentKeys.contains(key) || groupKeys.contains(key))
               .distinct()
               .sorted()
@@ -356,17 +348,10 @@ public final class ContactsImporter
         ContactAddress address = contact.addresses.get(addressIndex++);
         if (address.getSearchQueries().isEmpty())
           continue;
-        String key = address.getAddressKey();
-        String sourceKey = ContactSourceKey.hash("address-v2:" + key);
-        Location previous = sourceLocations.get(sourceKey);
-        if (previous != null)
+        String sourceKey = ContactSourceKey.hash("address-v2:" + address.getAddressKey());
+        if (locations.containsKey(sourceKey))
         {
-          entries.add(resolvedEntry(contact, address, previous, sourceKey));
-          break;
-        }
-        if (locations.containsKey(key))
-        {
-          Location cached = locations.get(key);
+          Location cached = locations.get(sourceKey);
           if (cached == null)
             continue;
           entries.add(resolvedEntry(contact, address, cached, sourceKey));
@@ -384,7 +369,7 @@ public final class ContactsImporter
                 && (!Double.isFinite(valid.latitude) || !Double.isFinite(valid.longitude)
                     || Math.abs(valid.latitude) > 90 || Math.abs(valid.longitude) > 180))
               valid = null;
-            locations.put(key, valid);
+            locations.put(sourceKey, valid);
             if (valid != null)
             {
               entries.add(resolvedEntry(contact, address, valid, sourceKey));

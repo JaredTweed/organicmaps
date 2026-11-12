@@ -29,10 +29,11 @@ bool IsFiniteCoordinate(double value)
   return (std::bit_cast<uint64_t>(value) & 0x7ff0000000000000ULL) != 0x7ff0000000000000ULL;
 }
 
-std::string Property(kml::Properties const & properties, char const * key)
+std::string const & Property(kml::Properties const & properties, char const * key)
 {
+  static std::string const empty;
   auto const it = properties.find(key);
-  return it == properties.end() ? std::string{} : it->second;
+  return it == properties.end() ? empty : it->second;
 }
 
 std::string Snapshot(std::string const & name, std::string const & address)
@@ -243,7 +244,6 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
         continue;
       }
       data = bookmark->GetData();
-      auto const current = Snapshot(bookmark->GetPreferredName(), bookmark->GetDescription());
       bool const needsPresentation = !entry.m_customImage.empty() && !data.m_properties.contains("CustomImage") &&
                                      !data.m_properties.contains("CustomImageOverride") &&
                                      data.m_icon == kml::BookmarkIcon::None &&
@@ -254,7 +254,7 @@ BookmarkImportResult ImportBookmarks(BookmarkManager & manager, std::string cons
           (data.m_minZoom != 14 || Property(data.m_properties, "CustomImage") != entry.m_customImage);
       if (!needsPresentation && !needsPoiZoomUpdate &&
           (!entry.m_requireSourceCategory || !Property(data.m_properties, kAppearance).empty()) &&
-          current == snapshot && Property(data.m_properties, kKey) == entry.m_key &&
+          Property(data.m_properties, kSnapshot) == snapshot && Property(data.m_properties, kKey) == entry.m_key &&
           Property(data.m_properties, kFingerprint) == entry.m_sourceFingerprint &&
           mercator::DistanceOnEarth(bookmark->GetPivot(), point) <= 1.0)
       {

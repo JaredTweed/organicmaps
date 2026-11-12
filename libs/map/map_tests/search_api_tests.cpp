@@ -625,13 +625,16 @@ UNIT_CLASS_TEST(SearchAPITest, BookmarksSearch)
     m_api.OnBookmarksAttached(groupInfos);
   }
 
-  runTest(query, kml::kInvalidMarkGroupId, vector<kml::MarkId>({1}));
+  runTest(query, kml::kInvalidMarkGroupId, {});
+  runTest("silver mustang", kml::kInvalidMarkGroupId, vector<kml::MarkId>({1}));
   runTest(query, kml::MarkGroupId(11), {});
   m_api.EnableIndexingOfBookmarkGroup(11, true /* enable */);
-  runTest(query, kml::kInvalidMarkGroupId, vector<kml::MarkId>({2, 1}));
+  runTest(query, kml::kInvalidMarkGroupId, {});
+  runTest("gread northern", kml::kInvalidMarkGroupId, vector<kml::MarkId>({2}));
   runTest(query, kml::MarkGroupId(11), vector<kml::MarkId>({2}));
   m_api.EnableIndexingOfBookmarkGroup(11, false /* enable */);
-  runTest(query, kml::kInvalidMarkGroupId, vector<kml::MarkId>({1}));
+  runTest(query, kml::kInvalidMarkGroupId, {});
+  runTest("great northern", kml::kInvalidMarkGroupId, {});
   runTest(query, kml::MarkGroupId(11), {});
   m_api.EnableIndexingOfBookmarkGroup(11, true /* enable */);
 
